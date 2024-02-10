@@ -11,8 +11,6 @@ const Form = () => {
     contactNumber: "",
     email: "",
     facultyMentorName: "",
-    hostelRent: "",
-    securityDeposit: "",
     arrivalDate: "",
     departureDate: "",
     remarks: "",
