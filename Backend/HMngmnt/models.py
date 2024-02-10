@@ -6,8 +6,8 @@ from django.db import models
 #     student_name = models.CharField(max_length=100)
     
 class Faculty(models.Model):
-    faculty_name = models.CharField(max_length=100, primary_key=True)
-    faculty_email = models.EmailField(max_length=100)
+    faculty_name = models.CharField(max_length=100)
+    faculty_email = models.EmailField(max_length=100, primary_key=True)
     faculty_phone = models.CharField(max_length=10)
     is_hod = models.BooleanField(default=False)
 
@@ -25,9 +25,12 @@ class Application(models.Model):
     instiId= models.FileField(upload_to='documents/')
     letter= models.FileField(upload_to='documents/')
     status = models.CharField(max_length=100, default='Pending Faculty Approval')
-
+    
     class Meta:
         ordering = ['name']
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'email'], name='unique_student')
+        ]
     def __str__(self):
         return self.name
 
