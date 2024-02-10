@@ -9,5 +9,6 @@ def index(request):
     return HttpResponse("Hello, world. You're at the HMngmnt index.")
 
 @csrf_exempt
-def home(request):
+def internship(request):
+    print(request.FILES)
     return HttpResponse("this is home")
