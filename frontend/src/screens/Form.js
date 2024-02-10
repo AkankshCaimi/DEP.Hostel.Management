@@ -11,6 +11,7 @@ const Form = () => {
     contactNumber: "",
     email: "",
     facultyMentorName: "",
+    facultyEmail: "",
     arrivalDate: "",
     departureDate: "",
     remarks: "",
@@ -51,6 +52,7 @@ const Form = () => {
     data.append("contactNumber", formData.contactNumber);
     data.append("email", formData.email);
     data.append("facultyMentorName", formData.facultyMentorName);
+    data.append("facultyEmail", formData.facultyEmail)
     data.append("arrivalDate", formData.arrivalDate);
     data.append("departureDate", formData.departureDate);
     data.append("instituteID", file1Data);
@@ -153,6 +155,18 @@ const Form = () => {
           type="text"
           name="facultyMentorName"
           value={formData.facultyMentorName}
+          onChange={handleChange}
+          className="mt-1 p-2 w-full border rounded"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-600">
+          Faculty Mentor's Email:
+        </label>
+        <input
+          type="text"
+          name="facultyEmail"
+          value={formData.facultyEmail}
           onChange={handleChange}
           className="mt-1 p-2 w-full border rounded"
         />
