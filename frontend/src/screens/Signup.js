@@ -5,6 +5,7 @@ import '../all_css/Signup.css';
 const Signup = ({ showPopup, setShowPopup }) => {
   const [type, setType] = useState('');
 
+
   const handleTypeChange = (e) => {
     setType(e.target.value);
   }

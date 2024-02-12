@@ -30,13 +30,13 @@ const Form = () => {
   const handleFileChange = (e, i) => {
     if(e.target.files[0].type !== "application/pdf") {
       alert("Please upload a PDF file");
-      if(i==1)
+      if(i===1)
         file1Ref.current.value = "";
       else
         file2Ref.current.value = "";
       return;
     }
-    if (i == 1) setFile1Data(e.target.files[0]);
+    if (i === 1) setFile1Data(e.target.files[0]);
     else setFile2Data(e.target.files[0]);
 
     // console.log(e.target.files[0])
@@ -232,6 +232,7 @@ const Form = () => {
           className="mt-1 p-2 w-full border rounded"
         />
       </div>
+      
       <div>
         <button
           type="submit"
