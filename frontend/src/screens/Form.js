@@ -67,13 +67,22 @@ const Form = () => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-md mx-auto mt-8 p-8 bg-gray-100 shadow-md rounded"
-      encType="multipart/form-data"
-    >
+    <div style={{}}>
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-8 p-8 rounded"
+        encType="multipart/form-data"
+        style={{
+          backgroundImage: 'url("../images/hero-bg.jpg")',
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0)',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Name of the student Intern:
         </label>
         <input
@@ -85,7 +94,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Gender:
         </label>
         <select
@@ -101,7 +110,7 @@ const Form = () => {
         </select>
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Affiliation of the student intern:
         </label>
         <input
@@ -113,7 +122,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Address:
         </label>
         <textarea
@@ -124,7 +133,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Contact Number:
         </label>
         <input
@@ -136,7 +145,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Email:
         </label>
         <input
@@ -148,7 +157,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Name of the Faculty Mentor:
         </label>
         <input
@@ -160,7 +169,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Faculty Mentor's Email:
         </label>
         <input
@@ -172,7 +181,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Date of arrival:
         </label>
         <input
@@ -184,7 +193,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Date of departure:{" "}
         </label>
         <input
@@ -196,7 +205,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Copy of your Institute ID
         </label>
         <input
@@ -205,11 +214,11 @@ const Form = () => {
           accept=".pdf"
           ref={file1Ref}
           onChange={(e) => handleFileChange(e, 1)}
-          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
+          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#fff' }}
           />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
           Copy of Official Letter from your Institute
         </label>
         <input
@@ -218,34 +227,35 @@ const Form = () => {
           accept=".pdf"
           ref={file2Ref}
           onChange={(e) => handleFileChange(e, 2)}
-          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
+          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#fff' }}
           />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600">
-          Remarks:{" "}
-        </label>
-        <textarea
-          name="remarks"
-          value={formData.remarks}
-          onChange={handleChange}
-          className="mt-1 p-2 w-full border rounded"
-        />
-      </div>
-      
-      <div>
-        <button
-          type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-        >
-          Submit
-        </button>
-      </div>
-      <div className="mt-4 text-sm text-gray-500">
-        Hostel room rent: Rs. 150/- per day/per person or Rs. 3000/- per month
-        which is less. Security (refundable) Rs. 10000/-
-      </div>
+    <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+      Remarks:{" "}
+    </label>
+    <textarea
+      name="remarks"
+      value={formData.remarks}
+      onChange={handleChange}
+      className="mt-1 p-2 w-full border rounded"
+    />
+  </div>
+    
+
+      <div className="mt-4 text-m text-gray-500" style={{ color: '#fff' }}>
+    Hostel room rent: Rs. 150/- per day per person or Rs. 3000/- per month which is less. Security (refundable) Rs. 10000/-
+  </div>
+  <div className="mt-4 flex justify-center"> {/* Adjusted mt-8 to mt-4 */}
+    <button
+      type="submit"
+      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+    >
+      Submit
+    </button>
+  </div>
     </form>
+    </div>
   );
 };
 

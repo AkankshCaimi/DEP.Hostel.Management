@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import '../styles/tailwind.css';
+import { NavLink } from 'react-router-dom';
+import '../all_css/Login.css';
 
 const AdminSignup = () => {
   const [adminName, setAdminName] = useState('');
@@ -25,40 +26,51 @@ const AdminSignup = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-10 p-6 bg-white rounded shadow-md">
-      <h2 className="text-2xl font-semibold mb-6">Admin Signup</h2>
-      <form onSubmit={handleAdminSignup}>
-        <label className="block mb-4">
-          Admin Name:
-          <input
-            type="text"
-            className="w-full border rounded px-3 py-2"
-            value={adminName}
-            onChange={handleAdminNameChange}
-          />
-        </label>
-        <label className="block mb-4">
-          Admin Email:
-          <input
-            type="email"
-            className="w-full border rounded px-3 py-2"
-            value={adminEmail}
-            onChange={handleAdminEmailChange}
-          />
-        </label>
-        <label className="block mb-4">
-          Admin Password:
-          <input
-            type="password"
-            className="w-full border rounded px-3 py-2"
-            value={adminPassword}
-            onChange={handleAdminPasswordChange}
-          />
-        </label>
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Signup
-        </button>
-      </form>
+    <div>
+      <div className="form-popup">
+        <div className="form-box signup">
+          <div className="form-details">
+            <h2>Admin Signup</h2>
+            <p>Please provide your information to create an admin account.</p>
+          </div>
+          <div className="form-content">
+            <h2>SIGNUP</h2>
+            <form onSubmit={handleAdminSignup}>
+              <div className="input-field">
+                <input
+                  type="text" required
+                  value={adminName}
+                  onChange={handleAdminNameChange}
+                />
+                <label>Admin Name</label>
+              </div>
+              <div className="input-field">
+                <input
+                  type="email" required
+                  value={adminEmail}
+                  onChange={handleAdminEmailChange}
+                />
+                <label>Admin Email</label>
+              </div>
+              <div className="input-field">
+                <input
+                  type="password" required
+                  value={adminPassword}
+                  onChange={handleAdminPasswordChange}
+                />
+                <label>Admin Password</label>
+              </div>
+              <button type="submit" className="custom-button">
+                Signup
+              </button>
+            </form>
+            <div className="bottom-link">
+              Already have an account?
+              <NavLink to='/login' id="signup-link"> Login</NavLink>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
