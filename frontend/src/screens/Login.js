@@ -41,4 +41,3 @@ const Login = ({ showPopup, setShowPopup }) => {
 
 export default Login;
 
-export default Login;
