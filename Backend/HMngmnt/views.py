@@ -17,6 +17,7 @@ def internship(request):
     # print(request.FILES)
     # vals= request.POST
     facultyE= request.POST.get('facultyEmail')
+    # print("email is this:", facultyE)
     # print(facultyE, Faculty.objects.values_list('faculty_name', flat=True))
     if Faculty.objects.get(faculty_email=facultyE) is None:
         return HttpResponse("Faculty not found", status=300)
@@ -27,8 +28,7 @@ def internship(request):
         address= request.POST.get('address'),
         phone= request.POST.get('contactNumber'),
         email= request.POST.get('email'),
-        faculty= request.POST.get('facultyMentorName'),
-        faculty_email = Faculty.objects.get(faculty_name=facultyE),
+        faculty= Faculty.objects.get(faculty_email=facultyE),
         arrival= request.POST.get('arrivalDate'),
         departure= request.POST.get('departureDate'),
         instiId= request.FILES.get('instituteID'),
@@ -38,3 +38,7 @@ def internship(request):
     application.save()
 
     return HttpResponse("this is internship")
+
+@csrf_exempt
+def login(request):
+    pass

@@ -1,2 +1,5 @@
 /HMngmnt/__pycache__/
 /Backend/__pycache__/
+db.sqlite3
+/documents/
+/HMngmnt/migrations/
