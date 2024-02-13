@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+// import { navigate } from '@reach/router';
+import { useNavigate } from 'react-router-dom';
 import '../all_css/Login.css';
+import axios from 'axios';
 
 const StudentSignup = () => {
   const [studentName, setStudentName] = useState('');
   const [studentEmail, setStudentEmail] = useState('');
   const [studentPassword, setStudentPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleStudentNameChange = (event) => {
     setStudentName(event.target.value);
@@ -23,6 +27,17 @@ const StudentSignup = () => {
     event.preventDefault();
     // Add your student signup logic here
     console.log('Student Name:', studentName, 'Student Email:', studentEmail, 'Student Password:', studentPassword);
+    axios.post('http://localhost:8000/api/signup', {
+      name: studentName,
+      email: studentEmail,
+      password: studentPassword,
+      role: 'student'
+    }).then((response) => {
+      console.log(response);
+      alert('Student Signup Successful'); 
+      navigate('/');
+      
+    });
   };
 
   return (

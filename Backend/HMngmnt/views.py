@@ -5,11 +5,14 @@ from .models import Application, Faculty
 # from ../add_fac import add_fac
 from .add_fac import add_fac
 # Create your views here.
-
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+import json
 
 @csrf_exempt
 def index(request):
-    add_fac('Dr. Puneet Goyal')
+    # add_fac('Dr. Puneet Goyal')
     return HttpResponse("Hello, world. You're at the HMngmnt index.")
 
 @csrf_exempt
@@ -40,5 +43,33 @@ def internship(request):
     return HttpResponse("this is internship")
 
 @csrf_exempt
-def login(request):
-    pass
+def signup_ep(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('name')
+        password = data.get('password')
+        email = data.get('email')
+        role=data.get('role')
+        print(username, password, email)
+        # print(request.POST)
+        user=User.objects.get_or_create(username=username,password=password,email=email)
+        if role=='faculty' or role=='admin':
+            user.is_staff=True
+        user.save()
+        login(request, user)
+        return JsonResponse({'message': 'Signup successful'})
+
+@csrf_exempt
+def login_ep(request):
+ if request.method == 'POST':
+    data = json.loads(request.body)
+    email = data.get('email')
+    password = data.get('password')
+    print(email, password)
+    # user=authenticate(email=email,password=password)
+    user=User.objects.get(email=email)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({'message': 'Login successful'})
+    else:
+        return JsonResponse({'message': 'Invalid login credentials'}, status=404)
