@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-// import { navigate } from '@reach/router';
-import { useNavigate } from 'react-router-dom';
-import '../all_css/Login.css';
+import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "../styles/tailwind.css";
 
 const StudentSignup = () => {
   const [studentName, setStudentName] = useState('');
@@ -36,51 +34,56 @@ const StudentSignup = () => {
       console.log(response);
       alert('Student Signup Successful'); 
       navigate('/');
-      
     });
   };
 
   return (
     <div>
-      <div className="form-popup">
-        <div className="form-box signup">
-          <div className="form-details">
-            <h2>Student Signup</h2>
-            <p>Please provide your information to create a student account.</p>
+      <div className="fixed top-20 right-0 w-full h-full flex items-center justify-center bg-gray-200 bg-opacity-75">
+        <div className="bg-white p-8 rounded shadow-md">
+          <span className="close-btn text-right cursor-pointer hover:text-blue-500" onClick={() => navigate('/')}>X</span>
+          <div className="text-center mb-4">
+            <h2 className="text-2xl font-bold">Student Signup</h2>
           </div>
-          <div className="form-content">
-            <h2>SIGNUP</h2>
-            <form onSubmit={handleStudentSignup}>
-              <div className="input-field">
-              <input type="text" required
+          <h2 className="text-xl mb-4">SIGNUP</h2>
+          <form onSubmit={handleStudentSignup}>
+            <div className="mb-4">
+              <label>Student Name</label>
+              <input
+                type="text"
+                required
                 value={studentName}
-                onChange={handleStudentNameChange} />
-                <label>Student Name</label>
-              </div>
-              <div className="input-field">
-                <input
-                  type="email" required
-                  value={studentEmail}
-                  onChange={handleStudentEmailChange}
-                />
-                <label >Student Email</label>
-              </div>
-              <div className="input-field">
-                <input
-                  type="password" required
-                  value={studentPassword}
-                  onChange={handleStudentPasswordChange}
-                />
-                <label >Student Password</label>
-              </div>
-              <button type="submit" className="custom-button">
-                Signup
-              </button>
-            </form>
-            <div className="bottom-link">
-              Already have an account?
-              <NavLink to='/login' id="signup-link"> Login</NavLink>
+                onChange={handleStudentNameChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
             </div>
+            <div className="mb-4">
+              <label>Student Email</label>
+              <input
+                type="email"
+                required
+                value={studentEmail}
+                onChange={handleStudentEmailChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label>Student Password</label>
+              <input
+                type="password"
+                required
+                value={studentPassword}
+                onChange={handleStudentPasswordChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+              Signup
+            </button>
+          </form>
+          <div className="mt-4 text-center">
+            Already have an account?
+            <NavLink to='/login' className="text-blue-500"> Login</NavLink>
           </div>
         </div>
       </div>

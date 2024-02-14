@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
+import "../styles/tailwind.css";
 const Form = () => {
   const backendUrl = process.env.REACT_APP_BASE_URL;
   console.log(backendUrl);
@@ -67,22 +68,22 @@ const Form = () => {
   };
 
   return (
-    <div style={{}}>
+    <div>
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-8 p-8 rounded"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-8 p-8 rounded bg-gray-100"
         encType="multipart/form-data"
         style={{
           backgroundImage: 'url("../images/hero-bg.jpg")',
           backgroundSize: 'cover',
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0)',
+          // backgroundColor: 'rgba(255, 255, 255, 0)',
           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         }}
       >
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Name of the student Intern:
         </label>
         <input
@@ -94,7 +95,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Gender:
         </label>
         <select
@@ -110,7 +111,7 @@ const Form = () => {
         </select>
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Affiliation of the student intern:
         </label>
         <input
@@ -122,7 +123,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Address:
         </label>
         <textarea
@@ -133,7 +134,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Contact Number:
         </label>
         <input
@@ -145,7 +146,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Email:
         </label>
         <input
@@ -157,7 +158,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Name of the Faculty Mentor:
         </label>
         <input
@@ -169,7 +170,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Faculty Mentor's Email:
         </label>
         <input
@@ -181,7 +182,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Date of arrival:
         </label>
         <input
@@ -193,7 +194,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Date of departure:{" "}
         </label>
         <input
@@ -205,7 +206,7 @@ const Form = () => {
         />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Copy of your Institute ID
         </label>
         <input
@@ -214,11 +215,11 @@ const Form = () => {
           accept=".pdf"
           ref={file1Ref}
           onChange={(e) => handleFileChange(e, 1)}
-          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#fff' }}
+          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
           />
       </div>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+        <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Copy of Official Letter from your Institute
         </label>
         <input
@@ -227,11 +228,11 @@ const Form = () => {
           accept=".pdf"
           ref={file2Ref}
           onChange={(e) => handleFileChange(e, 2)}
-          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#fff' }}
+          className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
           />
       </div>
       <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-600" style={{ color: '#fff' }}>
+    <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
       Remarks:{" "}
     </label>
     <textarea
@@ -243,7 +244,7 @@ const Form = () => {
   </div>
     
 
-      <div className="mt-4 text-m text-gray-500" style={{ color: '#fff' }}>
+      <div className="mt-4 text-m text-gray-500" style={{ color: '#000' }}>
     Hostel room rent: Rs. 150/- per day per person or Rs. 3000/- per month which is less. Security (refundable) Rs. 10000/-
   </div>
   <div className="mt-4 flex justify-center"> {/* Adjusted mt-8 to mt-4 */}

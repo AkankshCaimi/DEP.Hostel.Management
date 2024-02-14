@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import '../all_css/Signup.css';
+import "../styles/tailwind.css";
 
 const Signup = ({ showPopup, setShowPopup }) => {
   const [type, setType] = useState('');
-
 
   const handleTypeChange = (e) => {
     setType(e.target.value);
@@ -13,39 +12,36 @@ const Signup = ({ showPopup, setShowPopup }) => {
   return (
     <div>
       {showPopup && (
-        <div className={`form-popup ${showPopup ? 'show-popup' : ''}`}>
-          <span className="close-btn" onClick={() => setShowPopup(!showPopup)}>Close</span>
-          <div className="form-box signup">
-            <div className="form-details">
-              <h2>Welcome</h2>
-              <p>Please sign up using your personal information to stay connected with us.</p>
+        <div className="fixed top-20 left-0 w-full h-full flex items-center justify-center bg-gray-200 bg-opacity-75">
+          <div className="bg-white p-8 rounded shadow-md">
+            <span className="close-btn text-right cursor-pointer hover:text-blue-500" onClick={() => setShowPopup(!showPopup)}>X</span>
+            <div className="text-center mb-4">
+              <h2 className="text-2xl font-bold">Registeration</h2>
             </div>
-            <div className="form-content">
-              <h2>SIGNUP</h2>
-              <form>
-                <label>
-                  Signup as:
-                  <div>
-                    <input type="radio" id="student" name="type" value="student" onChange={handleTypeChange} />
-                    <label for="student">Student</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="faculty" name="type" value="faculty" onChange={handleTypeChange} />
-                    <label for="faculty">Faculty</label>
-                  </div>
-                  <div>
-                    <input type="radio" id="admin" name="type" value="admin" onChange={handleTypeChange} />
-                    <label for="admin">Admin</label>
-                  </div>
-                </label>
-                <NavLink to={`/signup/${type}`}>
-                  <button type="submit">Submit</button>
-                </NavLink>
-              </form>
-              <div class="bottom-link">
-                    Already have an account?
-                    <NavLink to='/login' id="login-link"> Login</NavLink>
+            <h2 className="text-xl mb-4">SIGNUP</h2>
+            <form>
+              <div className="mb-4">
+                {/* <label className="block mb-2">Signup as:</label> */}
+                <div className="mb-2">
+                  <input type="radio" id="student" name="type" value="student" onChange={handleTypeChange} />
+                  <label htmlFor="student" className="ml-2">Student</label>
                 </div>
+                <div className="mb-2">
+                  <input type="radio" id="faculty" name="type" value="faculty" onChange={handleTypeChange} />
+                  <label htmlFor="faculty" className="ml-2">Faculty</label>
+                </div>
+                <div className="mb-2">
+                  <input type="radio" id="admin" name="type" value="admin" onChange={handleTypeChange} />
+                  <label htmlFor="admin" className="ml-2">Admin</label>
+                </div>
+              </div>
+              <NavLink to={`/signup/${type}`}>
+                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
+              </NavLink>
+            </form>
+            <div className="mt-4 text-center">
+              Already have an account?
+              <NavLink to='/login' className="text-blue-500"> Login</NavLink>
             </div>
           </div>
         </div>
