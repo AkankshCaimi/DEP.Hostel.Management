@@ -1,34 +1,30 @@
 import React from 'react';
 import { NavLink, useLocation } from "react-router-dom";
-import logo from '../images/logo.jpg'
-import './Headers.css';
 import { useNavigate } from 'react-router-dom';
+import "../styles/tailwind.css";
 const Headers = ({ showPopup, setShowPopup }) => {
     const navigate = useNavigate();
     const location = useLocation();
     return (
         <>
-            <nav className="navbar">
-                <span className="hamburger-btn material-symbols-rounded">menu</span>
-                <NavLink to="/" className="logo">
-                    <img src={logo} alt="logo" />
-                    <h2>Hostel</h2>
-                </NavLink>
-                <ul className="links">
-                    <span className="close-btn material-symbols-rounded">close</span>
-                    <li><NavLink to="/">Home</NavLink></li>
-                    <li><NavLink to="/">Portfolio</NavLink></li>
-                    <li><NavLink to="/">Courses</NavLink></li>
-                    <li><NavLink to="/">About us</NavLink></li>
-                    <li><NavLink to="/">Contact us</NavLink></li>
-                </ul>
-                {location.pathname === '/signup' && (
-                    <button className="login-btn" onClick={() => { setShowPopup(true); navigate('/signup'); }}>SIGN UP</button>
-                )}
-                {(location.pathname === '/login') && (
-                    <button className="login-btn" onClick={() => { setShowPopup(true); navigate('/login'); }}>LOG IN</button>
-                )}
-            </nav>
+            <nav className="bg-gray-800 p-4 flex items-center justify-between">
+    {/* <span className="text-white cursor-pointer">menu</span> */}
+    <NavLink to="/" className="text-white text-2xl font-bold">Hostel</NavLink>
+    <ul className="hidden md:flex space-x-4">
+        <li><NavLink to="/" className="text-gray-300">Home</NavLink></li>
+        <li><NavLink to="/" className="text-gray-300 hover:text-gray-500 focus:outline-none focus:text-gray-500">Portfolio</NavLink></li>
+        <li><NavLink to="/" className="text-gray-300">Courses</NavLink></li>
+        <li><NavLink to="/" className="text-gray-300">About us</NavLink></li>
+        <li><NavLink to="/" className="text-gray-300">Contact us</NavLink></li>
+    </ul>
+    {location.pathname === '/signup' && (
+        <button className="text-white bg-blue-500 px-4 py-2 rounded" onClick={() => { setShowPopup(true); navigate('/signup'); }}>SIGN UP</button>
+    )}
+    {(location.pathname === '/login' || location.pathname === '/') && (
+        <button className="text-white bg-blue-500 px-4 py-2 rounded" onClick={() => { setShowPopup(true); navigate('/login'); }}>LOG IN</button>
+    )}
+</nav>
+
         </>
     )
 }
