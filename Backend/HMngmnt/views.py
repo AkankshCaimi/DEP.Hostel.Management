@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 import json
 import jwt, datetime
-from .decorators import token_required, admin_required
+from .decorators import token_required, admin_required, validate_token
 from django.core.serializers import serialize
 @csrf_exempt
 def index(request):
@@ -93,7 +93,21 @@ def login_ep(request):
         return JsonResponse({'message': 'Invalid login credentials'}, status=303)
     else:
         return JsonResponse({'message': 'Invalid login credentials'}, status=304)
-    
+
+@csrf_exempt  
+def user(request):
+    cookie=request.COOKIES.get('secret')
+    if not cookie:
+        return JsonResponse({'error': 'Token is missing'}, status=300)
+    decoded= validate_token(cookie)
+    if decoded is None or decoded.get('id') is None:
+        return JsonResponse({'error': 'User is not found'}, status=301)
+    user=CustomUser.objects.get(pk=decoded.get('id'))
+    user=serialize('json', [user])
+    user=json.loads(user[1:-1])['fields']
+    user={key: value for key, value in user.items() if key in ['email', 'name']}
+    return JsonResponse({'message': 'User page', 'data': user})
+
 @csrf_exempt
 @admin_required
 def admin_view(request):

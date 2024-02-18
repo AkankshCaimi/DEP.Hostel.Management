@@ -1,11 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../styles/tailwind.css";
+import { useAuth } from "../contexts/authContext";
 const Form = () => {
   const backendUrl = process.env.REACT_APP_BASE_URL;
-  console.log(backendUrl);
+  const { currentUser } = useAuth();
+  console.log(currentUser);
   const [formData, setFormData] = useState({
-    studentName: "",
+    studentName: '',
     gender: "",
     affiliation: "",
     address: "",
@@ -66,7 +68,16 @@ const Form = () => {
       }
     }).then((res) => {console.log(res)});
   };
-
+  useEffect(() => {
+    if (currentUser) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        studentName: currentUser.name,
+        email: currentUser.email,
+        // Update other fields accordingly
+      }));
+    }
+  }, [currentUser]);
   return (
     <div>
       <form

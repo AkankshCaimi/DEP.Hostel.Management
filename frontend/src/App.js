@@ -12,7 +12,6 @@ import Test from './screens/Test';
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
-
   return (
     <>
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />

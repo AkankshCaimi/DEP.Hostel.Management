@@ -8,36 +8,62 @@ export function useAuth() {
 }
 
 export function AuthProvider({children}) {
-    const [currentUser, setCurrentUser] = useState({});
+    const backendUrl = process.env.REACT_APP_BASE_URL;
+    const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(false);
+    // const [shouldRunEffect, setShouldRunEffect] = useState(true);
 
-    const login =async (email, password) => {
-        return new Promise((resolve, reject)=>{
-            axios.post('http://localhost:8000/api/login', {
-                email: email,
-                password: password
+    const login = async (email, password) => {
+        setLoading(true);
+        try {
+            const response = await axios.post(`${backendUrl}/api/login`, {
+            email: email,
+            password: password
             }, {
-                withCredentials: true
-            }).then((response) => {
-                console.log('here:', response.data.message);
-                console.log('here:', response.data.data);
-                setCurrentUser(response.data.email)
-                setLoading(false)
-                resolve(response)
-            })
-            .catch((err) => {
-                reject(err);
-            })
-        })
-    }
+            withCredentials: true
+            });
+            
+            setCurrentUser(response.data.data);
+            setLoading(false);
+            return response.data;
+        } catch (error) {
+            // Handle login error
+            console.error('Login failed:', error);
+            setLoading(false);
+            throw error;  // Propagate the error
+        }
+    };      
     const signup= ()=>{
 
     }
     const logout = ()=>{
 
     }
+    useEffect(()=>{
+        const unsubscribe =()=>{
+            if(!currentUser){
+                setLoading(true);
+                axios.get(`${backendUrl}/api/user`, {withCredentials: true})
+                .then((res) => {
+                    if(res.data.data){
+                        // console.log(res.data)
+                        setCurrentUser(res.data.data)
+                    }else{
+                        // console.log('No user logged in')
+                        setCurrentUser(null)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+                setLoading(false);
+            }
+        }
+        return unsubscribe;
+    }, [])
     const value = {
         currentUser,
+        setCurrentUser,
         signup,
         login,
         logout,

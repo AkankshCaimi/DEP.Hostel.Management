@@ -6,21 +6,26 @@ import axios from 'axios';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/authContext';
 const Login = ({ showPopup, setShowPopup }) => {
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const {currentUser, login}=useAuth();
+    const {currentUser, login, setCurrentUser}=useAuth();
     const navigate = useNavigate();
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // Add your login logic here
         console.log('Email:', email, 'Password:', password);
-        login(email, password)
-        .then(()=>{
-            alert('Login Successful')
+        try{
+            const resp = await login(email, password);
+            console.log('in login: ', resp.data)
+            console.log('in login: ', currentUser)
+            setCurrentUser(resp.data)
             setShowPopup(false)
             navigate('/')
-        })
-        .catch(err=> console.log(err))
+        }
+        catch(err){
+            console.log(err)
+        }
     }
     // const login=
     //     useGoogleLogin({
