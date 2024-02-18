@@ -1,12 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from './screens/Login';
-import Signup from './screens/Signup';
 import Form from './screens/Form';
+import AboutUs from './screens/AboutUs';
 import Headers from './components/Headers';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import StudentSignup from './screens/StudentSignup';
-import FacultySignup from './screens/FacultySignup';
-import AdminSignup from './screens/AdminSignup';
+import StudentSignup from './screens/Signup';
+import Home from './screens/Home';
+import Contact from './screens/Contact';
+import AdminDashboard from './screens/AdminDashboard';
 import { useState } from 'react';
 import Test from './screens/Test';
 
@@ -16,14 +17,14 @@ function App() {
     <>
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />
       <Routes>
-        <Route path="/" element={<Login showPopup={showPopup} setShowPopup={setShowPopup} />} />
-        <Route path="/login" element={<Login showPopup={showPopup} setShowPopup={setShowPopup} />} />
-        <Route path="/signup" element={<Signup showPopup={showPopup} setShowPopup={setShowPopup}/>} />
-        <Route path="/signup/student" element={<StudentSignup />} />
-        <Route path="/signup/faculty" element={<FacultySignup/>} />
-        <Route path="/signup/admin" element={<AdminSignup/>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<StudentSignup/>} />
         <Route path='/form' element={<Form />} />
         <Route path='/test' element={<Test/>} />
+        <Route path='/about' element={<AboutUs />} />
+        <Route path='/contact' element={<Contact />} />
+        <Route path='/admin-dashboard' element={<AdminDashboard />} />
       </Routes>
     </>
   );

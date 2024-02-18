@@ -1,53 +1,91 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "../styles/tailwind.css";
 
-const Signup = ({ showPopup, setShowPopup }) => {
-  const [type, setType] = useState('');
+const StudentSignup = () => {
+  const [studentName, setStudentName] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
+  const navigate = useNavigate();
 
-  const handleTypeChange = (e) => {
-    setType(e.target.value);
-  }
+  const handleStudentNameChange = (event) => {
+    setStudentName(event.target.value);
+  };
+
+  const handleStudentEmailChange = (event) => {
+    setStudentEmail(event.target.value);
+  };
+
+  const handleStudentPasswordChange = (event) => {
+    setStudentPassword(event.target.value);
+  };
+
+  const handleStudentSignup = (event) => {
+    event.preventDefault();
+    console.log('Student Name:', studentName, 'Student Email:', studentEmail, 'Student Password:', studentPassword);
+    axios.post('http://localhost:8000/api/signup', {
+      name: studentName,
+      email: studentEmail,
+      password: studentPassword,
+      role: 'student'
+    }).then((response) => {
+      console.log(response);
+      alert('Student Signup Successful'); 
+      navigate('/');
+    });
+  };
 
   return (
     <div>
-      {showPopup && (
-        <div className="fixed top-20 left-0 w-full h-full flex items-center justify-center bg-gray-200 bg-opacity-75">
-          <div className="bg-white p-8 rounded shadow-md">
-            <span className="close-btn text-right cursor-pointer hover:text-blue-500" onClick={() => setShowPopup(!showPopup)}>X</span>
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold">Registeration</h2>
-            </div>
-            <h2 className="text-xl mb-4">SIGNUP</h2>
-            <form>
-              <div className="mb-4">
-                {/* <label className="block mb-2">Signup as:</label> */}
-                <div className="mb-2">
-                  <input type="radio" id="student" name="type" value="student" onChange={handleTypeChange} />
-                  <label htmlFor="student" className="ml-2">Student</label>
-                </div>
-                <div className="mb-2">
-                  <input type="radio" id="faculty" name="type" value="faculty" onChange={handleTypeChange} />
-                  <label htmlFor="faculty" className="ml-2">Faculty</label>
-                </div>
-                <div className="mb-2">
-                  <input type="radio" id="admin" name="type" value="admin" onChange={handleTypeChange} />
-                  <label htmlFor="admin" className="ml-2">Admin</label>
-                </div>
-              </div>
-              <NavLink to={`/signup/${type}`}>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Submit</button>
-              </NavLink>
-            </form>
-            <div className="mt-4 text-center">
-              Already have an account?
-              <NavLink to='/login' className="text-blue-500"> Login</NavLink>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex items-center justify-center h-screen">
+  <div className="w-full max-w-md p-6 bg-gray-100 bg-opacity-75 rounded shadow-md">
+    <div className="text-center mb-4">
+      <h2 className="text-2xl font-bold">Register your Account</h2>
+    </div>
+    <form onSubmit={handleStudentSignup}>
+      <div className="mb-4">
+        <input
+          type="text"
+          required
+          value={studentName}
+          onChange={handleStudentNameChange}
+          className="w-full p-2 border border-gray-300 rounded"
+          placeholder="Name"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="email"
+          required
+          value={studentEmail}
+          onChange={handleStudentEmailChange}
+          className="w-full p-2 border border-gray-300 rounded"
+          placeholder="Email"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="password"
+          required
+          value={studentPassword}
+          onChange={handleStudentPasswordChange}
+          className="w-full p-2 border border-gray-300 rounded"
+          placeholder="Password"
+        />
+      </div>
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded w-full">
+        Signup
+      </button>
+    </form>
+    <div className="mt-4 text-center">
+      Already have an account? <NavLink to='/login' className="text-blue-500">Login</NavLink>
+    </div>
+  </div>
+</div>
+
     </div>
   );
-}
+};
 
-export default Signup;
+export default StudentSignup;
