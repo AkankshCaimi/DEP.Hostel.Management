@@ -3,24 +3,31 @@ import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../styles/tailwind.css';
 import axios from 'axios';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../contexts/authContext';
 const Login = ({ showPopup, setShowPopup }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const {currentUser, login}=useAuth();
     const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
         // Add your login logic here
         console.log('Email:', email, 'Password:', password);
-        axios.post('http://localhost:8000/api/login', {
-            email: email,
-            password: password
-        }).then((response) => {
-            console.log(response);
-            alert('Login Successful');
-            setShowPopup(false);
-            navigate('/');
-        });
+        login(email, password)
+        .then(()=>{
+            alert('Login Successful')
+            setShowPopup(false)
+            navigate('/')
+        })
+        .catch(err=> console.log(err))
     }
+    // const login=
+    //     useGoogleLogin({
+    //         onSuccess: (response) => console.log(response.data),
+    //         onFailure: (response) => console.log(response)
+    //     })
+    
     return (
         <div>
         {showPopup && (
@@ -65,6 +72,8 @@ const Login = ({ showPopup, setShowPopup }) => {
                             Log In
                         </button>
                     </form>
+                    {/* <GoogleLogin onSuccess={(response) => console.log(response)} onFailure={(response) => console.log(response)} /> */}
+                    <button onClick={()=>login()}>Sign in with Google</button>
                     <div className="mt-4 text-center">
                         Don't have an account?
                         <NavLink to='/signup' className="text-blue-500"> Signup</NavLink>

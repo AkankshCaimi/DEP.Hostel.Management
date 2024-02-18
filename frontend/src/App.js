@@ -8,6 +8,7 @@ import StudentSignup from './screens/StudentSignup';
 import FacultySignup from './screens/FacultySignup';
 import AdminSignup from './screens/AdminSignup';
 import { useState } from 'react';
+import Test from './screens/Test';
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -22,7 +23,8 @@ function App() {
         <Route path="/signup/student" element={<StudentSignup />} />
         <Route path="/signup/faculty" element={<FacultySignup/>} />
         <Route path="/signup/admin" element={<AdminSignup/>} />
-        <Route path='/test' element={<Form />} />
+        <Route path='/form' element={<Form />} />
+        <Route path='/test' element={<Test/>} />
       </Routes>
     </>
   );

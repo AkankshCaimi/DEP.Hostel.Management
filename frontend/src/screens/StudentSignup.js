@@ -33,7 +33,7 @@ const StudentSignup = () => {
     }).then((response) => {
       console.log(response);
       alert('Student Signup Successful'); 
-      navigate('/');
+      // navigate('/');
     });
   };
 
