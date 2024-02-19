@@ -79,19 +79,10 @@ const Form = () => {
     }
   }, [currentUser]);
   return (
-    <div>
+    <div >
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-8 p-8 rounded bg-gray-100"
-        encType="multipart/form-data"
-        style={{
-          backgroundImage: 'url("../images/hero-bg.jpg")',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center',
-          // backgroundColor: 'rgba(255, 255, 255, 0)',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-        }}
       >
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
@@ -255,17 +246,17 @@ const Form = () => {
   </div>
     
 
-      <div className="mt-4 text-m text-gray-500" style={{ color: '#000' }}>
-    Hostel room rent: Rs. 150/- per day per person or Rs. 3000/- per month which is less. Security (refundable) Rs. 10000/-
+      <div className="mt-4 text-sm text-gray-500" style={{ color: '#000' }}>
+    *Hostel room rent: Rs. 150/- per day per person or Rs. 3000/- per month which is less. Security (refundable) Rs. 10000/-
   </div>
-  <div className="mt-4 flex justify-center"> {/* Adjusted mt-8 to mt-4 */}
-    <button
-      type="submit"
-      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-    >
-      Submit
-    </button>
-  </div>
+  <div className="mt-8 my-10 flex justify-center">
+  <button
+    type="submit"
+    className="bg-blue-500 text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+  >
+    Submit
+  </button>
+</div>
     </form>
     </div>
   );

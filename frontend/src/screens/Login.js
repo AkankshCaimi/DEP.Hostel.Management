@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../styles/tailwind.css';
-import axios from 'axios';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../contexts/authContext';
-const Login = ({ showPopup, setShowPopup }) => {
+const Login = ({ setShowPopup }) => {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
