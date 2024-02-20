@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/authContext";
 const Form = () => {
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const { currentUser } = useAuth();
-  console.log(currentUser);
+  // console.log(currentUser);
   const [formData, setFormData] = useState({
     studentName: '',
     gender: "",
@@ -53,7 +53,7 @@ const Form = () => {
     data.append("affiliation", formData.affiliation);
     data.append("address", formData.address);
     data.append("contactNumber", formData.contactNumber);
-    data.append("email", formData.email);
+    data.append("studentEmail", formData.email);
     data.append("facultyMentorName", formData.facultyMentorName);
     data.append("facultyEmail", formData.facultyEmail)
     data.append("arrivalDate", formData.arrivalDate);
@@ -62,10 +62,11 @@ const Form = () => {
     data.append("instituteLetter", file2Data);
     data.append("remarks", formData.remarks);
 
-    axios.post(`${backendUrl}/api/internship`, data, {
+    axios.post(`${backendUrl}/api/internship`, data,{withCredentials: true}, {
       headers: {
         "Content-Type": "multipart/form-data",
-      }
+      },
+      
     }).then((res) => {console.log(res)});
   };
   useEffect(() => {

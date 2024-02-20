@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import '../styles/tailwind.css';
 import { useAuth } from '../contexts/authContext';
-const Login = ({ setShowPopup }) => {
+const Login = () => {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -14,10 +14,9 @@ const Login = ({ setShowPopup }) => {
         console.log('Email:', email, 'Password:', password);
         try{
             const resp = await login(email, password);
-            console.log('in login: ', resp.data)
-            console.log('in login: ', currentUser)
+            // console.log('in login: ', resp.data)
             setCurrentUser(resp.data)
-            setShowPopup(false)
+            // console.log('in login: ', currentUser)
             navigate('/')
         }
         catch(err){

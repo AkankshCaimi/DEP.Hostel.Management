@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import '../styles/tailwind.css';
+import axios from 'axios';
 
 const AddStudents = () => {
+    const backendUrl = process.env.REACT_APP_BASE_URL;
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [file, setFile] = useState(null);
     const [isManual, setIsManual] = useState(true);
-
+    const fileRef = useRef(null);
     const handleNameChange = (e) => {
         setName(e.target.value);
     };
@@ -21,6 +23,11 @@ const AddStudents = () => {
     };
 
     const handleFileChange = (e) => {
+        console.log(e.target.files[0].type)
+        if(e.target.files[0].type !== "'application/vnd.ms-excel'" && e.target.files[0].type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && e.target.files[0].type !== "application/vnd.ms-excel.sheet.macroEnabled.12" && e.target.files[0].type !== "application/vnd.google-apps.spreadsheet"){
+            alert('Please upload an Excel file');
+            fileRef.current.value = '';
+        }
         setFile(e.target.files[0]);
     };
 
@@ -38,6 +45,16 @@ const AddStudents = () => {
             file,
             isManual,
         });
+        const data=new FormData();
+        data.append('name', name);
+        data.append('phoneNumber', phoneNumber);
+        data.append('email', email);
+        data.append('file', file);
+        axios.post(`${backendUrl}/api/add_students`, data, {withCredentials: true}, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
     };
 
     return (
@@ -130,8 +147,10 @@ const AddStudents = () => {
                             <input
                                 type="file"
                                 id="file"
+                                accept='.xlsx, .xls'
                                 className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? 'cursor-not-allowed' : ''
                                     }`}
+                                ref={fileRef}
                                 onChange={isManual ? null : handleFileChange}
                                 disabled={isManual}
                             />

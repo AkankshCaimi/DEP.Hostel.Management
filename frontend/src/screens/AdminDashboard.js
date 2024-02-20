@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import "../styles/tailwind.css";
+import { useAuth } from '../contexts/authContext';
 
 function AdminDashboard() {
+  const { currentUser } = useAuth();
+  
   return (
+    currentUser && currentUser.is_superuser?
     <>
       <div className="min-h-40 flex items-center justify-center">
         <div className="text-center">
@@ -27,6 +31,12 @@ function AdminDashboard() {
           Complaint Status
         </Link>
       </div>
+    </>:
+    <>
+      <h1 className="text-4xl font-bold mb-6 text-black">Admin Dashboard</h1>
+      <p className="text-m text-left text-gray-600 mb-6">
+        You are not authorized to view this page. Please login as an admin to continue.
+      </p>
     </>
   );
 }

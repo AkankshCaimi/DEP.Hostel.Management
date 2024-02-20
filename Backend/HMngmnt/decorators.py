@@ -33,10 +33,26 @@ def admin_required(f):
         if not token:
             return JsonResponse({'error': 'Token is missing'}, status=300)
         user= validate_token(token)
+
+        print('token:', user)
         if user is None or user.get('id') is None:
             return JsonResponse({'error': 'User is not found'}, status=301)
         if user.get('role') != 'admin':
             return JsonResponse({'error': 'User is not admin'}, status=302)
+        return f(request, *args, **kwargs)
+    return wrapper
+
+def staff_required(f):
+    @wraps(f)
+    def wrapper(request, *args, **kwargs):
+        token = request.COOKIES.get('secret')
+        if not token:
+            return JsonResponse({'error': 'Token is missing'}, status=300)
+        user= validate_token(token)
+        if user is None or user.get('id') is None:
+            return JsonResponse({'error': 'User is not found'}, status=301)
+        if user.get('role') != 'staff':
+            return JsonResponse({'error': 'User is not staff'}, status=302)
         return f(request, *args, **kwargs)
     return wrapper
         

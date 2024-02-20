@@ -11,6 +11,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name= models.CharField(max_length=100)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+    gender = models.CharField(max_length=100, default='Not Specified')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -22,31 +23,31 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self
 
 class Faculty(models.Model):
-    faculty_name = models.CharField(max_length=100)
-    faculty_email = models.EmailField(max_length=100, primary_key=True)
+    faculty= models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
     faculty_phone = models.CharField(max_length=10)
     is_hod = models.BooleanField(default=False)
 
 class Application(models.Model):
     application_id= models.AutoField(primary_key=True)
-    name = models.CharField(max_length=100)
-    gender = models.CharField(max_length=100)
+    student= models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     affiliation = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=10)
-    email = models.EmailField(max_length=100)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, default=None)
     arrival = models.DateField()
     departure = models.DateField()
     instiId= models.FileField(upload_to='documents/')
     letter= models.FileField(upload_to='documents/')
     status = models.CharField(max_length=100, default='Pending Faculty Approval')
     
-    class Meta:
-        ordering = ['name']
-        constraints = [
-            models.UniqueConstraint(fields=['name', 'email'], name='unique_student')
-        ]
+    # class Meta:
+    #     ordering = ['name']
+    #     constraints = [
+    #         models.UniqueConstraint(fields=['name', 'email'], name='unique_student')
+    #     ]
     def __str__(self):
-        return self.name
+        return f"Application id: {self.application_id}"
 
+class Application_Final(models.Model):
+    application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
+    faculty_approval = models.BooleanField(default=False)
