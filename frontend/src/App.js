@@ -14,6 +14,8 @@ import { useState } from 'react';
 import Test from './screens/Test';
 import ApplicationStatus from './screens/ApplicationStatus';
 import ComplaintStatus from './screens/ComplaintStatus';
+import ProfessorDashboard from './screens/ProfessorDashboard';
+import ProfAppStatus from './screens/ProfAppStatus';
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -33,6 +35,8 @@ function App() {
         <Route path='/admin-dashboard/add-faculty' element={<AddFaculty />} />
         <Route path='/admin-dashboard/application-status' element={<ApplicationStatus />} />
         <Route path='/admin-dashboard/complaint-status' element={<ComplaintStatus />} />
+        <Route path='/professor-dashboard' element={<ProfessorDashboard/>} />
+        <Route path='/professor-dashboard/application-status' element={<ProfAppStatus/>} />
       </Routes>
     </>
   );

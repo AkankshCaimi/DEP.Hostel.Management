@@ -72,10 +72,10 @@ def signup_ep(request):
         response= JsonResponse({'message': 'Signup successful', 'data': {'email': user.email, 'name': user.name}})
         user.save()
         payload = {
-            'id': user.email,
+            'id': user.id,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
             'iat': datetime.datetime.utcnow(),
-            'role': "admin" if user.is_staff else "student"
+            'role':  "admin" if user.is_superuser else "staff" if user.is_staff else "student"
         }
         token = jwt.encode(payload, 'secret', algorithm='HS256')
         response.set_cookie('secret', token, expires=payload['exp'], secure=True, httponly=True)
@@ -92,7 +92,7 @@ def login_ep(request):
             user_json=get_user_dict(user, ['email', 'name', 'is_staff', 'is_superuser'])
             # login(request, user)
             payload = {
-                'id': user.email,
+                'id': user.id,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
                 'iat': datetime.datetime.utcnow(),
                 'role': "admin" if user.is_superuser else "staff" if user.is_staff else "student"
@@ -168,7 +168,27 @@ def get_applications(request):
 
 
 # ----------------STAFF ONLY FUNCTIONS----------------
-# @csrf_exempt
-# @staff_required
-# def view_applications(request):
-#     return JsonResponse({'message': 'Staff page'})
+@csrf_exempt
+@staff_required
+def view_applications(request):
+    user=request.new_param
+    print('user:', user)
+    faculty=CustomUser.objects.get(pk=user.get('id'))
+    print('faculty:', faculty)
+    applications = Application.objects.filter(faculty__faculty=faculty)
+    applications=serialize('json', applications, cls=DjangoJSONEncoder)
+    applications = json.loads(applications)
+    for application in applications:
+        fields = application['fields']
+        student_id = fields.get('student')
+        faculty_id = fields.get('faculty')
+
+        # Fetch the names based on the IDs (assuming your model has 'name' fields)
+        student_name = CustomUser.objects.get(pk=student_id).name if student_id else None
+        faculty_name = CustomUser.objects.get(pk=faculty_id).name if faculty_id else None
+
+        # Replace the references with names
+        fields['student'] = student_name
+        fields['prof'] = faculty_name
+    # print('applications:', applications)
+    return JsonResponse({'message': 'Staff page', 'data': applications})

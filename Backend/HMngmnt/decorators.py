@@ -51,8 +51,9 @@ def staff_required(f):
         user= validate_token(token)
         if user is None or user.get('id') is None:
             return JsonResponse({'error': 'User is not found'}, status=301)
-        if user.get('role') != 'staff':
+        if user.get('role') != 'staff' and user.get('role') != 'admin':
             return JsonResponse({'error': 'User is not staff'}, status=302)
+        request.new_param=user
         return f(request, *args, **kwargs)
     return wrapper
         

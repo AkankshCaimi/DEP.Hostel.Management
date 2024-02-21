@@ -3,33 +3,33 @@ import { Link } from 'react-router-dom';
 import "../styles/tailwind.css";
 import { useAuth } from '../contexts/authContext';
 
-function AdminDashboard() {
+function ProfessorDashboard() {
   const { currentUser } = useAuth();
   console.log(currentUser)
   return (
-    currentUser && currentUser.is_superuser?
+    currentUser && currentUser.is_staff?
     <>
       <div className="min-h-40 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-6 text-black">Admin Dashboard</h1>
+          <h1 className="text-4xl font-bold mb-6 text-black">Professor Dashboard</h1>
           <p className="text-m text-left text-gray-600 mb-6">
-            Welcome to the admin dashboard. Please select an option below to get started.
+            Welcome to the professor dashboard. Please select an option below to get started.
           </p>
         </div>
       </div>
       <div className="flex flex-col items-start space-y-4 pl-4">
-        <Link to="/admin-dashboard/add-student" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        {/* <Link to="/admin-dashboard/add-student" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Student
         </Link>
         <Link to="/admin-dashboard/add-faculty" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Faculty
-        </Link>
-        <Link to="/admin-dashboard/application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        </Link> */}
+        <Link to="/professor-dashboard/application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Application Status
         </Link>
-        <Link to="/admin-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        {/* <Link to="/admin-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Complaint Status
-        </Link>
+        </Link> */}
       </div>
     </>:
     <>
@@ -41,4 +41,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default ProfessorDashboard;
