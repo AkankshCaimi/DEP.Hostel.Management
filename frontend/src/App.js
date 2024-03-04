@@ -17,6 +17,7 @@ import ComplaintStatus from './screens/ComplaintStatus';
 import ProfessorDashboard from './screens/ProfessorDashboard';
 import ProfAppStatus from './screens/ProfAppStatus';
 import Footer from './screens/Footer';
+import Cal from './screens/Home/Calendar';
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/Calendar" element={<Cal />} />
         <Route path="/signup" element={<StudentSignup/>} />
         <Route path='/form' element={<Form />} />
         <Route path='/test' element={<Test/>} />
