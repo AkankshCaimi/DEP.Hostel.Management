@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/tailwind.css";
-
+import { useParams } from "react-router-dom";
 const ApplicationView = () => {
   // Dummy data for testing
   const formData = {
@@ -16,9 +16,10 @@ const ApplicationView = () => {
     departureDate: "2024-03-15",
     instituteID: "institute-id.pdf",
     instituteLetter: "institute-letter.pdf",
-    remarks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    remarks: "None",
   };
-
+  const { id } = useParams();
+  console.log("Application ID:", id);
   // Hardcoded field names
   const fieldNames = [
     "Student Name",

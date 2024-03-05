@@ -47,6 +47,10 @@ class Application(models.Model):
     #     ]
     def __str__(self):
         return f"Application id: {self.application_id}"
+    def get_faculty_name(self):
+        return self.faculty.faculty.name
+    def get_student_name(self):
+        return self.student.name
 
 class Application_Final(models.Model):
     application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)

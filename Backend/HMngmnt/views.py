@@ -1,7 +1,9 @@
 # Create your views here.
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import never_cache
 from .models import Application, Faculty, CustomUser
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -82,6 +84,7 @@ def signup_ep(request):
         return response
 
 @csrf_exempt
+@never_cache
 def login_ep(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -105,8 +108,14 @@ def login_ep(request):
         return JsonResponse({'message': 'Invalid login credentials'}, status=303)
     else:
         return JsonResponse({'message': 'Invalid login credentials'}, status=304)
+@csrf_exempt
+def logout_ep(request):
+    response=JsonResponse({'message': 'Logged out successfully'})
+    response.delete_cookie('secret')
+    return response
 
 @csrf_exempt  
+@never_cache
 def get_user_info(request):
     if request.method=='GET':
         cookie=request.COOKIES.get('secret')
@@ -121,6 +130,28 @@ def get_user_info(request):
         user=get_user_dict(user, ['email', 'name', 'is_staff', 'is_superuser'])
         return JsonResponse({'message': 'User page', 'data': user})
 
+# ----------------STUDENT ONLY FUNCTIONS----------------
+@csrf_exempt
+@token_required
+def get_application_status(request):
+    user=request.new_param
+    applications=Application.objects.filter(student__id=user.get('id')).select_related('student', 'faculty')
+    application_list = [
+        {
+            'application_id': application.application_id,
+            'affiliation': application.affiliation,
+            'faculty': application.faculty.faculty.name,
+            'status': application.status
+        }
+        for application in applications
+    ]
+    print('application_list:', application_list)
+    return JsonResponse({'message': 'Student page', 'data': application_list})
+
+@csrf_exempt
+@token_required
+def get_application(request):
+    id=request.get('id')
 
 # ----------------ADMIN ONLY FUNCTIONS----------------
 
@@ -140,32 +171,18 @@ def add_faculty(request):
 @csrf_exempt
 @admin_required
 def get_applications(request):
-    applications = Application.objects.all()
-
-    # Serialize the applications with custom encoder
-    applications_data = serialize('json', applications, cls=DjangoJSONEncoder)
-
-    # Deserialize the serialized data
-    applications_list = json.loads(applications_data)
-
-    # Replace student and prof references with their names
-    for application in applications_list:
-        fields = application['fields']
-        student_id = fields.get('student')
-        faculty_id = fields.get('faculty')
-
-        # Fetch the names based on the IDs (assuming your model has 'name' fields)
-        student_name = CustomUser.objects.get(pk=student_id).name if student_id else None
-        faculty_name = CustomUser.objects.get(pk=faculty_id).name if faculty_id else None
-
-        # Replace the references with names
-        fields['student'] = student_name
-        fields['prof'] = faculty_name
-
-    return JsonResponse({'message': 'Admin page', 'data': applications_list})
-
-    # return JsonResponse({'message': 'Admin page'})
-
+    applications=Application.objects.select_related('student', 'faculty')
+    application_list = [
+        {
+            'application_id': application.application_id,
+            'student': application.student.name,
+            'affiliation': application.affiliation,
+            'faculty': application.faculty.faculty.name,
+        }
+        for application in applications
+    ]
+    print('application_list:', application_list)
+    return JsonResponse({'message': 'Admin page', 'data': application_list})
 
 # ----------------STAFF ONLY FUNCTIONS----------------
 @csrf_exempt
@@ -175,20 +192,30 @@ def view_applications(request):
     print('user:', user)
     faculty=CustomUser.objects.get(pk=user.get('id'))
     print('faculty:', faculty)
-    applications = Application.objects.filter(faculty__faculty=faculty)
-    applications=serialize('json', applications, cls=DjangoJSONEncoder)
-    applications = json.loads(applications)
-    for application in applications:
-        fields = application['fields']
-        student_id = fields.get('student')
-        faculty_id = fields.get('faculty')
+    applications = Application.objects.filter(faculty__faculty=faculty).select_related('student', 'faculty')
+    application_list=[{
+        'application_id': application.application_id,
+        'student': application.student.name,
+        'affiliation': application.affiliation,
+        'faculty': application.faculty.faculty.name,
+        'status': application.status
+    } for application in applications]
+    print('application_list:', application_list)
+    return JsonResponse({'message': 'Staff page', 'data': application_list})
 
-        # Fetch the names based on the IDs (assuming your model has 'name' fields)
-        student_name = CustomUser.objects.get(pk=student_id).name if student_id else None
-        faculty_name = CustomUser.objects.get(pk=faculty_id).name if faculty_id else None
+@csrf_exempt
+@staff_required
+def approve_applications(request):
+    try:
+        data = json.loads(request.body)
+        application_ids = data.get('application_ids', [])
+        for app_id in application_ids:
+            application = get_object_or_404(Application, id=app_id)
+            # Simulate the approval process
+            if application.status.startswith('P'):
+                application.status = 'APR'
+                application.save()
 
-        # Replace the references with names
-        fields['student'] = student_name
-        fields['prof'] = faculty_name
-    # print('applications:', applications)
-    return JsonResponse({'message': 'Staff page', 'data': applications})
+        return JsonResponse({'message': 'Applications approved successfully.'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

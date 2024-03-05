@@ -17,17 +17,17 @@ function AdminDashboard() {
           </p>
         </div>
       </div>
-      <div className="flex flex-col items-start space-y-4 pl-4">
-        <Link to="/admin-dashboard/add-student" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+      <div className="flex flex-col items-start space-y-4 pl-4 pb-8">
+        <Link to="/admin-dashboard/add-student" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Student
         </Link>
-        <Link to="/admin-dashboard/add-faculty" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="/admin-dashboard/add-faculty" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Faculty
         </Link>
-        <Link to="/admin-dashboard/application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="/admin-dashboard/application-status" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Application Status
         </Link>
-        <Link to="/admin-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="/admin-dashboard/complaint-status" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Complaint Status
         </Link>
       </div>

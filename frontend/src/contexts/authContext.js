@@ -37,7 +37,17 @@ export function AuthProvider({children}) {
 
     }
     const logout = ()=>{
-
+        setLoading(true);
+        axios.get(`${backendUrl}/api/logout`, {withCredentials: true})
+        .then((res) => {
+            console.log('inside logout', res.data)
+            setCurrentUser(null)
+            
+        })
+        .catch((err) => {
+            console.error(err)
+        })
+        setLoading(false);
     }
     useEffect(()=>{
         const unsubscribe =()=>{
@@ -45,9 +55,9 @@ export function AuthProvider({children}) {
                 setLoading(true);
                 axios.get(`${backendUrl}/api/get_user_info`, {withCredentials: true})
                 .then((res) => {
+                    console.log('inside authContext useEffect', res.data.data)
                     if(res.data.data){
                         // console.log(res.data)
-                        console.log('inside authContext useEffect', res.data.data)
                         setCurrentUser(res.data.data)
                     }else{
                         // console.log('No user logged in')
