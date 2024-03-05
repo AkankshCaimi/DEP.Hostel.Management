@@ -21,6 +21,7 @@ def token_required(f):
         if not token:
             return JsonResponse({'error': 'Token is missing'}, status=300)
         user= validate_token(token)
+        print("token validotor: ", user)
         if user is None or user.get('id') is None:
             return JsonResponse({'error': 'User is not found'}, status=301)
         request.new_param=user

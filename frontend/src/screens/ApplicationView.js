@@ -1,42 +1,65 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import "../styles/tailwind.css";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 const ApplicationView = () => {
   // Dummy data for testing
-  const formData = {
-    studentName: "Devanshu Dhawan",
-    gender: "male",
+  const backendUrl=process.env.REACT_APP_BASE_URL;
+  const [formData, setFormData] = useState({
+    student: "Devanshu Dhawan",
+    application_id: "23",
     affiliation: "ITI Ropar",
-    address: "Sector 52, Chandigarh",
-    contactNumber: "9873524686",
-    email: "2021csb1082@iitrpr.ac.in",
-    facultyMentorName: "Dr. Puneet Goyal",
-    facultyEmail: "puneet.goyal@iitrpr.ac.in",
-    arrivalDate: "2024-03-04",
-    departureDate: "2024-03-15",
-    instituteID: "institute-id.pdf",
-    instituteLetter: "institute-letter.pdf",
-    remarks: "None",
-  };
+    faculty: "Dr. Puneet Goyal",
+    status: "Loading...",
+    address: "Ropar, Punjab",
+    arrival: "2024-03-04",
+    departure: "2024-03-15",
+    instiId: "institute-id.pdf",
+    letter: "institute-letter.pdf",
+  })
+  const [application, setApplication] = useState(null);
   const { id } = useParams();
+  const variableClassName=(idx)=>idx<=7?"border-b":"border-b hover:cursor-pointer";
   console.log("Application ID:", id);
   // Hardcoded field names
   const fieldNames = [
     "Student Name",
-    "Gender",
+    "Application ID",
     "Affiliation",
+    "Faculty",
+    "Status",
     "Address",
-    "Contact Number",
-    "Email",
-    "Faculty Mentor Name",
-    "Faculty Email",
     "Arrival Date",
     "Departure Date",
     "Institute ID",
     "Institute Letter",
-    "Remarks",
   ];
-
+  useEffect(()=>{
+    // Fetch application data from backend using the application ID
+    axios.get(`${backendUrl}/api/get_application/${id}`, {withCredentials: true})
+    .then((res)=>{
+      console.log(res.data);
+      setApplication({
+        instiId: res.data.data.instiId,
+        letter: res.data.data.letter
+      });
+      const newObj={...res.data.data};
+      newObj.instiId="View PDF";
+      newObj.letter="View PDF";
+      setFormData(newObj);
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  },[])
+  const handleClick=(e, idx)=>{
+    if(idx<=7) return;
+    if(application){
+      console.log('here', application)
+      const urls=[`data:application/pdf;base64,${application.instiId}`, `data:application/pdf;base64,${application.letter}`];
+      window.open(urls[idx-8])
+    }
+  }
   return (
     <div className="container mx-auto mt-8 p-18 bg-gray-100 rounded mb-4">
       <h1 className="text-2xl font-bold">Application</h1> {/* Remove mb-4 from here */}
@@ -47,7 +70,7 @@ const ApplicationView = () => {
             <tbody>
               {fieldNames.map((fieldName, index) => (
                 <tr key={index} className="border-b">
-                  <td className="text-left pl-4 py-2 text-m font-medium text-gray-600 border-r" style={{ color: '#000' }}>
+                  <td className="text-left pl-4 py-2 text-m font-medium text-gray-600 border-r" style={{ color: '#000' }} >
                     {fieldName}:
                   </td>
                 </tr>
@@ -60,8 +83,8 @@ const ApplicationView = () => {
           <table className="w-full border">
             <tbody>
               {Object.values(formData).map((value, index) => (
-                <tr key={index} className="border-b">
-                  <td className="pl-4 py-2 text-m font-normal text-gray-800 border-r bg-white" style={{ color: '#000' }}>
+                <tr key={index} className={variableClassName(index)}>
+                  <td className="pl-4 py-2 text-m font-normal text-gray-800 border-r bg-white" style={{ color: '#000' }} onClick={(e)=>handleClick(e,index)}>
                     {value}
                   </td>
                 </tr>

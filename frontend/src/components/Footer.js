@@ -33,7 +33,7 @@ const Footer = () => {
             <div className="container mx-auto flex flex-wrap justify-between">
                 <div className="w-full md:w-1/3 mb-4 md:mb-0 border-r border-gray-100 pr-4">
                     <h3 className="text-xl font-bold mb-2">Chief Warden</h3>
-                    <p className="text-base mb-1">Prof abcd</p>
+                    <p className="text-base mb-1">Prof Ravi Kumar</p>
                     <p className="text-base">IIT Ropar</p>
                 </div>
                 <div className="w-full md:w-1/3 mb-4 md:mb-0 border-r border-gray-100 pr-4 pl-8">

@@ -2,9 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../styles/tailwind.css";
 import { useAuth } from "../contexts/authContext";
+import { useNavigate } from "react-router-dom";
 const Form = () => {
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const { currentUser } = useAuth();
+  const navigate=useNavigate();
   // console.log(currentUser);
   const [formData, setFormData] = useState({
     studentName: '',
@@ -67,7 +69,14 @@ const Form = () => {
         "Content-Type": "multipart/form-data",
       },
       
-    }).then((res) => {console.log(res)});
+    }).then((res) => {
+      console.log(res)
+      alert('Form Submitted Successfully')
+      navigate('/internship')
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
   };
   useEffect(() => {
     if (currentUser) {

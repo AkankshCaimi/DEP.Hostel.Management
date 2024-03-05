@@ -11,7 +11,7 @@ import json
 import jwt, datetime
 from .decorators import token_required, admin_required, validate_token, staff_required
 from django.core.serializers import serialize
-from .helpers import get_user_dict
+from .helpers import get_user_dict, handle_file_attachment
 from django.core.serializers.json import DjangoJSONEncoder
 
 @csrf_exempt
@@ -135,23 +135,39 @@ def get_user_info(request):
 @token_required
 def get_application_status(request):
     user=request.new_param
-    applications=Application.objects.filter(student__id=user.get('id')).select_related('student', 'faculty')
-    application_list = [
-        {
-            'application_id': application.application_id,
-            'affiliation': application.affiliation,
-            'faculty': application.faculty.faculty.name,
-            'status': application.status
-        }
-        for application in applications
-    ]
-    print('application_list:', application_list)
-    return JsonResponse({'message': 'Student page', 'data': application_list})
+    application=Application.objects.filter(student__id=user.get('id')).select_related('student', 'faculty').first()
+    applicationX={
+        'application_id': application.application_id,
+        'student': application.student.name,
+        'affiliation': application.affiliation,
+        'faculty': application.faculty.faculty.name,
+        'status': application.status,
+        'address': application.address,
+        'arrival': application.arrival,
+        'departure': application.departure,
+        'instiId': handle_file_attachment(application.instiId.path),
+        'letter': handle_file_attachment(application.letter.path)
+    }
+
+    return JsonResponse({'message': 'Student page', 'data': applicationX})
 
 @csrf_exempt
 @token_required
-def get_application(request):
-    id=request.get('id')
+def get_application(request, id):
+    application=Application.objects.select_related('faculty', 'student').get(application_id=id)
+    applicationX={
+        'student': application.student.name,
+        'application_id': application.application_id,
+        'affiliation': application.affiliation,
+        'faculty': application.faculty.faculty.name,
+        'status': application.status,
+        'address': application.address,
+        'arrival': application.arrival,
+        'departure': application.departure,
+        'instiId': handle_file_attachment(application.instiId.path),
+        'letter': handle_file_attachment(application.letter.path)
+    }
+    return JsonResponse({'message': 'Student page', 'data': applicationX})
 
 # ----------------ADMIN ONLY FUNCTIONS----------------
 
@@ -219,3 +235,15 @@ def approve_applications(request):
         return JsonResponse({'message': 'Applications approved successfully.'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+    
+
+@csrf_exempt
+def download_pdf(request):
+  # Replace with the actual path to your PDF file
+    instiID=handle_file_attachment("C:/Users/devan/Desktop/My Folder/DEP.Hostel.Management/Backend/documents/gradesheet_till_4th.pdf")
+    letter=handle_file_attachment("C:/Users/devan/Desktop/My Folder/DEP.Hostel.Management/Backend/documents/gradesheet_till_4th.pdf")
+    resp={
+        'instiID': instiID,
+        'letter': letter
+    }
+    return JsonResponse(resp)

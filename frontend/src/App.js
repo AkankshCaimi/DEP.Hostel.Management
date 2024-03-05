@@ -19,7 +19,7 @@ import ProfAppStatus from './screens/ProfAppStatus';
 import Footer from './components/Footer';
 import Cal from './screens/Home/Calendar';
 import ApplicationView from './screens/ApplicationView';
-import Internship from './screens/Internship';import ApplicationView from './screens/ApplicationView';
+import Internship from './screens/Internship';
 
 function App() {
   const [showPopup, setShowPopup] = useState(false);
