@@ -9,14 +9,40 @@ function Home() {
       <div className='w-full'>
         <ImageSlider />
       </div>
+      <div className='w-full flex justify-between mt-4'>
+        <div className='w-70 p-4 border-r border-solid border-black'>
+          <h2 className='text-lg font-bold mb-2 bg-black text-white p-2'>Student Facilities</h2>
+          <div className='grid grid-cols-3 gap-4'>
+            {['Mitr', 'Gymkhana', 'Eateries Shops', 'Hospital', 'Student Film Club', 'Hostel Security'].map((facility, index) => (
+              <div key={index} className='flex flex-col items-center shadow-lg p-4'>
+                {/* Replace `icon.png` with the actual path to your icons */}
+                <img src={`icon${index}.png`} alt={facility} className='mb-2' />
+                <span>{facility}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className='w-30 p-4 border border-solid border-gray-200 bg-gray-100'>
+          <h2 className='text-lg font-bold mb-2'>Circulars</h2>
+          <ul>
+            {['Online Hostel/Mess Fee Payment', 'Students Guest Accommodation', 'Online Bulk Accommodation', 
+             'Hostel Office Working Hours','Mess Rebate Rules'].map((circular, index) => (
+              <li key={index} className='mb-1 shadow-lg p-2'>
+                {/* Replace `bullet.png` with the actual path to your bullet icon */}
+                <img src={`bullet${index}.png`} alt="bullet" className="inline-block mr-2" />
+                {circular}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+        
       <div className='flex flex-row w-full'>
         <div className='w-70 border-r border-solid border-black p-4 mb-200'>
           {/* Content for the 70% width side */}
           <p>
             {/* Your content goes here */}
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate doloribus quidem dolorum quisquam nulla commodi nostrum vero dolores praesentium deleniti non suscipit sint eius, totam odio, cumque repudiandae consequuntur culpa amet officia velit. Error voluptates dolore laudantium dolores accusamus similique.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero quas ea, cum alias porro aliquam illum molestiae culpa laborum odit distinctio ipsam minus ab amet voluptas sapiente recusandae molestias, earum accusamus provident sequi exercitationem. Officia, culpa ratione numquam sed est saepe amet rerum doloremque iure earum qui. Quod hic magni rem, blanditiis a quibusdam reiciendis odio illum facere maxime id quo maiores numquam sunt ipsam cumque, quisquam qui natus dicta quam veritatis!
-            Ea excepturi enim non. Inventore corrupti ad, reiciendis at voluptate possimus dolor repellat ducimus nisi obcaecati vitae facilis quibusdam explicabo velit officia, eius, recusandae modi odio similique laboriosam?
           </p>
         </div>
         <div className='w-30 p-4'>

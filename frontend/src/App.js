@@ -16,10 +16,11 @@ import ApplicationStatus from './screens/ApplicationStatus';
 import ComplaintStatus from './screens/ComplaintStatus';
 import ProfessorDashboard from './screens/ProfessorDashboard';
 import ProfAppStatus from './screens/ProfAppStatus';
-import Footer from './screens/Footer';
+import Footer from './components/Footer';
 import Cal from './screens/Home/Calendar';
 import ApplicationView from './screens/ApplicationView';
-import Internship from './screens/Internship';
+import Internship from './screens/Internship';import ApplicationView from './screens/ApplicationView';
+
 function App() {
   const [showPopup, setShowPopup] = useState(false);
   return (
