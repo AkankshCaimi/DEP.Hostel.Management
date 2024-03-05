@@ -1,18 +1,17 @@
-// ApplicationView.js
 import React from "react";
 import "../styles/tailwind.css";
 
 const ApplicationView = () => {
   // Dummy data for testing
   const formData = {
-    studentName: "John Doe",
+    studentName: "Devanshu Dhawan",
     gender: "male",
-    affiliation: "Example University",
-    address: "123 Street, City",
-    contactNumber: "123-456-7890",
-    email: "john@example.com",
-    facultyMentorName: "Dr. Mentor",
-    facultyEmail: "mentor@example.com",
+    affiliation: "ITI Ropar",
+    address: "Sector 52, Chandigarh",
+    contactNumber: "9873524686",
+    email: "2021csb1082@iitrpr.ac.in",
+    facultyMentorName: "Dr. Puneet Goyal",
+    facultyEmail: "puneet.goyal@iitrpr.ac.in",
     arrivalDate: "2024-03-04",
     departureDate: "2024-03-15",
     instituteID: "institute-id.pdf",
@@ -38,11 +37,10 @@ const ApplicationView = () => {
   ];
 
   return (
-    <div className="container mx-auto mt-10 p-18 bg-gray-100 rounded mb-16">
-      <h1 className="text-2xl font-bold mb-8">Application</h1>
-
+    <div className="container mx-auto mt-8 p-18 bg-gray-100 rounded mb-4">
+      <h1 className="text-2xl font-bold">Application</h1> {/* Remove mb-4 from here */}
+      
       <div className="grid grid-cols-2 gap-8">
-        {/* Left side: Field names */}
         <div>
           <table className="w-full border">
             <tbody>
@@ -56,8 +54,7 @@ const ApplicationView = () => {
             </tbody>
           </table>
         </div>
-
-        {/* Right side: Information */}
+  
         <div>
           <table className="w-full border">
             <tbody>

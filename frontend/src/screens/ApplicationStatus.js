@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/tailwind.css';
 // import axios from 'axios';
 // import { useAuth } from '../contexts/authContext';
 
 const ApplicationList = ({ applications }) => {
   const [openDropdown, setOpenDropdown] = useState({});
+  const dropdownRefs = {};
 
   const handleButtonClick = (appId) => {
     setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
@@ -14,6 +15,26 @@ const ApplicationList = ({ applications }) => {
     // Add logic for handling the click on an application
     console.log(`Application ${appId} clicked`);
   };
+
+  const handleClickOutside = (event, appId) => {
+    if (dropdownRefs[appId] && !dropdownRefs[appId].contains(event.target)) {
+        setOpenDropdown({ ...openDropdown, [appId]: false });
+    }
+};
+
+useEffect(() => {
+    const handleDocumentClick = (event) => {
+        for (const appId in openDropdown) {
+            handleClickOutside(event, appId);
+        }
+    };
+
+    document.addEventListener('mousedown', handleDocumentClick);
+
+    return () => {
+        document.removeEventListener('mousedown', handleDocumentClick);
+    };
+}, [openDropdown]);
 
   if (!applications) {
     return <div>Loading...</div>;
@@ -34,7 +55,7 @@ const ApplicationList = ({ applications }) => {
                 </p>
                 <p className={`text-sm text-${app.status === 'Active' ? 'green' : 'gray'}-600`}>Status: {app.status}</p>
               </div>
-              <div className="mt-2 relative group">
+              <div className="mt-2 relative group" ref={(ref) => (dropdownRefs[app.id] = ref)}>
                 <button
                   type="button"
                   className={`bg-blue-500 text-white px-4 py-2 rounded group-hover:bg-blue-600 flex items-center`}

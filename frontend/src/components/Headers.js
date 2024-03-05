@@ -1,45 +1,64 @@
-import React, { useState } from 'react';
-import { NavLink } from "react-router-dom";
-import "../styles/tailwind.css";
-
-
+import React, { useState , useEffect, useRef} from 'react';
+import { NavLink } from 'react-router-dom';
+import '../styles/tailwind.css';
 
 const Headers = () => {
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [openDropdown, setOpenDropdown] = useState(false);
+    const dropdownRef = useRef(null);
 
     const handleDropdownToggle = () => {
-        setDropdownOpen(!isDropdownOpen);
+        setOpenDropdown(!openDropdown);
     };
 
-    const handleDropdownClose = () => {
-        setDropdownOpen(false);
+    const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setOpenDropdown(false);
+        }
     };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
         <>
             <nav className="p-2 flex items-center justify-between bg-color">
                 <NavLink to="/" className="flex items-center text-white text-2xl font-bold no-underline ml-10">
-                    <img src={require('../images/iitropar.png')} alt="logo" className="w-16 h-16 mr-2" /> {/* Increase image size */}
+                    <img src={require('../images/iitropar.png')} alt="logo" className="w-16 h-16 mr-2" />
                     Hostel IIT Ropar
                 </NavLink>
-
-                <ul className="hidden md:flex space-x-6 font-semibold text-lg mt-2 ml-8 mr-8"> {/* Adjust font styles and spacing */}
+                <ul className="hidden md:flex space-x-6 font-semibold text-lg mt-2 ml-8 mr-8">
                     <li><NavLink to="/" className="text-gray-300 no-underline">Home</NavLink></li>
-                    <li
-                        className="relative group"
-                        onMouseEnter={handleDropdownToggle}
-                        onMouseLeave={handleDropdownClose}
-                    >
-                        <span className="text-gray-300 cursor-pointer no-underline">Programs</span>
-                        <ul
-                            className={`absolute ${isDropdownOpen ? 'block' : 'hidden'} bg-color text-gray-300 p-2 space-y-2 mt-2 rounded`}
+                    <div className="relative group" ref={dropdownRef}>
+                        <button
+                            type="button"
+                            className={`text-gray-300 flex items-center`}
+                            onClick={handleDropdownToggle}
                         >
-                            <li><NavLink to="/programs/ug" className="block text-gray-300 px-4 py-2 no-underline hover:bg-color rounded">UG Program</NavLink></li>
-                            <li><NavLink to="/programs/pg" className="block text-gray-300 px-4 py-2 no-underline hover:bg-color rounded">PG Program</NavLink></li>
-                            <li><NavLink to="/programs/intern" className="block text-gray-300 px-4 py-2 no-underline hover:bg-color rounded">Intern Student</NavLink></li>
-                            <li><NavLink to="/programs/exchange" className="block text-gray-300 px-4 py-2 no-underline hover:bg-color rounded">Student Exchange</NavLink></li>
-                        </ul>
-                    </li>
+                            Programs
+                            <svg
+                                className={`ml-2 h-4 w-4 transition-transform ${openDropdown ? 'transform rotate-180' : ''}`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        {openDropdown && (
+                            <ul className="absolute z-10 bg-gray-300 text-red border border-2 p-0 space-y-0 mt-2 w-32">
+                                <li><NavLink to="" className="block px-4 py-2 no-underline hover:bg-color border-b border-gray-800">UG Program</NavLink></li>
+                                <li><NavLink to="" className="block px-4 py-2 no-underline hover:bg-color border-b border-gray-800">PG Program</NavLink></li>
+                                <li><NavLink to="" className="block px-4 py-2 no-underline hover:bg-color border-b border-gray-800">Intern Student</NavLink></li>
+                                <li><NavLink to="" className="block px-4 py-2 no-underline hover:bg-color ">Student Exchange</NavLink></li>
+                            </ul>
+                        )}
+                    </div>
                     <li><NavLink to="/contact" className="text-gray-300 no-underline">Contact us</NavLink></li>
                     <li><NavLink to="/login" className="text-gray-300 no-underline">Login</NavLink></li>
                 </ul>

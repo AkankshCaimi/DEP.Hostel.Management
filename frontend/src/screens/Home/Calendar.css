@@ -1,5 +1,4 @@
-/* App.css */
-body {
+ body {
 	font-family: Arial, sans-serif;
 	background-color: #f5f7fa;
 	margin: 0;
@@ -11,13 +10,13 @@ body {
 	margin: 20px;
 }
 
-h1 {
+.head{
 	font-size: 2.5rem;
 	margin-bottom: 20px;
-	color: #05ca40ce;
+	color: #007bff;
 }
 
-.container {
+.container001 {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -262,7 +261,7 @@ h1 {
 .event-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-	border-radius: 100%;
+	/* border-radius: 100%; */
 }
 
 .event-card-header {
@@ -320,4 +319,4 @@ h1 {
 	text-underline-offset: 0.2em;
 	font-weight: bold;
 	font-size: 1.05rem;
-}
+} 

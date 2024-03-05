@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Calendar.css";
+import "../../styles/tailwind.css";
 
 const Cal = () => {
 	const [selectedDate, setSelectedDate] = useState(null);
@@ -50,23 +51,23 @@ const Cal = () => {
 
 	return (
 		<div className="Calendar">
-			<h1> Calendar </h1>
-			<div className="container">
+			<h1 className="head"> Calendar </h1>
+			<div className="container001">
 				<div className="calendar-container">
 					<Calendar
 						value={selectedDate}
 						onClickDay={Date_Click_Fun}
 						tileClassName={({ date }) =>
 							selectedDate &&
-							date.toDateString() === selectedDate.toDateString()
+								date.toDateString() === selectedDate.toDateString()
 								? "selected"
 								: events.some(
 									(event) =>
 										event.date.toDateString() ===
 										date.toDateString(),
 								)
-								? "event-marked"
-								: ""
+									? "event-marked"
+									: ""
 						}
 					/>{" "}
 				</div>
@@ -74,33 +75,38 @@ const Cal = () => {
 					{" "}
 					{selectedDate && (
 						<div className="event-form">
-							<h2> Create Event </h2>{" "}
+							<p> Create Event for: </p>{" "}
 							<p>
-								{" "}
-								Selected Date: {selectedDate.toDateString()}{" "}
-							</p>{" "}
+								{selectedDate.toLocaleDateString('en-GB')}
+							</p>
 							<input
 								type="text"
-								placeholder="Event Name"
+								placeholder="Event Details"
 								value={eventName}
+								rows={3}
 								onChange={Event_Data_Update}
-							/>{" "}
+								className="mb-2 px-2 py-1 rounded border border-gray-300 resize-none"
+							/>
+
+							<br />
+
 							<button
-								className="create-btn"
+								className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
 								onClick={Create_Event_Fun}
 							>
-								Click Here to Add Event{" "}
-							</button>{" "}
+								Add Event
+							</button>
+
 						</div>
 					)}
 					{events.length > 0 && selectedDate && (
 						<div className="event-list">
-							<h2> My Created Event List </h2>{" "}
+							<h2 > My Created Event List </h2>{" "}
 							<div className="event-cards">
 								{" "}
 								{events.map((event) =>
 									event.date.toDateString() ===
-									selectedDate.toDateString() ? (
+										selectedDate.toDateString() ? (
 										<div
 											key={event.id}
 											className="event-card"
