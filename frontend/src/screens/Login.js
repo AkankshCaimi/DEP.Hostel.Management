@@ -17,7 +17,12 @@ const Login = () => {
             // console.log('in login: ', resp.data)
             setCurrentUser(resp.data)
             // console.log('in login: ', currentUser)
-            navigate('/')
+            if(resp.data.is_superuser)
+                navigate('/admin-dashboard')
+            else if(resp.data.is_staff)
+                navigate('/professor-dashboard')
+            else
+                navigate('/')
         }
         catch(err){
             console.log(err)

@@ -18,7 +18,8 @@ import ProfessorDashboard from './screens/ProfessorDashboard';
 import ProfAppStatus from './screens/ProfAppStatus';
 import Footer from './screens/Footer';
 import Cal from './screens/Home/Calendar';
-
+import ApplicationView from './screens/ApplicationView';
+import Internship from './screens/Internship';
 function App() {
   const [showPopup, setShowPopup] = useState(false);
   return (
@@ -41,7 +42,8 @@ function App() {
         <Route path='/admin-dashboard/application-status/application' element={<ApplicationView/>} />
         <Route path='/professor-dashboard' element={<ProfessorDashboard/>} />
         <Route path='/professor-dashboard/application-status' element={<ProfAppStatus/>} />
-        <Route path='/professor-dashboard/application-status/application' element={<ApplicationView/>} />
+        <Route path='/application/:id' element={<ApplicationView/>} />
+        <Route path='/internship' element={<Internship/>} />
       </Routes>
       <Footer showPopup={showPopup} setShowPopup={setShowPopup} />
     </>

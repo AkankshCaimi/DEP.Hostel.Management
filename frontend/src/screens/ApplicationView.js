@@ -1,25 +1,26 @@
 // ApplicationView.js
 import React from "react";
 import "../styles/tailwind.css";
-
+import { useParams } from "react-router-dom";
 const ApplicationView = () => {
   // Dummy data for testing
   const formData = {
-    studentName: "John Doe",
+    studentName: "Devanshu Dhawan",
     gender: "male",
-    affiliation: "Example University",
-    address: "123 Street, City",
-    contactNumber: "123-456-7890",
-    email: "john@example.com",
-    facultyMentorName: "Dr. Mentor",
-    facultyEmail: "mentor@example.com",
+    affiliation: "IIT Ropar",
+    address: "IIT Ropar",
+    contactNumber: "9876543201",
+    email: "2021csb1082@iitrpr.ac.in",
+    facultyMentorName: "Dr. Puneet Goyal",
+    facultyEmail: "puneet@iitrpr.ac.in",
     arrivalDate: "2024-03-04",
     departureDate: "2024-03-15",
     instituteID: "institute-id.pdf",
     instituteLetter: "institute-letter.pdf",
-    remarks: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    remarks: "None",
   };
-
+  const { id } = useParams();
+  console.log("Application ID:", id);
   // Hardcoded field names
   const fieldNames = [
     "Student Name",
