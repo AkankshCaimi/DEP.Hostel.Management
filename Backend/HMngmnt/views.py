@@ -136,6 +136,8 @@ def get_user_info(request):
 def get_application_status(request):
     user=request.new_param
     application=Application.objects.filter(student__id=user.get('id')).select_related('student', 'faculty').first()
+    if application is None:
+        return JsonResponse({'message': 'Student page', 'data': None})
     applicationX={
         'application_id': application.application_id,
         'student': application.student.name,
@@ -194,6 +196,7 @@ def get_applications(request):
             'student': application.student.name,
             'affiliation': application.affiliation,
             'faculty': application.faculty.faculty.name,
+            'status': application.status
         }
         for application in applications
     ]
@@ -206,18 +209,43 @@ def get_applications(request):
 def view_applications(request):
     user=request.new_param
     print('user:', user)
-    faculty=CustomUser.objects.get(pk=user.get('id'))
-    print('faculty:', faculty)
-    applications = Application.objects.filter(faculty__faculty=faculty).select_related('student', 'faculty')
-    application_list=[{
-        'application_id': application.application_id,
-        'student': application.student.name,
-        'affiliation': application.affiliation,
-        'faculty': application.faculty.faculty.name,
-        'status': application.status
-    } for application in applications]
-    print('application_list:', application_list)
-    return JsonResponse({'message': 'Staff page', 'data': application_list})
+    faculty=Faculty.objects.get(faculty=CustomUser.objects.get(pk=user.get('id')))
+    if not faculty.is_hod:
+        print('faculty:', faculty)
+        applications = Application.objects.filter(faculty=faculty).select_related('student', 'faculty')
+        application_list=[{
+            'application_id': application.application_id,
+            'student': application.student.name,
+            'affiliation': application.affiliation,
+            'faculty': application.faculty.faculty.name,
+            'status': application.status
+        } for application in applications]
+        print('application_list:', application_list)
+        return JsonResponse({'message': 'Staff page', 'data': {'own': application_list}})
+    else:
+        print("HOD here")
+        # applications for hod approval
+        applications1=Application.objects.filter(status='Pending HOD Approval', faculty__department=faculty.department).select_related('student', 'faculty')
+        #applications for own approval
+        applications2 = Application.objects.filter(faculty=faculty).select_related('student', 'faculty')
+
+        application_list1=[{
+            'application_id': application.application_id,
+            'student': application.student.name,
+            'affiliation': application.affiliation,
+            'faculty': application.faculty.faculty.name,
+            'status': application.status
+        } for application in applications1]
+        application_list2=[{
+            'application_id': application.application_id,
+            'student': application.student.name,
+            'affiliation': application.affiliation,
+            'faculty': application.faculty.faculty.name,
+            'status': application.status
+        } for application in applications2]
+        # print('application_list:', application_list)
+        # return JsonResponse({'message': 'Staff page', 'data': application_list})
+        return JsonResponse({'message': 'Staff page', 'data': {'hod': application_list1, 'own': application_list2}})
 
 @csrf_exempt
 @staff_required
@@ -236,6 +264,24 @@ def approve_applications(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
     
+@csrf_exempt
+@staff_required
+def update_application(request):
+    try:
+        data=json.loads(request.body)
+        data=data['data']
+        mapping={
+            0:'Pending SA Approval',
+            1: 'Pending HOD Approval',
+            2: 'Pending Admin Approval',
+        }
+        for obj in data:
+            application=Application.objects.get(application_id=obj['appId'])
+            application.status=mapping[int(obj['action'])]
+            application.save()
+        return JsonResponse({'message': 'Applications updated successfully.'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
 def download_pdf(request):

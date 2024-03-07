@@ -3,17 +3,17 @@ import "../styles/tailwind.css";
 import axios from "axios";
 import { useAuth } from "../contexts/authContext";
 import { useNavigate } from "react-router-dom";
-const ApplicationList = ({ applications }) => {
+const ApplicationList = ({ applications, data, setData }) => {
   const [openDropdown, setOpenDropdown] = useState({});
-  const navigate = useNavigate();  const dropdownRefs = {};
-
+  const navigate = useNavigate();  
+  const dropdownRefs = {};
   const handleButtonClick = (appId) => {
     setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
   };
 
   const handleApplicationClick = (appId) => {
     // Add logic for handling the click on an application
-    console.log(`Application ${appId} clicked`);
+    // console.log(`Application ${appId} clicked`);
     navigate(`/application/${appId}`);
   };
 
@@ -22,6 +22,10 @@ const ApplicationList = ({ applications }) => {
         setOpenDropdown({ ...openDropdown, [appId]: false });
     }
 };
+const handleActionClick = (appId, action) => {
+  console.log(`Application ${appId} action ${action} clicked`);
+  setData([...data, { appId, action }]);
+}
 
 useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -36,7 +40,7 @@ useEffect(() => {
         document.removeEventListener('mousedown', handleDocumentClick);
     };
 }, [openDropdown]);
-  console.log("applications:", applications);
+  // console.log("applications:", applications);
   if (!applications) {
     return <div>Loading...</div>;
   }
@@ -45,10 +49,13 @@ useEffect(() => {
     <div className="overflow-y-auto">
       <ul className="divide-y divide-gray-300">
         {applications.map((app) => {
-          console.log("inside loop:", app);
+          // console.log("inside loop:", app);
+          const isDisabled= app.status === "Pending SA Approval";
           return (
             <li key={app.application_id} className="py-2">
-              <div className="border border-gray-200 p-3 rounded bg-gray-100 flex items-center justify-between">
+              <div className={`border border-gray-200 p-3 rounded bg-gray-100 flex items-center justify-between ${
+                    isDisabled ? "opacity-50" : ""
+                  }`}>
                 <div>
                   <p
                     className="text-m font-medium text-gray-900 cursor-pointer"
@@ -57,16 +64,12 @@ useEffect(() => {
                     {app.student} - {app.faculty} - {app.application_id}
                   </p>
                   <p
-                    className={`text-sm text-${
-                      app.status === "Pending Faculty Approval"
-                        ? "green"
-                        : "gray"
-                    }-600`}
+                    className={`text-sm `}
                   >
                     Status: {app.status}
                   </p>
                 </div>
-                <div className="mt-2 relative group" ref={(ref) => (dropdownRefs[app.id] = ref)}>
+                {!isDisabled &&(<div className="mt-2 relative group" ref={(ref) => (dropdownRefs[app.id] = ref)}>
                   <button
                     type="button"
                     className={`bg-blue-500 text-white px-4 py-2 rounded group-hover:bg-blue-600 flex items-center focus:outline-none`}
@@ -94,27 +97,66 @@ useEffect(() => {
                   </button>
                   {openDropdown[app.application_id] && (
                     <div className="absolute z-10 mt-2 bg-white border border-gray-200 shadow-lg rounded">
-                      <button
-                        type="button"
-                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 border focus:outline-none"
-                      >
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 0
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                0
+                              )
+                            }
+                          >
                         Approve
                       </button>
-                      <button
-                        type="button"
-                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 border focus:outline-none"
-                      >
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 1
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                1
+                              )
+                            }
+                          >
                         Approve Faculty
                       </button>
-                      <button
-                        type="button"
-                        className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100 border focus:outline-none"
-                      >
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 2
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                2
+                              )
+                            }
+                          >
                         Approve HOD
                       </button>
                     </div>
                   )}
-                </div>
+                </div>)}
               </div>
             </li>
           );
@@ -137,33 +179,45 @@ const ApplicationStatus = () => {
     // { application_id: 8, student: 'Application 8', status: 'Pending' , faculty:  "Faculty 1""},
     { application_id: 9, student: "Application 9", status: "Inactive" , faculty:  "Faculty 1"},
   ];
-
+  const [data, setData] = useState([]);
   const backendUrl = process.env.REACT_APP_BASE_URL;
   // State to manage applications
   const { currentUser } = useAuth();
   const [applications, setApplications] = useState(null);
   // const [applications] = useState(initialApplications);
-  console.log("applications:", applications);
+  // console.log("applications:", applications);
   useEffect(() => {
     axios
       .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
       .then((res) => {
-        console.log("here:", res.data.data);
+        // console.log("here:", res.data.data);
         setApplications(res.data.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
-
+  const handleSubmit = () => {
+    console.log("Data to be submitted:", data);
+    // Add logic to submit the data to the backend
+    const backendUrl=process.env.REACT_APP_BASE_URL;
+    axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
+    .then((res)=>{
+      console.log(res.data);
+      alert("Data submitted successfully");
+      window.location.reload();
+    })
+    
+  }
   return (
     <div className="p-8 border border-gray-200 rounded">
       <h1 className="text-3xl font-bold mb-4">Application Status</h1>
-      <ApplicationList applications={applications} />
+      <ApplicationList applications={applications} data={data} setData={setData} />
       <div className="mt-4 flex justify-center">
         <button
           type="button"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => handleSubmit()}
         >
           Update
         </button>

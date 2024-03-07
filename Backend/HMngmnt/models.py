@@ -24,6 +24,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Faculty(models.Model):
     faculty= models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
+    department = models.CharField(max_length=100)
     faculty_phone = models.CharField(max_length=10)
     is_hod = models.BooleanField(default=False)
 
