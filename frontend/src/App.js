@@ -20,14 +20,27 @@ import Footer from './components/Footer';
 import Cal from './screens/Home/Calendar';
 import ApplicationView from './screens/ApplicationView';
 import Internship from './screens/Internship';
+import { useAuth } from './contexts/authContext';
 
 function App() {
+  const {currentUser}=useAuth();
   const [showPopup, setShowPopup] = useState(false);
   return (
     <>
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />
       <Routes>
-        <Route path="/" element={<Home />} />
+      <Route
+          path="/"
+          element={
+            currentUser
+              ? (currentUser.is_superuser
+                ? <AdminDashboard />
+                : currentUser.is_staff
+                  ? <ProfessorDashboard />
+                  : <Home />)
+              : (<Login />)
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/Calendar" element={<Cal />} />
         <Route path="/signup" element={<StudentSignup/>} />

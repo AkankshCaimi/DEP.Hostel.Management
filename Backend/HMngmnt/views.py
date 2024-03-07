@@ -1,19 +1,17 @@
 # Create your views here.
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from .models import Application, Faculty, CustomUser
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
 import jwt, datetime
 from .decorators import token_required, admin_required, validate_token, staff_required
-from django.core.serializers import serialize
-from .helpers import get_user_dict, handle_file_attachment
-from django.core.serializers.json import DjangoJSONEncoder
-
+from .helpers import get_user_dict, handle_file_attachment, parse_xl
+import os
 @csrf_exempt
 def index(request):
     # add_fac('Dr. Puneet Goyal')
@@ -175,11 +173,62 @@ def get_application(request, id):
 
 @csrf_exempt
 @admin_required
-def add_students(request):
+def add_users(request):
     xlFile= request.FILES.get('file')
-    name=request.POST.get('name')
-    print(xlFile, name)
-    return JsonResponse({'message': 'Admin page'})
+    type=request.POST.get('type')
+    if xlFile:
+    # name=request.POST.get('name')
+        with open('temp.xlsx', 'wb+') as destination:
+            for chunk in xlFile.chunks():
+                destination.write(chunk)
+        users=parse_xl('temp.xlsx', type)
+        # print("here:", users)
+        if type=='faculty':
+            for userX in users:
+                # print(user)
+                try:
+                    user=CustomUser(name=userX[0], email=userX[1], gender=userX[4])
+                    user.set_password('devanshu')
+                    user.is_staff=True
+                    user.is_active=True
+                    user.save()
+                    faculty=Faculty(faculty=user, department=userX[2], is_hod=userX[3], faculty_phone=userX[5])
+                    faculty.save()
+                except IntegrityError as e:
+                    pass
+        elif type=='student':
+            for user in users:
+                user=CustomUser(name=user[0], email=user[1], gender=user[2])
+                user.set_password('devanshu')
+                user.is_active=True
+                user.save()
+        # delete file temp.xlsx
+        os.remove('temp.xlsx')
+
+        return JsonResponse({'message': 'Success'})
+    else:
+        name=request.POST.get('name')
+        email=request.POST.get('email')
+        phone=request.POST.get('phoneNumber')
+        gender=request.POST.get('gender')
+        department=request.POST.get('department')
+        # print(name, email, phone, gender, department)
+        is_hod=request.POST.get('is_hod') 
+        if type=='faculty':
+            user=CustomUser(name=name, email=email, gender=gender)
+            user.set_password('devanshu')
+            user.is_staff=True
+            user.is_active=True
+            user.save()
+            faculty=Faculty(faculty=user, department=department, is_hod=False, faculty_phone=phone)
+            faculty.save()
+        elif type=='student':
+            user=CustomUser(name=name, email=email, gender=gender)
+            user.set_password('devanshu')
+            user.is_active=True
+            user.save()
+        return JsonResponse({'message': 'Success'})
+
 
 @csrf_exempt
 @admin_required

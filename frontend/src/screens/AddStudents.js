@@ -1,33 +1,36 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import '../styles/tailwind.css';
 import axios from 'axios';
 
-const AddStudents = () => {
-    const backendUrl = process.env.REACT_APP_BASE_URL;
-    const [name, setName] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [email, setEmail] = useState('');
+const AddStudent = () => { 
+    // const [name, setName] = useState('');
+    // const [phoneNumber, setPhoneNumber] = useState('');
+    // const [email, setEmail] = useState('');
+    const [oneData, setOneData] = useState({
+        name:'',
+        // phoneNumber:'',
+        email:'',
+        gender:'',
+        // department:''
+    });
     const [file, setFile] = useState(null);
     const [isManual, setIsManual] = useState(true);
-    const fileRef = useRef(null);
-    const handleNameChange = (e) => {
-        setName(e.target.value);
-    };
+    const handleChange=(e)=>{
+        setOneData({...oneData,[e.target.name]:e.target.value});
+    }
+    // const handleNameChange = (e) => {
+    //     setName(e.target.value);
+    // };
 
-    const handlePhoneNumberChange = (e) => {
-        setPhoneNumber(e.target.value);
-    };
+    // const handlePhoneNumberChange = (e) => {
+    //     setPhoneNumber(e.target.value);
+    // };
 
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
+    // const handleEmailChange = (e) => {
+    //     setEmail(e.target.value);
+    // };
 
     const handleFileChange = (e) => {
-        console.log(e.target.files[0].type)
-        if(e.target.files[0].type !== "'application/vnd.ms-excel'" && e.target.files[0].type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" && e.target.files[0].type !== "application/vnd.ms-excel.sheet.macroEnabled.12" && e.target.files[0].type !== "application/vnd.google-apps.spreadsheet"){
-            alert('Please upload an Excel file');
-            fileRef.current.value = '';
-        }
         setFile(e.target.files[0]);
     };
 
@@ -38,28 +41,37 @@ const AddStudents = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Handle form submission or file upload logic here
-        console.log('Form submitted:', {
-            name,
-            phoneNumber,
-            email,
-            file,
-            isManual,
-        });
+        // console.log('Form submitted:', {
+        //     name,
+        //     phoneNumber,
+        //     email,
+        //     file,
+        //     isManual,
+        // });
+        console.log(oneData);
         const data=new FormData();
-        data.append('name', name);
-        data.append('phoneNumber', phoneNumber);
-        data.append('email', email);
-        data.append('file', file);
-        axios.post(`${backendUrl}/api/add_students`, data, {withCredentials: true}, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
+        if(isManual){
+            data.append('name',oneData.name);
+            // data.append('phoneNumber',oneData.phoneNumber);
+            data.append('email',oneData.email);
+            data.append('gender', oneData.gender);
+            // data.append('department', oneData.department);
+        }
+        else{
+            data.append('file',file);
+        }
+        data.append('type','student');
+        console.log(isManual);
+        const backendUrl=process.env.REACT_APP_BASE_URL;
+        axios.post(`${backendUrl}/api/add_users`,data,{withCredentials:true}, {headers: {'Content-Type': 'multipart/form-data'}})
+        .then((res)=>{
+            console.log(res);
         })
     };
 
     return (
         <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Add Students</h1>
+            <h1 className="text-2xl font-bold mb-4">Add Students</h1> 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block font-bold mb-2">
@@ -95,24 +107,12 @@ const AddStudents = () => {
                             <input
                                 type="text"
                                 id="name"
+                                name='name'
                                 className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : ' cursor-not-allowed'}`}
-                                value={name}
-                                onChange={isManual ? handleNameChange : null}
+                                value={oneData.name}
+                                onChange={isManual ? handleChange : null}
                                 disabled={!isManual}
 
-                            />
-                        </div>
-                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                            <label htmlFor="phoneNumber" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                                Phone Number
-                            </label>
-                            <input
-                                type="text"
-                                id="phoneNumber"
-                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
-                                value={phoneNumber}
-                                onChange={isManual ? handlePhoneNumberChange : null}
-                                disabled={!isManual}
                             />
                         </div>
                         <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
@@ -122,11 +122,30 @@ const AddStudents = () => {
                             <input
                                 type="email"
                                 id="email"
+                                name='email'
                                 className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
-                                value={email}
-                                onChange={isManual ? handleEmailChange : null}
+                                value={oneData.email}
+                                onChange={isManual ? handleChange : null}
                                 disabled={!isManual}
                             />
+                        </div>
+                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                            <label htmlFor="gender" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                                Gender
+                            </label>
+                            <select
+                                id="gender"
+                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
+                                value={oneData.gender}
+                                name='gender'
+                                onChange={isManual ? handleChange : null}
+                                disabled={!isManual}
+                            >
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
                         <button
                             type="submit"
@@ -147,10 +166,8 @@ const AddStudents = () => {
                             <input
                                 type="file"
                                 id="file"
-                                accept='.xlsx, .xls'
                                 className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? 'cursor-not-allowed' : ''
                                     }`}
-                                ref={fileRef}
                                 onChange={isManual ? null : handleFileChange}
                                 disabled={isManual}
                             />
@@ -172,4 +189,4 @@ const AddStudents = () => {
     );
 };
 
-export default AddStudents;
+export default AddStudent;
