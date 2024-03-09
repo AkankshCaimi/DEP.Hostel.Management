@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router,Routes, Route } from 'react-router-dom';
 import Login from './screens/Login';
 import Form from './screens/Form';
 import AboutUs from './screens/AboutUs';
@@ -27,7 +27,8 @@ function App() {
   const {currentUser}=useAuth();
   const [showPopup, setShowPopup] = useState(false);
   return (
-    <>
+    <section className="bg-Hero bg-cover
+    font-[Poppins] md:bg-top bg-center">
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />
       <Routes>
       <Route
@@ -42,6 +43,7 @@ function App() {
               : (<Login />)
           }
         />
+        {/* <Route path="/" element={<Home />} /> */}
         <Route path="/login" element={<Login />} />
         <Route path="/Calendar" element={<Cal />} />
         <Route path="/signup" element={<StudentSignup/>} />
@@ -61,13 +63,13 @@ function App() {
         <Route path='/professor-dashboard/application-status' element={<ProfAppStatus/>} />
         <Route path='/application/:id' element={<ApplicationView/>} />
         <Route path='/professor-dashboard/complaint-status' element={<ComplaintStatus />} />
-        <Route path='/internship' element={<Internship/>} />
+      <Route path='/internship' element={<Internship/>} />
         {/* Caretaker Routes */}
         <Route path='/caretaker-dashboard' element={<CaretakerDashboard />} />
 
       </Routes>
       <Footer showPopup={showPopup} setShowPopup={setShowPopup} />
-    </>
+    </section>
   );
 }
 

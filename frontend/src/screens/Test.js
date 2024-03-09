@@ -1,49 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const MyComponent = () => {
-  const [pdfData, setPdfData] = useState(null);
-  const [error, setError] = useState(null);
-  const backendUrl = process.env.REACT_APP_BASE_URL;
-  useEffect(() => {
-    const fetchPdf = async () => {
-      try {
-        const response = await axios.get(`${backendUrl}/api/test`);
-        setPdfData(response.data);
-      } catch (error) {
-        setError(error.message || 'An error occurred while fetching the PDF.');
-      }
-    };
-
-    fetchPdf();
-  }, []);
-
-  const handleError = () => {
-    // Handle error appropriately, e.g., display an error message to the user
-    console.error(error);
-  };
-
-  const openPdfInNewTab = (idx,e) => {
-    e.preventDefault();
-    console.log(idx);
-    if (pdfData) {
-      const pdfUrls = [`data:application/pdf;base64,${pdfData.instiID}`, `data:application/pdf;base64,${pdfData.letter}`];
-      window.open(pdfUrls[idx], '_blank');
-    }
-  };
-
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Typography,
+  Button,
+} from "@material-tailwind/react";
+ 
+export default function CardDefault() {
   return (
-    <div>
-      {pdfData && (
-        <div>
-          <p>{pdfData.pdf_name}</p>
-          <button onClick={(e)=>openPdfInNewTab(0,e)}>Open Institute Id</button>
-          <button onClick={(e)=>openPdfInNewTab(1,e)}>Open Letter</button>
-        </div>
-      )}
-      {error && handleError()}
+    <div className="flex justify-center items-center h-full">
+      <Card className="my-10 w-96">
+        <CardHeader color="white" className="mt-10 relative h-60 py-4 flex items-center justify-center">
+        <img src={require('../images/iitropar.jpg')} alt="logo" className="h-full" /> 
+        </CardHeader>
+        <CardBody className="text-center">
+          <Typography variant="h5" color="blue-gray" className="mb-2">
+            UI/UX Review Check
+          </Typography>
+          <Typography>
+            The place is close to Barceloneta Beach and bus stop just 2 min by
+            walk and near to &quot;Naviglio&quot; where you can enjoy the main
+            night life in Barcelona.
+          </Typography>
+        </CardBody>
+      </Card>
     </div>
   );
-};
-
-export default MyComponent;
+}
