@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import '../styles/tailwind.css';
+import '../../styles/tailwind.css';
 import axios from 'axios';
 
-const AddFaculty = () => { 
+const AddStudent = () => { 
     // const [name, setName] = useState('');
     // const [phoneNumber, setPhoneNumber] = useState('');
     // const [email, setEmail] = useState('');
@@ -11,6 +11,7 @@ const AddFaculty = () => {
         phoneNumber:'',
         email:'',
         gender:'',
+        year:'',
         department:''
     });
     const [file, setFile] = useState(null);
@@ -55,12 +56,13 @@ const AddFaculty = () => {
             data.append('phoneNumber',oneData.phoneNumber);
             data.append('email',oneData.email);
             data.append('gender', oneData.gender);
+            data.append('year', oneData.year);
             data.append('department', oneData.department);
         }
         else{
             data.append('file',file);
         }
-        data.append('type','faculty');
+        data.append('type','student');
         console.log(isManual);
         const backendUrl=process.env.REACT_APP_BASE_URL;
         axios.post(`${backendUrl}/api/add_users`,data,{withCredentials:true}, {headers: {'Content-Type': 'multipart/form-data'}})
@@ -71,7 +73,7 @@ const AddFaculty = () => {
 
     return (
         <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Add Faculty</h1> 
+            <h1 className="text-2xl font-bold mb-4">Add Students</h1> 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block font-bold mb-2">
@@ -116,20 +118,6 @@ const AddFaculty = () => {
                             />
                         </div>
                         <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                            <label htmlFor="phoneNumber" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                                Phone Number
-                            </label>
-                            <input
-                                type="phone"
-                                id="phoneNumber"
-                                name='phoneNumber'
-                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
-                                value={oneData.phoneNumber}
-                                onChange={isManual ? handleChange : null}
-                                disabled={!isManual}
-                            />
-                        </div>
-                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
                             <label htmlFor="email" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
                                 Email
                             </label>
@@ -139,20 +127,6 @@ const AddFaculty = () => {
                                 name='email'
                                 className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
                                 value={oneData.email}
-                                onChange={isManual ? handleChange : null}
-                                disabled={!isManual}
-                            />
-                        </div>
-                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                            <label htmlFor="department" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
-                                Department
-                            </label>
-                            <input
-                                type="text"
-                                id="department"
-                                name='department'
-                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
-                                value={oneData.department}
                                 onChange={isManual ? handleChange : null}
                                 disabled={!isManual}
                             />
@@ -174,6 +148,48 @@ const AddFaculty = () => {
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
+                        </div>
+                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                            <label htmlFor="department" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                                Department
+                            </label>
+                            <input
+                                type="text"
+                                id="Department"
+                                name='department'
+                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
+                                value={oneData.department}
+                                onChange={isManual ? handleChange : null}
+                                disabled={!isManual}
+                            />
+                        </div>
+                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                            <label htmlFor="year" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                                Year of admission
+                            </label>
+                            <input
+                                type="text"
+                                id="Year"
+                                name='year'
+                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
+                                value={oneData.year}
+                                onChange={isManual ? handleChange : null}
+                                disabled={!isManual}
+                            />
+                        </div>
+                        <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                            <label htmlFor="PhoneNumber" className={`block font-bold mb-2 ${isManual ? '' : 'cursor-not-allowed'}`}>
+                                Phone No.
+                            </label>
+                            <input
+                                type="phone"
+                                id="Phone"
+                                name='phoneNumber'
+                                className={`border border-gray-300 rounded px-4 py-2 w-full ${isManual ? '' : 'cursor-not-allowed'}`}
+                                value={oneData.phoneNumber}
+                                onChange={isManual ? handleChange : null}
+                                disabled={!isManual}
+                            />
                         </div>
                         <button
                             type="submit"
@@ -217,4 +233,4 @@ const AddFaculty = () => {
     );
 };
 
-export default AddFaculty;
+export default AddStudent;

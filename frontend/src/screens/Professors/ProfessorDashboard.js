@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import "../styles/tailwind.css";
-import { useAuth } from '../contexts/authContext';
+import "../../styles/tailwind.css";
+import { useAuth } from '../../contexts/authContext';
 
 function ProfessorDashboard() {
   const { currentUser } = useAuth();
@@ -27,9 +27,15 @@ function ProfessorDashboard() {
         <Link to="/professor-dashboard/application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Application Status
         </Link>
-        {/* <Link to="/admin-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-          Complaint Status
-        </Link> */}
+        <Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+          Chief Warden Hostel View
+        </Link>
+        <Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+          Warden Hostel View
+        </Link>
+        <Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded my-3">
+          Warden Complaint status
+        </Link>
       </div>
     </>:
     <>

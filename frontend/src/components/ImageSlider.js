@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
-import img1 from '../../images/Hostel/1.jpg';
-import img2 from '../../images/Hostel/2.jpg';
-import img3 from '../../images/Hostel/3.jpg';
+import img1 from '../images/Hostel/1.jpg';
+import img2 from '../images/Hostel/2.jpg';
+import img3 from '../images/Hostel/3.jpg';
 
 function ImageSlider() {
   const slides = [

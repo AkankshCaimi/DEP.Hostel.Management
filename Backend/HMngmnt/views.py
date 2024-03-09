@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
-from .models import Application, Faculty, CustomUser
+from .models import Application, Faculty, CustomUser, Student, Room
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
@@ -197,11 +197,17 @@ def add_users(request):
                 except IntegrityError as e:
                     pass
         elif type=='student':
-            for user in users:
-                user=CustomUser(name=user[0], email=user[1], gender=user[2])
+            for userX in users:
+                user=CustomUser(name=userX[0], email=userX[1], gender=userX[3])
                 user.set_password('devanshu')
                 user.is_active=True
                 user.save()
+                try:
+                    room=Room.objects.get(room_no=userX[6])
+                except:
+                    room=None
+                student=Student(student=user, department=userX[2], student_phone=userX[4], student_roll=userX[1].split('@')[0], student_year=userX[5], student_room=room)
+                student.save()
         # delete file temp.xlsx
         os.remove('temp.xlsx')
 
@@ -212,6 +218,8 @@ def add_users(request):
         phone=request.POST.get('phoneNumber')
         gender=request.POST.get('gender')
         department=request.POST.get('department')
+        # roll=request.POST.get('roll') or None
+        year=request.POST.get('year') or None
         # print(name, email, phone, gender, department)
         is_hod=request.POST.get('is_hod') 
         if type=='faculty':
@@ -219,21 +227,19 @@ def add_users(request):
             user.set_password('devanshu')
             user.is_staff=True
             user.is_active=True
-            user.save()
+            # user.save()
             faculty=Faculty(faculty=user, department=department, is_hod=False, faculty_phone=phone)
-            faculty.save()
+            # faculty.save()
         elif type=='student':
             user=CustomUser(name=name, email=email, gender=gender)
             user.set_password('devanshu')
             user.is_active=True
+            # print(department, phone, year)
             user.save()
+            student=Student(student=user, department=department, student_phone=phone, student_roll=email.split('@')[0], student_year=year)
+            student.save()
         return JsonResponse({'message': 'Success'})
 
-
-@csrf_exempt
-@admin_required
-def add_faculty(request):
-    return JsonResponse({'message': 'Admin page'})
 
 @csrf_exempt
 @admin_required
@@ -257,7 +263,7 @@ def get_applications(request):
 @staff_required
 def view_applications(request):
     user=request.new_param
-    print('user:', user)
+    # print('user:', user)
     faculty=Faculty.objects.get(faculty=CustomUser.objects.get(pk=user.get('id')))
     if not faculty.is_hod:
         print('faculty:', faculty)
@@ -296,22 +302,6 @@ def view_applications(request):
         # return JsonResponse({'message': 'Staff page', 'data': application_list})
         return JsonResponse({'message': 'Staff page', 'data': {'hod': application_list1, 'own': application_list2}})
 
-@csrf_exempt
-@staff_required
-def approve_applications(request):
-    try:
-        data = json.loads(request.body)
-        application_ids = data.get('application_ids', [])
-        for app_id in application_ids:
-            application = get_object_or_404(Application, id=app_id)
-            # Simulate the approval process
-            if application.status.startswith('P'):
-                application.status = 'APR'
-                application.save()
-
-        return JsonResponse({'message': 'Applications approved successfully.'})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
     
 @csrf_exempt
 @staff_required

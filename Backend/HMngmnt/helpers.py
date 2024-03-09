@@ -35,19 +35,23 @@ def parse_xl(file, type):
         users = []
         if type == 'faculty':
             for index, row in df.iterrows():
-                name = row['Faculty Name']
-                email = row['Faculty Email']
-                department = row['Faculty Department']
+                name = row['Name']
+                email = row['Email']
+                department = row['Department']
                 gender=row['Gender']
-                phone=row['Faculty Phone']
+                phone=row['Phone']
                 hod_status = bool(row['is_HOD'])  # Convert to boolean if necessary
                 users.append((name, email, department, hod_status, gender, phone))
         elif type == 'student':
             for index, row in df.iterrows():
                 name = row['Name']
                 email = row['Email']
-                gender = row['Gender']
-                users.append((name, email, gender))
+                department = row['Department']
+                gender=row['Gender']
+                phone=row['Phone']
+                year = row['Year']
+                room_no = row['Room No']
+                users.append((name, email, department, gender, phone, year, room_no))
 
         return users
     except Exception as e:

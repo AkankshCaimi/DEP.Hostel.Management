@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "../styles/tailwind.css";
+import "../../styles/tailwind.css";
 import axios from "axios";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router-dom";
 const ApplicationList = ({ applications, data, setData }) => {
   const [openDropdown, setOpenDropdown] = useState({});

@@ -1,6 +1,6 @@
 import React from 'react';
-import ImageSlider from './Home/ImageSlider';
-import Cal from './Home/Calendar';
+import ImageSlider from '../components/ImageSlider';
+import Cal from '../components/Calendar';
 import '../styles/tailwind.css';
 
 function Home() {
