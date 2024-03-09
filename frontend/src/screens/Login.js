@@ -16,14 +16,17 @@ const Login = () => {
             const resp = await login(email, password);
             // console.log('in login: ', resp.data)
             setCurrentUser(resp.data)
-            // console.log('in login: ', currentUser)
-            // if(resp.data.is_superuser)
-            //     navigate('/admin-dashboard')
-            // else if(resp.data.is_staff)
-            //     navigate('/professor-dashboard')
-            // else
-            //     navigate('/')
-            navigate('/')
+            const role=resp.data.roles
+            if(role.includes('admin'))
+                navigate('/admin')
+            else if(role.includes('faculty'))
+                navigate('/professor')
+            else if(role.includes('student'))
+                navigate('/home')
+            else if(role.includes('caretaker'))
+                navigate('/caretaker')
+            else
+                navigate('/')
         }
         catch(err){
             console.log(err)

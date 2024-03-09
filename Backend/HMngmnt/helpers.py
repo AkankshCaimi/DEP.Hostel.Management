@@ -6,6 +6,7 @@ import pandas as pd
 def get_user_dict(user, params):
     roles=[]
     if hasattr(user, 'student'):
+        roles.append('student')
         roles.append('college student')
     elif hasattr(user, 'faculty'):
         roles.append('faculty')
@@ -24,6 +25,7 @@ def get_user_dict(user, params):
             roles.append('caretaker')
     else:
         roles.append('outside student')
+        roles.append('student')
     user_json={}
     user_json['name']=user.name
     user_json['email']=user.email

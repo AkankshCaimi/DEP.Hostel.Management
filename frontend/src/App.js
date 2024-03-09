@@ -23,6 +23,8 @@ import ApplicationView from './screens/ApplicationView';
 import Internship from './screens/Internship';
 import { useAuth } from './contexts/authContext';
 import CaretakerDashboard from './screens/Caretaker/CaretakerDashboard';
+import Admin from './screens/Admin/Admin';
+import Professor from './screens/Professors/Professors';
 function App() {
   const {currentUser}=useAuth();
   const [showPopup, setShowPopup] = useState(false);
@@ -33,36 +35,40 @@ function App() {
       <Routes>
       <Route
           path="/"
-          element={
-            currentUser
-              ? (currentUser.is_superuser
-                ? <AdminDashboard />
-                : currentUser.is_staff
-                  ? <ProfessorDashboard />
-                  : <Home />)
-              : (<Login />)
-          }
+          // element={
+          //   currentUser
+          //     ? (currentUser.is_superuser
+          //       ? <AdminDashboard />
+          //       : currentUser.is_staff
+          //         ? <ProfessorDashboard />
+          //         : <Home />)
+          //     : (<Login />)
+          // }
+          element={<Home/>}
         />
-        {/* <Route path="/" element={<Home />} /> */}
+        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/Calendar" element={<Cal />} />
         <Route path="/signup" element={<StudentSignup/>} />
         <Route path='/form' element={<Form />} />
         <Route path='/test' element={<Test/>} />
         <Route path='/about' element={<AboutUs />} />
         <Route path='/contact' element={<Contact />} />
         {/* Admin Routes */}
-        <Route path='/admin-dashboard' element={<AdminDashboard />} />
-        <Route path='/admin-dashboard/add-student' element={<AddStudents />} />
-        <Route path='/admin-dashboard/add-faculty' element={<AddFaculty />} />
-        <Route path='/admin-dashboard/application-status' element={<ApplicationStatus />} />
-        <Route path='/admin-dashboard/complaint-status' element={<ComplaintStatus />} />
-        <Route path='/admin-dashboard/application-status/application/:id' element={<ApplicationView/>} />
+        <Route path='/admin/*' element={<Admin/>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path='add-student' element={<AddStudents />} />
+          <Route path='add-faculty' element={<AddFaculty />} />
+          <Route path='application-status' element={<ApplicationStatus />} />
+          <Route path='complaint-status' element={<ComplaintStatus />} />
+          <Route path='application-status/application/:id' element={<ApplicationView/>} />
+        </Route>
         {/* Professor Routes includes wardens */}
-        <Route path='/professor-dashboard' element={<ProfessorDashboard/>} />
-        <Route path='/professor-dashboard/application-status' element={<ProfAppStatus/>} />
-        <Route path='/application/:id' element={<ApplicationView/>} />
-        <Route path='/professor-dashboard/complaint-status' element={<ComplaintStatus />} />
+        <Route path='/professor/*' element={<Professor/>}>
+          <Route index element={<ProfessorDashboard/>} />
+          <Route path='application-status' element={<ProfAppStatus/>} />
+          <Route path='application-status/application/:id' element={<ApplicationView/>} />
+          <Route path='complaint-status' element={<ComplaintStatus />} />
+        </Route>
       <Route path='/internship' element={<Internship/>} />
         {/* Caretaker Routes */}
         <Route path='/caretaker-dashboard' element={<CaretakerDashboard />} />

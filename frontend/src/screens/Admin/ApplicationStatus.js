@@ -14,7 +14,7 @@ const ApplicationList = ({ applications, data, setData }) => {
   const handleApplicationClick = (appId) => {
     // Add logic for handling the click on an application
     // console.log(`Application ${appId} clicked`);
-    navigate(`/application/${appId}`);
+    navigate(`./application/${appId}`);
   };
 
   const handleClickOutside = (event, appId) => {

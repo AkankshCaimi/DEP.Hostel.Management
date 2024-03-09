@@ -24,16 +24,16 @@ function ProfessorDashboard() {
         <Link to="/admin-dashboard/add-faculty" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Faculty
         </Link> */}
-        <Link to="/professor-dashboard/application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="application-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Application Status
         </Link>
-        {currentUser.roles.includes('chief warden')&&(<Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        {currentUser.roles.includes('chief warden')&&(<Link to="complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Chief Warden Hostel View
         </Link>)}
-        {currentUser.roles.includes('warden') && (<Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        {currentUser.roles.includes('warden') && (<Link to="complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Warden Hostel View
         </Link>)}
-        {currentUser.roles.includes('warden') && (<Link to="/professor-dashboard/complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded my-3">
+        {currentUser.roles.includes('warden') && (<Link to="complaint-status" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded my-3">
           Warden Complaint status
         </Link>)}
       </div>
