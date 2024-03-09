@@ -4,12 +4,32 @@ import base64
 from .models import CustomUser, Faculty
 import pandas as pd
 def get_user_dict(user, params):
-    user_json=serialize('json', [user])
-    user_json=json.loads(user_json[1:-1])['fields']
-    user_json={key: value for key, value in user_json.items() if key in params}
-    if user_json.get('is_staff')==True and user_json.get('is_superuser')==False:
-        user_json['is_hod']=Faculty.objects.get(faculty=user).is_hod
-
+    roles=[]
+    if hasattr(user, 'student'):
+        roles.append('college student')
+    elif hasattr(user, 'faculty'):
+        roles.append('faculty')
+        fac=user.faculty
+        if hasattr(fac, 'warden'):
+            warden=fac.warden
+            if warden.is_chief_warden:
+                roles.append('chief warden')
+            else:
+                roles.append('warden')
+    elif user.is_superuser:
+        roles.append('admin')
+    elif user.is_staff:
+        roles.append('staff')
+        if hasattr(user, 'caretaker'):
+            roles.append('caretaker')
+    else:
+        roles.append('outside student')
+    user_json={}
+    user_json['name']=user.name
+    user_json['email']=user.email
+    user_json['roles']=roles
+    user_json['is_superuser']=user.is_superuser
+    user_json['is_staff']=user.is_staff
     return user_json
 
 def handle_file_attachment(field):

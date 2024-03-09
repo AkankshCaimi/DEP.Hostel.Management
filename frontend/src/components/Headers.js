@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import {
   Navbar,
   Collapse,
@@ -23,7 +23,7 @@ import { useAuth } from "../contexts/authContext";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 const excludedRoutes = ["/login", "/signup"];
- 
+
 function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -37,33 +37,36 @@ function NavListMenu() {
         placement="bottom"
         allowHover={true}
       >
-        
-      <MenuHandler>
-      <Typography as="div" variant="small" className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900">
-        <ListItem
-          className="flex items-center gap-2 pr-4 font-medium pt-2 text-white  hover:text-blue-gray-900"
-          selected={isMenuOpen || isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-        >
-          Programs
-          <ChevronDownIcon
-            strokeWidth={2.5}
-            className={`hidden h-3 w-3 transition-transform lg:block ${
-              isMenuOpen ? "rotate-180" : ""
-            }`}
-          />
-          <ChevronDownIcon
-            strokeWidth={2.5}
-            className={`block h-3 w-3 transition-transform lg:hidden ${
-              isMobileMenuOpen ? "rotate-180" : ""
-            }`}
-          />
-        </ListItem>
-      </Typography>
-    </MenuHandler>
+        <MenuHandler>
+          <Typography
+            as="div"
+            variant="small"
+            className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900"
+          >
+            <ListItem
+              className="flex items-center gap-2 pr-4 font-medium pt-2 text-white  hover:text-blue-gray-900"
+              selected={isMenuOpen || isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+            >
+              Programs
+              <ChevronDownIcon
+                strokeWidth={2.5}
+                className={`hidden h-3 w-3 transition-transform lg:block ${
+                  isMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+              <ChevronDownIcon
+                strokeWidth={2.5}
+                className={`block h-3 w-3 transition-transform lg:hidden ${
+                  isMobileMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </ListItem>
+          </Typography>
+        </MenuHandler>
         <MenuList className="no-underline hidden max-w-screen-xl rounded-xl lg:block">
           <ul className="no-underline grid grid-cols-1 gap-y-2 outline-none outline-0 pl-1">
-            <a href="/" className="no-underline">
+            <NavLink to="/" className="no-underline">
               <MenuItem className="no-underline flex items-center gap-3 rounded-lg ">
                 <div>
                   <Typography
@@ -74,8 +77,8 @@ function NavListMenu() {
                   </Typography>
                 </div>
               </MenuItem>
-            </a>
-            <a href="/" className="no-underline">
+            </NavLink>
+            <NavLink to="/" className="no-underline">
               <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
                 <div>
                   <Typography
@@ -86,8 +89,8 @@ function NavListMenu() {
                   </Typography>
                 </div>
               </MenuItem>
-            </a>
-            <a href="/internship" className="no-underline">
+            </NavLink>
+            <NavLink to="/internship" className="no-underline">
               <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
                 <div>
                   <Typography
@@ -98,8 +101,8 @@ function NavListMenu() {
                   </Typography>
                 </div>
               </MenuItem>
-            </a>
-            <a href="/intership" className="no-underline">
+            </NavLink>
+            <NavLink to="/intership" className="no-underline">
               <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
                 <div>
                   <Typography
@@ -110,13 +113,13 @@ function NavListMenu() {
                   </Typography>
                 </div>
               </MenuItem>
-            </a>
+            </NavLink>
           </ul>
         </MenuList>
       </Menu>
       <div className="no-underline block lg:hidden">
         <Collapse open={isMobileMenuOpen}>
-          <a href="/" className="no-underline text-white">
+          <NavLink to="/" className="no-underline text-white">
             <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
               <div>
                 <Typography
@@ -127,8 +130,8 @@ function NavListMenu() {
                 </Typography>
               </div>
             </MenuItem>
-          </a>
-          <a href="/" className="no-underline text-white">
+          </NavLink>
+          <NavLink to="/" className="no-underline text-white">
             <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
               <div>
                 <Typography
@@ -139,8 +142,8 @@ function NavListMenu() {
                 </Typography>
               </div>
             </MenuItem>
-          </a>
-          <a href="/internship" className="no-underline text-white">
+          </NavLink>
+          <NavLink to="/internship" className="no-underline text-white">
             <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
               <div>
                 <Typography
@@ -151,8 +154,8 @@ function NavListMenu() {
                 </Typography>
               </div>
             </MenuItem>
-          </a>
-          <a href="/internship" className="no-underline text-white">
+          </NavLink>
+          <NavLink to="/internship" className="no-underline text-white">
             <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
               <div>
                 <Typography
@@ -163,29 +166,31 @@ function NavListMenu() {
                 </Typography>
               </div>
             </MenuItem>
-          </a>
+          </NavLink>
         </Collapse>
       </div>
     </React.Fragment>
   );
 }
- 
+
 function NavList() {
   return (
     <List className="no-underline mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1 lg:mr-10">
       <Typography
-        as="a"
-        href="/"
+        as={NavLink}
+        to="/"
         variant="small"
         color="white"
         className="no-underline "
       >
-        <ListItem className="no-underline flex items-center gap-2 py-2 pr-4 text-md">Home</ListItem>
+        <ListItem className="no-underline flex items-center gap-2 py-2 pr-4 text-md">
+          Home
+        </ListItem>
       </Typography>
       <NavListMenu />
       <Typography
-        as="a"
-        href="/contact"
+        as={NavLink}
+        to="/contact"
         variant="small"
         color="white"
         className="no-underline font-medium"
@@ -197,77 +202,99 @@ function NavList() {
     </List>
   );
 }
- 
+
 export default function Headers() {
   const [openNav, setOpenNav] = React.useState(false);
- 
+
   React.useEffect(() => {
     window.addEventListener(
       "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false),
+      () => window.innerWidth >= 960 && setOpenNav(false)
     );
   }, []);
   const [openDropdown, setOpenDropdown] = useState(false);
-    const dropdownRef = useRef(null);
-    const navigate = useNavigate();
-    const handleDropdownToggle = () => {
-        setOpenDropdown(!openDropdown);
-    };
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const handleDropdownToggle = () => {
+    setOpenDropdown(!openDropdown);
+  };
 
-    const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setOpenDropdown(false);
-        }
-    };
-    const location = useLocation();
-    const { currentUser, logout } = useAuth();
-    const [shouldRenderNavbar, setShouldRenderNavbar] = useState(
-      !excludedRoutes.includes(location.pathname) // Initial render based on route
-    );
-      const handleLogout=async()=>{
-          try{
-              console.log('inside handleLogout')
-              await logout();
-              navigate('/');
-          }
-          catch(err){
-              console.log(err)
-          }
-      }
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setOpenDropdown(false);
+    }
+  };
+  const location = useLocation();
+  const { currentUser, logout } = useAuth();
+  // console.log("inside header ",currentUser)
+  const [shouldRenderNavbar, setShouldRenderNavbar] = useState(
+    !excludedRoutes.includes(location.pathname) // Initial render based on route
+  );
+  const handleLogout = async () => {
+    try {
+      console.log("inside handleLogout");
+      await logout();
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            setShouldRenderNavbar(!excludedRoutes.includes(location.pathname));
-        };
-    }, [location]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      setShouldRenderNavbar(!excludedRoutes.includes(location.pathname));
+    };
+  }, [location]);
 
   const handleSignInClick = () => {
     // Redirect to the "/login" page
     navigate("/login");
   };
- 
+
   return (
     <Navbar className="no-underline mx-auto max-w-full lg:px-20 py-0 bg-color rounded-none">
       <div className="no-underline flex items-center justify-between text-blue-gray-900">
         <Typography
-          as="a"
-          href="/"
+          as={NavLink}
+          to="/"
           variant="h6"
           className="no-underline mr-4 cursor-pointer py-1.5 lg:ml-2 flex items-center text-white text-lg"
         >
-        <img src={require('../images/iitropar.png')} alt="logo" className="no-underline w-16 h-16 mr-4 " />
-        Hostel IIT Ropar
+          <img
+            src={require("../images/iitropar.png")}
+            alt="logo"
+            className="no-underline w-16 h-16 mr-4 "
+          />
+          Hostel IIT Ropar
         </Typography>
         <div className="no-underline hidden lg:block">
           <NavList />
         </div>
-        <div className="no-underline hidden gap-2 lg:flex">
-          <Button variant="gradient" size="sm" color="white" onClick={handleSignInClick}>
-            Sign In
-          </Button>
-        </div>
+        {currentUser ? (
+          <div className="no-underline hidden gap-2 lg:flex">
+            <Button
+              variant="gradient"
+              size="sm"
+              color="white"
+              onClick={handleLogout}
+            >
+              Sign Out
+            </Button>
+          </div>
+        ) : (
+          <div className="no-underline hidden gap-2 lg:flex">
+            <Button
+              variant="gradient"
+              size="sm"
+              color="white"
+              onClick={handleSignInClick}
+            >
+              Sign In
+            </Button>
+          </div>
+        )}
         <IconButton
           variant="text"
           color="white"

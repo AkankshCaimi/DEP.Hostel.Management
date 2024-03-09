@@ -71,14 +71,14 @@ def signup_ep(request):
         # print(user.name, user.email, user.password, user.is_staff, user.is_superuser, user.is_active, user)
         response= JsonResponse({'message': 'Signup successful', 'data': {'email': user.email, 'name': user.name}})
         user.save()
-        payload = {
-            'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
-            'iat': datetime.datetime.utcnow(),
-            'role':  "admin" if user.is_superuser else "staff" if user.is_staff else "student"
-        }
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
-        response.set_cookie('secret', token, expires=payload['exp'], secure=True, httponly=True)
+        # payload = {
+        #     'id': user.id,
+        #     'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        #     'iat': datetime.datetime.utcnow(),
+        #     'role':  "admin" if user.is_superuser else "staff" if user.is_staff else "student"
+        # }
+        # token = jwt.encode(payload, 'secret', algorithm='HS256')
+        # response.set_cookie('secret', token, expires=payload['exp'], secure=True, httponly=True)
         return response
 
 @csrf_exempt
@@ -125,7 +125,9 @@ def get_user_info(request):
         if decoded is None or decoded.get('id') is None:
             return JsonResponse({'error': 'User is not found'}, status=301)
         user=CustomUser.objects.get(pk=decoded.get('id'))
+        
         user=get_user_dict(user, ['email', 'name', 'is_staff', 'is_superuser'])
+
         return JsonResponse({'message': 'User page', 'data': user})
 
 # ----------------STUDENT ONLY FUNCTIONS----------------
