@@ -92,7 +92,7 @@ const Form = () => {
     <div >
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-8 p-8 rounded bg-gray-100"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-0 p-8 rounded bg-white lg:px-20"
       >
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
@@ -115,6 +115,7 @@ const Form = () => {
           value={formData.gender}
           onChange={handleChange}
           className="mt-1 p-2 w-full border rounded"
+          required
         >
           <option value="">Select</option>
           <option value="male">Male</option>
@@ -262,7 +263,7 @@ const Form = () => {
   <div className="mt-8 my-10 flex justify-center">
   <button
     type="submit"
-    className="bg-blue-500 text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+    className="bg-color text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
   >
     Submit
   </button>

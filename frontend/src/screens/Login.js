@@ -65,7 +65,7 @@ const Login = () => {
                     <button
                         type="submit"
                         onClick={handleSubmit}
-                        className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                        className="bg-color text-white px-4 py-2 rounded w-full"
                     >
                         Log In
                     </button>

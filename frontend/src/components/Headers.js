@@ -1,13 +1,213 @@
-import React, { useState, useEffect } from "react";
+import React,{useState,useEffect} from "react";
+import {
+  Navbar,
+  Collapse,
+  Typography,
+  Button,
+  IconButton,
+  List,
+  ListItem,
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+} from "@material-tailwind/react";
+import {
+  ChevronDownIcon,
+  Bars3Icon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { NavLink, useLocation } from "react-router-dom";
 import "../styles/tailwind.css";
 import { useAuth } from "../contexts/authContext";
-import { Button } from "bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 const excludedRoutes = ["/login", "/signup"];
-const Headers = () => {
-    const [openDropdown, setOpenDropdown] = useState(false);
+ 
+function NavListMenu() {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  return (
+    <React.Fragment>
+      <Menu
+        open={isMenuOpen}
+        handler={setIsMenuOpen}
+        offset={{ mainAxis: 20 }}
+        placement="bottom"
+        allowHover={true}
+      >
+        
+      <MenuHandler>
+      <Typography as="div" variant="small" className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900">
+        <ListItem
+          className="flex items-center gap-2 pr-4 font-medium pt-2 text-white  hover:text-blue-gray-900"
+          selected={isMenuOpen || isMobileMenuOpen}
+          onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+        >
+          Programs
+          <ChevronDownIcon
+            strokeWidth={2.5}
+            className={`hidden h-3 w-3 transition-transform lg:block ${
+              isMenuOpen ? "rotate-180" : ""
+            }`}
+          />
+          <ChevronDownIcon
+            strokeWidth={2.5}
+            className={`block h-3 w-3 transition-transform lg:hidden ${
+              isMobileMenuOpen ? "rotate-180" : ""
+            }`}
+          />
+        </ListItem>
+      </Typography>
+    </MenuHandler>
+        <MenuList className="no-underline hidden max-w-screen-xl rounded-xl lg:block">
+          <ul className="no-underline grid grid-cols-1 gap-y-2 outline-none outline-0 pl-1">
+            <a href="/" className="no-underline">
+              <MenuItem className="no-underline flex items-center gap-3 rounded-lg ">
+                <div>
+                  <Typography
+                    variant="h6"
+                    className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                  >
+                    UG Program
+                  </Typography>
+                </div>
+              </MenuItem>
+            </a>
+            <a href="/" className="no-underline">
+              <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+                <div>
+                  <Typography
+                    variant="h6"
+                    className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                  >
+                    PG Program
+                  </Typography>
+                </div>
+              </MenuItem>
+            </a>
+            <a href="/internship" className="no-underline">
+              <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+                <div>
+                  <Typography
+                    variant="h6"
+                    className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                  >
+                    Intern Students
+                  </Typography>
+                </div>
+              </MenuItem>
+            </a>
+            <a href="/intership" className="no-underline">
+              <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+                <div>
+                  <Typography
+                    variant="h6"
+                    className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                  >
+                    Student Exchange
+                  </Typography>
+                </div>
+              </MenuItem>
+            </a>
+          </ul>
+        </MenuList>
+      </Menu>
+      <div className="no-underline block lg:hidden">
+        <Collapse open={isMobileMenuOpen}>
+          <a href="/" className="no-underline text-white">
+            <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+              <div>
+                <Typography
+                  variant="h6"
+                  className="no-underline flex items-center text-xs font-bold lg:text-white"
+                >
+                  UG Program
+                </Typography>
+              </div>
+            </MenuItem>
+          </a>
+          <a href="/" className="no-underline text-white">
+            <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+              <div>
+                <Typography
+                  variant="h6"
+                  className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                >
+                  PG Program
+                </Typography>
+              </div>
+            </MenuItem>
+          </a>
+          <a href="/internship" className="no-underline text-white">
+            <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+              <div>
+                <Typography
+                  variant="h6"
+                  className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                >
+                  Intern Students
+                </Typography>
+              </div>
+            </MenuItem>
+          </a>
+          <a href="/internship" className="no-underline text-white">
+            <MenuItem className="no-underline flex items-center gap-3 rounded-lg">
+              <div>
+                <Typography
+                  variant="h6"
+                  className="no-underline flex items-center text-sm font-bold lg:text-blue-gray-900"
+                >
+                  Student Exchange
+                </Typography>
+              </div>
+            </MenuItem>
+          </a>
+        </Collapse>
+      </div>
+    </React.Fragment>
+  );
+}
+ 
+function NavList() {
+  return (
+    <List className="no-underline mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1 lg:mr-10">
+      <Typography
+        as="a"
+        href="/"
+        variant="small"
+        color="white"
+        className="no-underline "
+      >
+        <ListItem className="no-underline flex items-center gap-2 py-2 pr-4 text-md">Home</ListItem>
+      </Typography>
+      <NavListMenu />
+      <Typography
+        as="a"
+        href="/contact"
+        variant="small"
+        color="white"
+        className="no-underline font-medium"
+      >
+        <ListItem className="no-underline flex items-center gap-2 py-2 pr-4 text-md">
+          Contact Us
+        </ListItem>
+      </Typography>
+    </List>
+  );
+}
+ 
+export default function Headers() {
+  const [openNav, setOpenNav] = React.useState(false);
+ 
+  React.useEffect(() => {
+    window.addEventListener(
+      "resize",
+      () => window.innerWidth >= 960 && setOpenNav(false),
+    );
+  }, []);
+  const [openDropdown, setOpenDropdown] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
     const handleDropdownToggle = () => {
@@ -43,53 +243,58 @@ const Headers = () => {
         };
     }, [location]);
 
-    return (
-        <>
-            <nav className="p-2 flex items-center justify-between bg-color">
-                <NavLink to="/" className="flex items-center text-white text-2xl font-bold no-underline ml-10">
-                    <img src={require('../images/iitropar.png')} alt="logo" className="w-16 h-16 mr-2" />
-                    Hostel IIT Ropar
-                </NavLink>
-                <ul className="hidden md:flex font-semibold text-lg mt-3 ml-8 mr-8">
-                    <li><NavLink to="/" className="text-gray-300 no-underline hover:bg-red-700 hover:text-white px-4 rounded-md py-1">Home</NavLink></li>
-                    <div className="relative group" ref={dropdownRef}>
-                        <button
-                            type="button"
-                            className={`text-gray-300 flex items-center hover:bg-red-700 hover:text-white px-4 rounded-md`}
-                            onClick={handleDropdownToggle}
-                        >
-                            Programs
-                            <svg
-                                className={`ml-2 h-4 w-4 transition-transform ${openDropdown ? 'transform rotate-180' : ''}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-                        {openDropdown && (
-                            <ul className="absolute z-10 bg-gray-300 text-red border-2 border-white p-0 space-y-0 mt-2 flex flex-col rounded-md">
-                                <li><NavLink to="/" className="block px-2 py-2 no-underline hover:bg-color border-b border-gray-800 text-sm">UG Program</NavLink></li>
-                                <li><NavLink to="" className="block px-2 py-2 no-underline hover:bg-color border-b border-gray-800 text-sm">PG Program</NavLink></li>
-                                <li><NavLink to="/internship" className="block px-2 py-2 no-underline hover:bg-color border-b border-gray-800 text-sm">Intern Student</NavLink></li>
-                                <li><NavLink to="/internship" className="block px-2 py-2 no-underline hover:bg-color text-sm">Student Exchange</NavLink></li>
-                            </ul>
-                        )}
-                    </div>
-                    <li><NavLink to="/contact" className="text-gray-300 no-underline hover:bg-red-700 hover:text-white px-4 rounded-md py-1">Contact us</NavLink></li>
-                    <li>{!currentUser ? (
-                <NavLink to="/login" className="text-gray-300 no-underline hover:bg-red-700 hover:text-white px-4 rounded-md py-1">
-                  Login
-                </NavLink>
-              ) : (
-                <span onClick={handleLogout} className="text-gray-300 no-underline hover:cursor-pointer hover:bg-red-700 hover:text-white px-4 rounded-md py-1">Logout</span>
-              )}</li>
-                </ul>
-            </nav>
-        </>
-    );
+  const handleSignInClick = () => {
+    // Redirect to the "/login" page
+    navigate("/login");
+  };
+ 
+  return (
+    <Navbar className="no-underline mx-auto max-w-full lg:px-20 py-0 bg-color rounded-none">
+      <div className="no-underline flex items-center justify-between text-blue-gray-900">
+        <Typography
+          as="a"
+          href="/"
+          variant="h6"
+          className="no-underline mr-4 cursor-pointer py-1.5 lg:ml-2 flex items-center text-white text-lg"
+        >
+        <img src={require('../images/iitropar.png')} alt="logo" className="no-underline w-16 h-16 mr-4 " />
+        Hostel IIT Ropar
+        </Typography>
+        <div className="no-underline hidden lg:block">
+          <NavList />
+        </div>
+        <div className="no-underline hidden gap-2 lg:flex">
+          <Button variant="gradient" size="sm" color="white" onClick={handleSignInClick}>
+            Sign In
+          </Button>
+        </div>
+        <IconButton
+          variant="text"
+          color="white"
+          className="no-underline lg:hidden"
+          onClick={() => setOpenNav(!openNav)}
+        >
+          {openNav ? (
+            <XMarkIcon className="no-underline h-6 w-6" strokeWidth={2} />
+          ) : (
+            <Bars3Icon className="no-underline h-6 w-6" strokeWidth={2} />
+          )}
+        </IconButton>
+      </div>
+      <Collapse open={openNav} className="no-underline color-white">
+        <NavList />
+        <li>{!currentUser ?(
+          <NavLink to="/login">
+          <div className="no-underline flex w-full flex-nowrap items-center gap-2 lg:hidden mb-2">
+            <Button variant="gradient" size="sm" fullWidth color="white" onClick={handleSignInClick}>
+              Login
+            </Button>
+          </div>
+        </NavLink>
+      ) : (
+        <span onClick={handleLogout} className="text-gray-300 no-underline hover:cursor-pointer hover:bg-red-700 hover:text-white px-4 rounded-md py-1">Logout</span>
+      )}</li>
+      </Collapse>
+    </Navbar>
+  );
 }
-
-export default Headers;

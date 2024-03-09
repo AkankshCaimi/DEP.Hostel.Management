@@ -7,10 +7,19 @@
     background-color: #365899;
 }
 
+.text-color{
+    color:#365899;
+}
+
 .border-color-blue {
     border-color: #365899;
 }
 
 .fnt-color {
     color: #365899;
+}
+
+.pt-programs{
+    padding-top: 0.5rem;
+    padding-bottom: 100px;
 }
