@@ -49,6 +49,10 @@ const Form = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log("Form submitted:", formData);
+    if(formData.arrivalDate > formData.departureDate || formData.arrivalDate <= new Date().toISOString().split('T')[0] || formData.departureDate <= new Date().toISOString().split('T')[0]) {
+      alert("Please enter valid dates");
+      return;
+    }
     const data = new FormData();
     data.append("studentName", formData.studentName);
     data.append("gender", formData.gender);
@@ -96,24 +100,27 @@ const Form = () => {
       >
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Name of the student Intern:
+          Name of the student Intern: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="studentName"
           value={formData.studentName}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Gender:
+          Gender: <span className="text-red-500">*</span>
         </label>
         <select
           name="gender"
           value={formData.gender}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
           required
         >
@@ -125,102 +132,118 @@ const Form = () => {
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Affiliation of the student intern:
+          Affiliation of the student intern: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="affiliation"
           value={formData.affiliation}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Address:
+          Address: <span className="text-red-500">*</span>
         </label>
         <textarea
           name="address"
           value={formData.address}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Contact Number:
+          Contact Number: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="contactNumber"
           value={formData.contactNumber}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Email:
+          Email: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="email"
           value={formData.email}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Name of the Faculty Mentor:
+          Name of the Faculty Mentor: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="facultyMentorName"
           value={formData.facultyMentorName}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Faculty Mentor's Email:
+          Faculty Mentor's Email: <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           name="facultyEmail"
           value={formData.facultyEmail}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Date of arrival:
+          Date of arrival: <span className="text-red-500">*</span>
         </label>
         <input
           type="date"
           name="arrivalDate"
           value={formData.arrivalDate}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Date of departure:{" "}
+          Date of departure: <span className="text-red-500">*</span>
         </label>
         <input
           type="date"
           name="departureDate"
           value={formData.departureDate}
           onChange={handleChange}
+          aria-required="true"
           className="mt-1 p-2 w-full border rounded"
+          required
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Copy of your Institute ID
+          Copy of your Institute ID Card (pdf): <span className="text-red-500">*</span>
         </label>
         <input
           type="file"
@@ -228,12 +251,14 @@ const Form = () => {
           accept=".pdf"
           ref={file1Ref}
           onChange={(e) => handleFileChange(e, 1)}
+          aria-required="true"
           className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
+          required
           />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Copy of Official Letter from your Institute
+          Copy of Official Letter from your Institute (pdf): <span className="text-red-500">*</span>
         </label>
         <input
           type="file"
@@ -241,12 +266,14 @@ const Form = () => {
           accept=".pdf"
           ref={file2Ref}
           onChange={(e) => handleFileChange(e, 2)}
+          aria-required="true"
           className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
+          required
           />
       </div>
       <div className="mb-4">
     <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-      Remarks:{" "}
+      Remarks:
     </label>
     <textarea
       name="remarks"
