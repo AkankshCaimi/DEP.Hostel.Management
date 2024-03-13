@@ -5,25 +5,25 @@ import "../../styles/tailwind.css";
 function AdminHome() {
   return (
     <>
-      <div className="min-h-40 flex items-center justify-center">
+      <div className="min-h-40 flex items-center justify-center -mb-1">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6 text-black">Admin Dashboard</h1>
-          <p className="text-m text-left text-gray-600 mb-6">
+          <p className="text-m text-left flex flex-center text-gray-600 mb-6 px-4 justify-center lg:justify-start">
             Welcome to the admin dashboard. Please select an option below to get started.
           </p>
         </div>
       </div>
-      <div className="flex flex-col items-start space-y-4 pl-4 pb-8">
-        <Link to="add-student" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+      <div className="flex flex-col items-start space-y-4 px-4 pb-8">
+        <Link to="add-student" className="no-underline  bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56">
           Add Student
         </Link>
-        <Link to="add-faculty" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="add-faculty" className="no-underline  bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56">
           Add Faculty
         </Link>
-        <Link to="application-status" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="application-status" className="no-underline  bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56">
           Application Status
         </Link>
-        <Link to="complaint-status" className="no-underline w-25 bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        <Link to="complaint-status" className="no-underline  bg-color hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56">
           Complaint Status
         </Link>
       </div>

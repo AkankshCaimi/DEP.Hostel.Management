@@ -32,6 +32,9 @@ def get_user_dict(user, params):
     user_json['roles']=roles
     user_json['is_superuser']=user.is_superuser
     user_json['is_staff']=user.is_staff
+    if 'faculty' in roles:
+        user_json['department']=user.faculty.department
+        user_json['is_hod']=user.faculty.is_hod
     return user_json
 
 def handle_file_attachment(field):

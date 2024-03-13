@@ -68,11 +68,11 @@ const Internship = () => {
             </tr>
             <tr className="border-b border-black">
               <th className="border-r border-black px-2 py-1">Institute ID:</th>
-              <td className="px-2 py-1 hover:cursor-pointer"><span  onClick={(e)=>openPdf(1)}>View PDF</span></td>
+              <td className="px-2 py-1 hover:cursor-pointer text-blue-500"><span className="hover:underline" onClick={(e)=>openPdf(1)}>View PDF</span></td>
             </tr>
             <tr className="border-b border-black">
               <th className="border-r border-black px-2 py-1">Institute Letter:</th>
-              <td className="px-2 py-1 hover:cursor-pointer"><span  onClick={(e)=>openPdf(1)}>View PDF</span></td>
+              <td className="px-2 py-1 text-blue-500 hover:cursor-pointer"><span className="hover:underline" onClick={(e)=>openPdf(1)}>View PDF</span></td>
             </tr>
           </tbody>
         </table>

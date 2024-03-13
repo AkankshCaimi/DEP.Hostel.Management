@@ -9,15 +9,15 @@ function ProfessorDashboard() {
   return (
     currentUser && currentUser.is_staff?
     <>
-      <div className="min-h-40 flex items-center justify-center">
+      <div className="min-h-40 flex items-center justify-center -mb-1">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6 text-black">Professor Dashboard</h1>
-          <p className="text-m text-left text-gray-600 mb-6">
+          <p className="text-m text-center text-gray-600 mb-6">
             Welcome to the professor dashboard. Please select an option below to get started.
           </p>
         </div>
       </div>
-      <div className="flex flex-col items-start space-y-4 pl-4">
+      <div className="flex flex-col justify-center items-start space-y-4 pl-4 px-3 pb-3">
         {/* <Link to="/admin-dashboard/add-student" className="no-underline w-25 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
           Add Student
         </Link>

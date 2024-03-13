@@ -66,8 +66,12 @@ export function AuthProvider({children}) {
                 })
                 .catch((err) => {
                     console.error(err)
+                    setCurrentUser(null)
                 })
-                setLoading(false);
+                .finally(()=>{
+                    setLoading(false);
+                })
+                // setLoading(false);
             }
         }
         return unsubscribe;
@@ -78,6 +82,7 @@ export function AuthProvider({children}) {
         signup,
         login,
         logout,
+        loading,
       };
     
       return (

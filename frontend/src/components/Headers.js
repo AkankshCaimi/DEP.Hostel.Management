@@ -44,7 +44,7 @@ function NavListMenu() {
             className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900"
           >
             <ListItem
-              className="flex items-center gap-2 pr-4 font-medium pt-2 text-white  hover:text-blue-gray-900"
+              className="text-white bg-color no-underline flex items-center gap-2 py-2 pr-4 text-md"
               selected={isMenuOpen || isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen((cur) => !cur)}
             >
@@ -124,7 +124,7 @@ function NavListMenu() {
               <div>
                 <Typography
                   variant="h6"
-                  className="no-underline flex items-center text-xs font-bold lg:text-white"
+                  className="no-underline flex items-center text-sm font-bold lg:text-white"
                 >
                   UG Program
                 </Typography>
@@ -310,8 +310,8 @@ export default function Headers() {
       </div>
       <Collapse open={openNav} className="no-underline color-white">
         <NavList />
-        <li>{!currentUser ?(
-          <NavLink to="/login">
+       {!currentUser ?(
+          <NavLink to="/login" className="text-decoration-none">
           <div className="no-underline flex w-full flex-nowrap items-center gap-2 lg:hidden mb-2">
             <Button variant="gradient" size="sm" fullWidth color="white" onClick={handleSignInClick}>
               Login
@@ -319,8 +319,12 @@ export default function Headers() {
           </div>
         </NavLink>
       ) : (
-        <span onClick={handleLogout} className="text-gray-300 no-underline hover:cursor-pointer hover:bg-red-700 hover:text-white px-4 rounded-md py-1">Logout</span>
-      )}</li>
+        <div className="no-underline flex w-full flex-nowrap items-center gap-2 lg:hidden mb-2">
+            <Button variant="gradient" size="sm" fullWidth color="white" onClick={handleLogout}>
+              Logout
+            </Button>
+          </div>
+        )}
       </Collapse>
     </Navbar>
   );
