@@ -1,7 +1,7 @@
 from django.core.serializers import serialize
 import json
 import base64
-from .models import CustomUser, Faculty
+from .models import CustomUser, Faculty, Hostel
 import pandas as pd
 def get_user_dict(user, params):
     roles=[]
@@ -82,3 +82,12 @@ def parse_xl(file, type):
     except Exception as e:
         # print(e)
         return None
+    
+
+def room_allocation(incoming_batch, outgoing_batch, type):
+    if type=="btech":
+        # get all hostels
+        hostels = Hostel.objects.all()
+        # keep 3rd year students constant
+        # transfer 2nd year to 4th year
+        # put 1st year in 2nd year

@@ -150,7 +150,7 @@ def get_application_status(request):
         'instiId': handle_file_attachment(application.instiId.path),
         'letter': handle_file_attachment(application.letter.path)
     }
-
+    # print('here: ', application.letter.path, application.instiId.path)
     return JsonResponse({'message': 'Student page', 'data': applicationX})
 
 @csrf_exempt

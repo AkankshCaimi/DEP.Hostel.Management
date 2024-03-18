@@ -43,12 +43,7 @@ class Application(models.Model):
     instiId= models.FileField(upload_to='documents/')
     letter= models.FileField(upload_to='documents/')
     status = models.CharField(max_length=100, default='Pending Faculty Approval')
-    
-    # class Meta:
-    #     ordering = ['name']
-    #     constraints = [
-    #         models.UniqueConstraint(fields=['name', 'email'], name='unique_student')
-    #     ]
+
     def __str__(self):
         return f"Application id: {self.application_id}"
     def get_faculty_name(self):
@@ -58,20 +53,22 @@ class Application(models.Model):
 
 class Application_Final(models.Model):
     application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
-    faculty_approval = models.BooleanField(default=False)
 
 class Hostel(models.Model):
     hostel_no = models.CharField(primary_key=True, max_length=20)
     hostel_name = models.CharField(max_length=100)
     hostel_type = models.CharField(max_length=100) # Male, Female, Mixed
-
+    num_floors = models.IntegerField(default=1)
+    capacity = models.IntegerField(default=1)
     def __str__(self):
         return self.hostel_name
 
 class Room(models.Model):
     room_no = models.CharField(primary_key=True, max_length=20)
+    floor= models.IntegerField(default=1)
     hostel= models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None)
     room_occupancy = models.IntegerField(default=1)
+    current_occupancy = models.IntegerField(default=0)
 
 class Student(models.Model):
     student= models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
@@ -80,7 +77,7 @@ class Student(models.Model):
     student_roll = models.CharField(max_length=15)
     student_year = models.IntegerField(default=None)
     student_room = models.OneToOneField(Room, on_delete=models.CASCADE, null=True, blank=True, default=None)
-
+    is_backlog = models.BooleanField(default=False)
     def __str__(self):
         return self.student.name
 
