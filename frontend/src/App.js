@@ -24,6 +24,7 @@ import CaretakerDashboard from "./screens/Caretaker/CaretakerDashboard";
 import Admin from "./screens/Admin/Admin";
 import Professor from "./screens/Professors/Professors";
 import RoomView from "./screens/Caretaker/RoomView";
+import RoomDetails from "./screens/Caretaker/RoomDetails";
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -67,6 +68,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/room-view" element={<RoomView />} />
+        <Route path="/room-details" element={<RoomDetails />} />
         {/* Admin Routes */}
         <Route path="/admin/*" element={<Admin />}>
           <Route index element={<AdminDashboard />} />
