@@ -1,79 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
-import { RxDotFilled } from 'react-icons/rx';
-import img1 from '../images/Hostel/1.jpg';
-import img2 from '../images/Hostel/2.jpg';
-import img3 from '../images/Hostel/3.jpg';
+import { Carousel } from "@material-tailwind/react";
 
-function ImageSlider() {
-  const slides = [
-    {
-      url: img1,
-    },
-    {
-      url: img2,
-    },
-    {
-      url: img3,
-    },
-    // Add more images as needed
-  ];
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const prevSlide = () => {
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const nextSlide = () => {
-    const isLastSlide = currentIndex === slides.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const goToSlide = (slideIndex) => {
-    setCurrentIndex(slideIndex);
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [currentIndex]);
-
+export default function Slider() {
   return (
-    <div className='max-w-[1400px] h-[600px] w-full m-auto py-16 px-4 relative group'>
-      <div
-        style={{ backgroundImage: `url(${slides[currentIndex].url})` }}
-        className='w-full h-full rounded-2xl bg-center bg-cover duration-500'
-      ></div>
-      {/* Left Arrow */}
-      <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] left-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
-        <BsChevronCompactLeft onClick={prevSlide} size={30} />
-      </div>
-      {/* Right Arrow */}
-      <div className='hidden group-hover:block absolute top-[50%] -translate-x-0 translate-y-[-50%] right-5 text-2xl rounded-full p-2 bg-black/20 text-white cursor-pointer'>
-        <BsChevronCompactRight onClick={nextSlide} size={30} />
-      </div>
-      <div className='flex top-4 justify-center py-2'>
-        {slides.map((slide, slideIndex) => (
-          <div
-            key={slideIndex}
-            onClick={() => goToSlide(slideIndex)}
-            className={`text-2xl cursor-pointer ${
-              slideIndex === currentIndex ? 'text-white' : 'text-gray-300'
-            }`}
-          >
-            <RxDotFilled />
-          </div>
-        ))}
-      </div>
+    <div className="pt-3 mx-auto max-w-screen-2xl">
+      <Carousel loop={true} autoplay={true} className="rounded-xl slider">
+        <img
+          src="https://images.unsplash.com/photo-1499696010180-025ef6e1a8f9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+          alt="image 1"
+          className="h-full w-full object-cover object-center"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1432462770865-65b70566d673?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+          alt="image 2"
+          className="h-full w-full object-cover object-center"
+        />
+        <img
+          src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+          alt="image 3"
+          className="h-full w-full object-cover object-center"
+        />
+      </Carousel>
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .slider {
+            height: 400px; /* Set the desired height for desktop */
+          }
+        }
+      `}</style>
     </div>
   );
 }
-
-export default ImageSlider;

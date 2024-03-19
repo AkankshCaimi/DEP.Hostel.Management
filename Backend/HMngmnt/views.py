@@ -158,17 +158,18 @@ def get_application_status(request):
 def get_application(request, id):
     application=Application.objects.select_related('faculty', 'student').get(application_id=id)
     applicationX={
-        'student': application.student.name,
+        'student_name': application.student.name,
         'application_id': application.application_id,
         'affiliation': application.affiliation,
         'faculty': application.faculty.faculty.name,
         'status': application.status,
         'address': application.address,
-        'arrival': application.arrival,
-        'departure': application.departure,
-        'instiId': handle_file_attachment(application.instiId.path),
-        'letter': handle_file_attachment(application.letter.path)
+        'arrival_date': application.arrival,
+        'departure_date': application.departure,
+        'institute_id': handle_file_attachment(application.instiId.path),
+        'institute_letter': handle_file_attachment(application.letter.path)
     }
+    # print('here:', application.instiId.path, application.letter.path)
     return JsonResponse({'message': 'Student page', 'data': applicationX})
 
 # ----------------ADMIN ONLY FUNCTIONS----------------

@@ -97,7 +97,7 @@ const AddStudent = () => {
                         Upload Excel File
                     </label>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-column gap-4">
                     <div
                         className={`w-full mb-4 ${isManual ? '' : 'opacity-50 cursor-not-allowed'}`}
                     >

@@ -1,30 +1,270 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
-  CardBody,
-  CardFooter,
+  Input,
   Typography,
   Button,
+  CardBody,
+  Chip,
+  CardFooter,
+  Tabs,
+  TabsHeader,
+  Tab,
+  Avatar,
+  IconButton,
+  Tooltip,
+  Select,Option
 } from "@material-tailwind/react";
+import axios from "axios";
+import { useAuth } from "../contexts/authContext";
+import { useNavigate } from "react-router-dom";
  
-export default function CardDefault() {
+const TABS = [
+  {
+    label: "All",
+    value: "all",
+  },
+  {
+    label: "Monitored",
+    value: "monitored",
+  },
+  {
+    label: "Unmonitored",
+    value: "unmonitored",
+  },
+];
+ 
+const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
+ 
+
+ 
+export default function MembersTable() {
+  
+  const [data, setData] = useState([]);
+  const backendUrl = process.env.REACT_APP_BASE_URL;
+  // State to manage applications
+  const { currentUser } = useAuth();
+  const [applications, setApplications] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  // const [applications] = useState(initialApplications);
+  // console.log("applications:", applications);
+  useEffect(() => {
+    axios
+      .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
+      .then((res) => {
+        console.log("here:", res.data.data);
+        setApplications(res.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  const handleSubmit = () => {
+    console.log("Data to be submitted:", data);
+    // Add logic to submit the data to the backend
+    const backendUrl=process.env.REACT_APP_BASE_URL;
+    axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
+    .then((res)=>{
+      console.log(res.data);
+      alert("Data submitted successfully");
+      window.location.reload();
+    })
+    
+  }
+  const [openDropdown, setOpenDropdown] = useState({});
+  const navigate = useNavigate();  
+  const dropdownRefs = {};
+  const handleButtonClick = (appId) => {
+    setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
+  };
+
+  const handleApplicationClick = (appId) => {
+    // Add logic for handling the click on an application
+    // console.log(`Application ${appId} clicked`);
+    navigate(`./application/${appId}`);
+  };
+
+  const handleClickOutside = (event, appId) => {
+    if (dropdownRefs[appId] && !dropdownRefs[appId].contains(event.target)) {
+        setOpenDropdown({ ...openDropdown, [appId]: false });
+    }
+};
+const handleActionClick = (appId, action) => {
+  console.log(`Application ${appId} action ${action} clicked`);
+  setData([...data, { appId, action }]);
+}
+const handleOption = (appId, e) => {
+  setSelectedOptions({...selectedOptions, [appId]: e});
+  console.log(selectedOptions)
+  // console.log(appId, e)
+}
+
+  if (!applications) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="flex justify-center items-center h-full">
-      <Card className="my-10 w-96">
-        <CardHeader color="white" className="mt-10 relative h-60 py-4 flex items-center justify-center">
-        <img src={require('../images/iitropar.jpg')} alt="logo" className="h-full" /> 
-        </CardHeader>
-        <CardBody className="text-center">
-          <Typography variant="h5" color="blue-gray" className="mb-2">
-            UI/UX Review Check
-          </Typography>
-          <Typography>
-            The place is close to Barceloneta Beach and bus stop just 2 min by
-            walk and near to &quot;Naviglio&quot; where you can enjoy the main
-            night life in Barcelona.
-          </Typography>
-        </CardBody>
-      </Card>
+    <div className="flex justify-center h-full">
+    <Card className="h-full w-full lg:w-4/5">
+      <CardHeader floated={false} shadow={false} className="rounded-none">
+        <div className="mb-8 flex items-center justify-between gap-8">
+          <div>
+            <Typography variant="h5" color="blue-gray">
+              Members list
+            </Typography>
+            <Typography color="gray" className="mt-1 font-normal">
+              See information about all members
+            </Typography>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <Tabs value="all" className="w-full md:w-max">
+            <TabsHeader>
+              {TABS.map(({ label, value }) => (
+                <Tab key={value} value={value}>
+                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
+                </Tab>
+              ))}
+            </TabsHeader>
+          </Tabs>
+          <div className="w-full md:w-72">
+            <Input
+              label="Search"
+              icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+            />
+          </div>
+        </div>
+      </CardHeader>
+      <CardBody className="px-0">
+        <table className="mt-4 w-full min-w-max table-auto text-left">
+          <thead>
+            <tr>
+              {TABLE_HEAD.map((head) => (
+                <th
+                  key={head}
+                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                >
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70"
+                  >
+                    {head}
+                  </Typography>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {applications.map(
+              ({ application_id, student, faculty, status,affiliation}, index) => {
+                const isLast = index === applications.length - 1;
+                const classes = isLast
+                  ? "p-4 border-b border-blue-gray-50"
+                  : "p-4 border-b border-blue-gray-50";
+ 
+                return (
+                  <tr key={application_id} className="hover:bg-gray-200 hover:cursor-pointer" onClick={()=>handleApplicationClick(application_id)}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {application_id}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {student}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {affiliation}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {faculty}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {status}
+                        </Typography>
+                      </div>
+                    </td>
+                    {/* <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          variant="ghost"
+                          size="sm"
+                          value={online ? "online" : "offline"}
+                          color={online ? "green" : "blue-gray"}
+                        />
+                      </div>
+                    </td> */}
+                    <td className="p-4 border-b border-blue-gray-50 w-10">
+                      <Tooltip className="bg-white">
+                      <Select label="Change Status" onChange={e=>handleOption(application_id, e)}>
+                        <Option value="Approve">Approve</Option>
+                        <Option value="Approve Faculty">Approve Faculty</Option>
+                        <Option value="Approve HOD">Approve HOD</Option>
+                        <Option value="Reject">Reject</Option>
+                        {/* <Option>Material Tailwind Svelte</Option> */}
+                      </Select>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              },
+            )}
+          </tbody>
+        </table>
+      </CardBody>
+      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 ">
+        <Typography variant="small" color="blue-gray" className="font-normal">
+          Page 1 of 10
+        </Typography>
+          <Button variant="outlined" size="sm" className="bg-green-500">
+            Submit
+          </Button>
+        <div className="flex gap-2">
+          <Button variant="outlined" size="sm">
+            Previous
+          </Button>
+          <Button variant="outlined" size="sm">
+            Next
+          </Button>
+        </div>
+      </CardFooter>
+    </Card>
     </div>
   );
 }
