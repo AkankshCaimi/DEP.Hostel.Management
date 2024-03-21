@@ -1,12 +1,15 @@
 import { Card, Typography } from "@material-tailwind/react";
 import React, { useState, useEffect } from "react";
 import "../styles/tailwind.css";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, NavLink } from "react-router-dom";
 import axios from "axios";
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
 export default function TableWithStripedColumns() {
+  const location = useLocation();
+  const renderButtons=location.pathname.includes("/caretaker/application-status/application")
+  // console.log("location:", location, renderButtons);
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const [formData, setFormData] = useState({
     student: "Devanshu Dhawan",
@@ -112,14 +115,14 @@ export default function TableWithStripedColumns() {
                             contentLabel="Institute ID"
                             className="h-full flex flex-col justify-center items-center bg-transparent"
                           >
-                            <div className="hidden md:block">
+                            {/* <div className="hidden md:block"> */}
                               <iframe
                                 title="Institute Letter"
                                 src={`data:application/pdf;base64,${value}`}
                                 width="80%"
                                 height="80%"
                               />
-                            </div>
+                            {/* </div> */}
                             <div className="md:hidden">
                               <a
                                 href={`data:application/pdf;base64,${value}`}
@@ -156,14 +159,14 @@ export default function TableWithStripedColumns() {
                             contentLabel="Institute Letter"
                             className="h-full flex flex-col justify-center items-center bg-transparent"
                           >
-                            <div className="hidden md:block">
+                            {/* <div className="hidden md:block"> */}
                               <iframe
                                 title="Institute Letter"
                                 src={`data:application/pdf;base64,${value}`}
                                 width="80%"
                                 height="80%"
                               />
-                            </div>
+                            {/* </div> */}
                             <div className="md:hidden">
                               <a
                                 href={`data:application/pdf;base64,${value}`}
@@ -193,6 +196,16 @@ export default function TableWithStripedColumns() {
           </tbody>
         </table>
       </Card>
+      {renderButtons && <div>
+      <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+        onClick={()=>{alert("Payment details sent via email")}}
+      >
+        Send Payment details
+      </button>
+      <NavLink to="/room-view" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline">
+        Allot Room
+      </NavLink >
+      </div>}
     </div>
   );
 }

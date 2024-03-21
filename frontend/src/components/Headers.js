@@ -178,7 +178,7 @@ function NavList() {
     <List className="no-underline mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1 lg:mr-10">
       <Typography
         as={NavLink}
-        to="/"
+        to="/home"
         variant="small"
         color="white"
         className="no-underline "
@@ -233,8 +233,8 @@ export default function Headers() {
   const handleLogout = async () => {
     try {
       console.log("inside handleLogout");
-      await logout();
-      navigate("/");
+      logout().then(()=>navigate("/"));
+      // navigate("/");
     } catch (err) {
       console.log(err);
     }
@@ -258,7 +258,7 @@ export default function Headers() {
       <div className="no-underline flex items-center justify-between text-blue-gray-900">
         <Typography
           as={NavLink}
-          to="/"
+          to="/home"
           variant="h6"
           className="no-underline mr-4 cursor-pointer py-1.5 lg:ml-2 flex items-center text-white text-lg"
         >

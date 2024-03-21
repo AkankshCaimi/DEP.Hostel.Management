@@ -1,82 +1,11 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardHeader,
-  Input,
-  Typography,
-  Button,
-  CardBody,
-  Chip,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
-  Select,
-  Option,
-} from "@material-tailwind/react";
+import "../../styles/tailwind.css";
 import axios from "axios";
 import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router-dom";
-
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Monitored",
-    value: "monitored",
-  },
-  {
-    label: "Unmonitored",
-    value: "unmonitored",
-  },
-];
-
-const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
-
-export default function MembersTable() {
-  const [data, setData] = useState([]);
-  const backendUrl = process.env.REACT_APP_BASE_URL;
-  // State to manage applications
-  const { currentUser } = useAuth();
-  const [applications, setApplications] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  // const [applications] = useState(initialApplications);
-  // console.log("applications:", applications);
-  useEffect(() => {
-    axios
-      .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
-      .then((res) => {
-        console.log("here:", res.data.data);
-        setApplications(res.data.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-  const handleSubmit = () => {
-    console.log("Data to be submitted:", data);
-    // Add logic to submit the data to the backend
-    const backendUrl = process.env.REACT_APP_BASE_URL;
-    axios
-      .post(
-        `${backendUrl}/api/update_application`,
-        { data },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        console.log(res.data);
-        alert("Data submitted successfully");
-        window.location.reload();
-      });
-  };
+const ApplicationList = ({ applications, data, setData }) => {
   const [openDropdown, setOpenDropdown] = useState({});
-  const navigate = useNavigate();
+  const navigate = useNavigate();  
   const dropdownRefs = {};
   const handleButtonClick = (appId) => {
     setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
@@ -90,201 +19,211 @@ export default function MembersTable() {
 
   const handleClickOutside = (event, appId) => {
     if (dropdownRefs[appId] && !dropdownRefs[appId].contains(event.target)) {
-      setOpenDropdown({ ...openDropdown, [appId]: false });
+        setOpenDropdown({ ...openDropdown, [appId]: false });
     }
-  };
-  const handleActionClick = (appId, action) => {
-    console.log(`Application ${appId} action ${action} clicked`);
-    setData([...data, { appId, action }]);
-  };
-  const handleOption = (appId, e) => {
-    setSelectedOptions({ ...selectedOptions, [appId]: e });
-    console.log(selectedOptions);
-    // console.log(appId, e)
-  };
+};
+const handleActionClick = (appId, action) => {
+  console.log(`Application ${appId} action ${action} clicked`);
+  setData([...data, { appId, action }]);
+}
 
+useEffect(() => {
+    const handleDocumentClick = (event) => {
+        for (const appId in openDropdown) {
+            handleClickOutside(event, appId);
+        }
+    };
+
+    document.addEventListener('mousedown', handleDocumentClick);
+
+    return () => {
+        document.removeEventListener('mousedown', handleDocumentClick);
+    };
+}, [openDropdown]);
+  // console.log("applications:", applications);
   if (!applications) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="flex justify-center h-full">
-      <Card className="h-full w-full lg:w-4/5">
-        <CardHeader floated={false} shadow={false} className="rounded-none">
-          <div className="mb-8 flex items-center justify-between gap-8">
-            <div>
-              <Typography variant="h5" color="blue-gray">
-                Members list
-              </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
-                See information about all members
-              </Typography>
-            </div>
-          </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
-              <Input
-                label="Search"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
-            </div>
-          </div>
-        </CardHeader>
-        <CardBody className="px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+    <div className="overflow-y-auto">
+      <ul className="divide-y divide-gray-300">
+        {applications.map((app) => {
+          // console.log("inside loop:", app);
+          const isDisabled= false;
+          return (
+            <li key={app.application_id} className="py-2">
+              <div className={`border border-gray-200 p-3 rounded bg-gray-100 flex items-center justify-between ${
+                    isDisabled ? "opacity-50" : ""
+                  }`}>
+                <div>
+                  <p
+                    className="text-m font-medium text-gray-900 cursor-pointer"
+                    onClick={() => handleApplicationClick(app.application_id)}
                   >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
+                    {app.student} - {app.faculty} - {app.application_id}
+                  </p>
+                  <p
+                    className={`text-sm `}
+                  >
+                    Status: {app.status}
+                  </p>
+                </div>
+                {!isDisabled &&(<div className="mt-2 relative group" ref={(ref) => (dropdownRefs[app.id] = ref)}>
+                  <button
+                    type="button"
+                    className={`bg-blue-500 text-white px-4 py-2 rounded group-hover:bg-blue-600 flex items-center focus:outline-none`}
+                    onClick={() => handleButtonClick(app.application_id)}
+                  >
+                    <span className="mr-2">Action</span>
+                    <svg
+                      className={`h-4 w-4 transition-transform ${
+                        openDropdown[app.application_id]
+                          ? "transform rotate-180"
+                          : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {applications.map(
-                (
-                  { application_id, student, faculty, status, affiliation },
-                  index
-                ) => {
-                  const isLast = index === applications.length - 1;
-                  const classes = isLast
-                    ? "p-4 border-b border-blue-gray-50"
-                    : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr
-                      key={application_id}
-                      className="hover:bg-gray-200 hover:cursor-pointer"
-                      onClick={() => handleApplicationClick(application_id)}
-                    >
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {application_id}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      ></path>
+                    </svg>
+                  </button>
+                  {openDropdown[app.application_id] && (
+                    <div className="absolute z-10 mt-2 bg-white border border-gray-200 shadow-lg rounded">
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 0
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                0
+                              )
+                            }
                           >
-                            {student}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
+                        Approve
+                      </button>
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 1
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                1
+                              )
+                            }
                           >
-                            {affiliation}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
+                        Approve Faculty
+                      </button>
+                      <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
+                            data.some(
+                              (action) =>
+                                action.appId === app.application_id &&
+                                action.action === 2
+                            )
+                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
+                              : "hover:bg-gray-100 border focus:outline-none"
+                          }` // Default or non-selected state
+                            }
+                            onClick={() =>
+                              handleActionClick(
+                                app.application_id,
+                                2
+                              )
+                            }
                           >
-                            {faculty}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {status}
-                          </Typography>
-                        </div>
-                      </td>
-                      {/* <td className={classes}>
-    <div className="w-max">
-      <Chip
-        variant="ghost"
-        size="sm"
-        value={online ? "online" : "offline"}
-        color={online ? "green" : "blue-gray"}
-      />
-    </div>
-  </td> */}
-                      <td
-                        className="p-4 border-b border-blue-gray-50 w-10"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Tooltip className="bg-gray-200">
-                          {/* <Select label="Change Status" onChange={e=>handleOption(application_id, e)}> */}
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <Select
-                              label="Change Status"
-                              onChange={(e) => handleOption(application_id, e)}
-                            >
-                              <Option value="Approve">Approve</Option>
-                              <Option value="Approve Faculty">
-                                Approve Faculty
-                              </Option>
-                              <Option value="Approve HOD">Approve HOD</Option>
-                              <Option value="Reject">Reject</Option>
-                              {/* <Option>Material Tailwind Svelte</Option> */}
-                            </Select>
-                          </div>
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
-        </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 ">
-          <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 10
-          </Typography>
-          <Button variant="outlined" size="sm" className="bg-green-500">
-            Submit
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="outlined" size="sm">
-              Previous
-            </Button>
-            <Button variant="outlined" size="sm">
-              Next
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
+                        Approve HOD
+                      </button>
+                    </div>
+                  )}
+                </div>)}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
-}
+};
+
+const ApplicationStatus = () => {
+  // Sample data for applications
+  const initialApplications = [
+    { application_id: 1, student: "Application 1", status: "Active" , faculty:  "Faculty 1"},
+    { application_id: 2, student: "Application 2", status: "Pending" , faculty: "Faculty 1"},
+    // { application_id: 3, student: 'Application 3', status: 'Inactive' , faculty: "Faculty 1""},
+    // { application_id: 4, student: 'Application 4', status: 'Active' , faculty: "Faculty 1"},
+    // { application_id: 5, student: 'Application 5', status: 'Inactive' , faculty: "Faculty 1""},
+    // { application_id: 6, student: 'Application 6', status: 'Pending' , faculty:  "Faculty 1""},
+    // { application_id: 7, student: 'Application 7', status: 'Active' , faculty: "Faculty 1"},
+    // { application_id: 8, student: 'Application 8', status: 'Pending' , faculty:  "Faculty 1""},
+    { application_id: 9, student: "Application 9", status: "Inactive" , faculty:  "Faculty 1"},
+  ];
+  const [data, setData] = useState([]);
+  const backendUrl = process.env.REACT_APP_BASE_URL;
+  // State to manage applications
+  const { currentUser } = useAuth();
+  const [applications, setApplications] = useState(null);
+  // const [applications] = useState(initialApplications);
+  // console.log("applications:", applications);
+  useEffect(() => {
+    axios
+      .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
+      .then((res) => {
+        // console.log("here:", res.data.data);
+        setApplications(res.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  const handleSubmit = () => {
+    console.log("Data to be submitted:", data);
+    // Add logic to submit the data to the backend
+    const backendUrl=process.env.REACT_APP_BASE_URL;
+    axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
+    .then((res)=>{
+      console.log(res.data);
+      alert("Data submitted successfully");
+      window.location.reload();
+    })
+    
+  }
+  return (
+    <div className="p-8 border border-gray-200 rounded">
+      <h1 className="text-3xl font-bold mb-4">Application Status</h1>
+      <ApplicationList applications={applications} data={data} setData={setData} />
+      <div className="mt-4 flex justify-center">
+        <button
+          type="button"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => handleSubmit()}
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ApplicationStatus;

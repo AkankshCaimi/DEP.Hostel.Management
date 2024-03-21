@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
-from .models import Application, Faculty, CustomUser, Student, Room
+from .models import Application, Faculty, CustomUser, Hostel, Student, Room, Application_Final
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
@@ -305,7 +305,24 @@ def view_applications(request):
         # return JsonResponse({'message': 'Staff page', 'data': application_list})
         return JsonResponse({'message': 'Staff page', 'data': {'hod': application_list1, 'own': application_list2}})
 
-    
+@csrf_exempt
+@staff_required
+def view_final_applications(request):
+    applications=Application_Final.objects.select_related('application', 'application__student', 'application__faculty')
+    application_list = [
+        {
+            'application_id': application.application.application_id,
+            'student': application.application.student.name,
+            'affiliation': application.application.affiliation,
+            'faculty': application.application.faculty.faculty.name,
+            'status': application.application.status
+        }
+        for application in applications
+    ]
+    print('application_list:', application_list)
+    return JsonResponse({'message': 'Staff page', 'data': {'own':application_list}})    
+
+
 @csrf_exempt
 @staff_required
 def update_application(request):
@@ -313,7 +330,7 @@ def update_application(request):
         data=json.loads(request.body)
         data=data['data']
         mapping={
-            0:'Pending SA Approval',
+            0: 'Pending Caretaker Action',
             1: 'Pending HOD Approval',
             2: 'Pending Admin Approval',
         }
@@ -321,9 +338,40 @@ def update_application(request):
             application=Application.objects.get(application_id=obj['appId'])
             application.status=mapping[int(obj['action'])]
             application.save()
+            if int(obj['action']) == 0:
+                application_final=Application_Final(application=application)
+                application_final.save()
         return JsonResponse({'message': 'Applications updated successfully.'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+# ----------------WARDEN FUNCTIONS----------------
+@csrf_exempt
+# @staff_required
+def get_hostels(request):
+    hostels=Hostel.objects.select_related('caretaker__caretaker').all()
+    hostels_list=[{
+        'hostel_no': hostel.hostel_no,
+        'hostel_name': hostel.hostel_name,
+        'hostel_type': hostel.hostel_type,
+        'num_floors': hostel.num_floors,
+        'capacity': hostel.capacity,
+        'caretaker': hostel.caretaker.caretaker.email
+    } for hostel in hostels]
+    return JsonResponse({'message': 'Warden page', 'data': hostels_list})
+
+@csrf_exempt
+# @staff_required
+def get_rooms(request):
+    hostel=request.GET.get('hostel')
+    floor=request.GET.get('floor')
+    rooms=Room.objects.filter(hostel__hostel_name=hostel, floor=int(floor))
+    rooms_list=[{
+        'room_no': room.room_no,
+        'room_occupancy': room.room_occupancy
+    } for room in rooms]
+    return JsonResponse({'message': 'Warden page', 'data': rooms_list})
+    # return JsonResponse({'message':'Warden page'})
 
 @csrf_exempt
 def download_pdf(request):

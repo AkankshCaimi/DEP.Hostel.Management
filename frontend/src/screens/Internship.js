@@ -22,7 +22,7 @@ const Internship = () => {
           { withCredentials: true }
         );
         setApplication(data.data.data);
-        console.log(data.data.data)
+        console.log('here:', data.data.data)
       } catch (error) {
         console.error("Error fetching application status:", error);
       }
@@ -30,13 +30,7 @@ const Internship = () => {
 
     fetchApplicationStatus();
   }, []);
-  const openPdf=(idx)=>{
-    if(application){
-      console.log('here', application)
-      const urls=[`data:application/pdf;base64,${application.instiId}`, `data:application/pdf;base64,${application.letter}`];
-      window.open(urls[idx])
-    }
-  }
+
   return (currentUser?(
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Internship Application</h1>

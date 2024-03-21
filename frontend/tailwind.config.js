@@ -8,11 +8,8 @@ module.exports = withMT({
   theme: {
     extend: {},
   },
-  corePlugins: {
-    aspectRatio: false,
-  },
   plugins: [
-    require('@tailwindcss/aspect-ratio')
+    // require('@tailwindcss/aspect-ratio')
   ],
 });
 

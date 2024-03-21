@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/tailwind.css';
-
+import { useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 function Card({ children }) {
   return (
     <div className="border border-black rounded-md p-1">
@@ -55,15 +56,18 @@ const people = [
 ];
 
 function HostelRoomCard({ roomNumber, occupants }) {
+  // const navigate= useNavigate();
   function handleClick() {
-    console.log('Room number:', roomNumber);
+    console.log('Room number here:', roomNumber);
+    // navigate(`/room-details/${parseInt(roomNumber)}`);
+    // navigate('')
   }
   const backgroundColorClass =
-    occupants.length === 2 ? "bg-red-100" : "bg-green-100";
+    occupants.length === 2 ? "bg-gray-300" : "bg-green-200";
   const backgroundColorClass2 =
-    occupants.length === 2 ? "hover:bg-red-200" : "hover:bg-green-200";
+    occupants.length === 2 ? "hover:bg-gray-400" : "hover:bg-green-300";
   return (
-    <Link to="" className="no-underline text-black">
+    <Link to={`../room-details/CE-${roomNumber}`} className="no-underline text-black">
     <div className={`${backgroundColorClass} rounded-md w-12 h-17 flex items-center justify-center mr-1 hover:cursor-pointer ${backgroundColorClass2}`} onClick={handleClick}>
       <Card>
         <CardHeader>
@@ -142,16 +146,16 @@ export default function HostelRooms() {
         </p>
         <div className="flex items-center space-x-8">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-green-100 mr-2 border border-black"></div>
+            <div className="w-4 h-4 bg-green-200 mr-2 border border-black"></div>
             <p className='mt-3'>Vacant</p>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-red-100 mr-2 border border-black"></div>
+            <div className="w-4 h-4 bg-gray-300 mr-2 border border-black"></div>
             <p className='mt-3'>Occupied</p>
           </div>
         </div>
       </div>
-      <div className='bg-gray-300 p-4 overflow-x-auto'>
+      <div className='bg-gray-200 p-4 overflow-x-auto rounded-md' >
         {/* Hostel room display */}
         <div className="flex flex-row space-x-1">
           <div className="flex">

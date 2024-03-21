@@ -25,6 +25,9 @@ import Admin from "./screens/Admin/Admin";
 import Professor from "./screens/Professors/Professors";
 import RoomView from "./screens/Caretaker/RoomView";
 import RoomDetails from "./screens/Caretaker/RoomDetails";
+import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
+import Caretaker from "./screens/Caretaker/Caretaker";
+import Allotment from "./screens/Allotment";
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -64,11 +67,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/test" element={<Allotment />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/room-view" element={<RoomView />} />
-        <Route path="/room-details" element={<RoomDetails />} />
         {/* Admin Routes */}
         <Route path="/admin/*" element={<Admin />}>
           <Route index element={<AdminDashboard />} />
@@ -76,24 +77,25 @@ function App() {
           <Route path="add-faculty" element={<AddFaculty />} />
           <Route path="application-status" element={<ApplicationStatus />} />
           <Route path="complaint-status" element={<ComplaintStatus />} />
-          <Route
-            path="application-status/application/:id"
-            element={<ApplicationView />}
-          />
+          <Route path="application-status/application/:id" element={<ApplicationView />}/>
         </Route>
         {/* Professor Routes includes wardens */}
         <Route path="/professor/*" element={<Professor />}>
           <Route index element={<ProfessorDashboard />} />
           <Route path="application-status" element={<ProfAppStatus />} />
-          <Route
-            path="application-status/application/:id"
-            element={<ApplicationView />}
-          />
+          <Route path="application-status/application/:id" element={<ApplicationView />}/>
           <Route path="complaint-status" element={<ComplaintStatus />} />
         </Route>
         <Route path="/internship" element={<Internship />} />
         {/* Caretaker Routes */}
-        <Route path="/caretaker-dashboard" element={<CaretakerDashboard />} />
+        <Route path='caretaker/*' element={<Caretaker/>}>
+          <Route index element={<CaretakerDashboard />} />
+          <Route path='application-status' element={<FinalAppStatus />} />
+          <Route path='application-status/application/:id' element={<ApplicationView />} />
+          <Route path="room-view" element={<RoomView />} />
+          <Route path="room-details/:id" element={<RoomDetails />} />
+        </Route>
+
       </Routes>
       <Footer showPopup={showPopup} setShowPopup={setShowPopup} />
     </section>

@@ -8,9 +8,6 @@ const ApplicationList = ({ applications, data, setData, idx }) => {
   const navigate = useNavigate();
   const dropdownRefs = {};
   const { currentUser } = useAuth();
-  const handleButtonClick = (appId) => {
-    setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
-  };
 
   const handleApplicationClick = (appId) => {
     // Add logic for handling the click on an application
@@ -22,10 +19,6 @@ const ApplicationList = ({ applications, data, setData, idx }) => {
     if (dropdownRefs[appId] && !dropdownRefs[appId].contains(event.target)) {
       setOpenDropdown({ ...openDropdown, [appId]: false });
     }
-  };
-  const handleActionClick = (appId, action) => {
-    // console.log(`Application ${appId} action ${action} clicked`);
-    setData([...data, { appId, action }]);
   };
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -49,8 +42,8 @@ const ApplicationList = ({ applications, data, setData, idx }) => {
     <div className="overflow-y-auto">
       <ul className="divide-y divide-gray-300">
         {applications.map((app) => {
-          const isHidden = app.status === "Pending HOD Approval" && currentUser.is_hod && idx === 1;
-          const isDisabled = app.status === "Pending Admin Approval" || app.status === "Pending Caretaker Action" || (app.status === "Pending HOD Approval" && !currentUser.is_hod);
+          const isHidden = 0;
+          const isDisabled = 0;
           // console.log("inside loop:", app);
           // console.log("Application:",app.application_id,"isHidden:", isHidden, "isDisabled:", isDisabled);
           return (
@@ -85,7 +78,7 @@ const ApplicationList = ({ applications, data, setData, idx }) => {
                       className="mt-2 relative group"
                       ref={(ref) => (dropdownRefs[app.id] = ref)}
                     >
-                      <button
+                      {/* <button
                         type="button"
                         className={`bg-blue-500 text-white px-4 py-2 rounded group-hover:bg-blue-600 flex items-center focus:outline-none`}
                         onClick={() => handleButtonClick(app.application_id)}
@@ -132,7 +125,7 @@ const ApplicationList = ({ applications, data, setData, idx }) => {
                             Approve
                           </button>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   )}
                 </div>
@@ -183,7 +176,7 @@ const ApplicationStatus = () => {
   // console.log("applications:", applications);
   useEffect(() => {
     axios
-      .get(`${backendUrl}/api/view_applications`, { withCredentials: true })
+      .get(`${backendUrl}/api/view_final_applications`, { withCredentials: true })
       .then((res) => {
         console.log("here:", res.data.data);
         setApplications(res.data.data);

@@ -1,18 +1,19 @@
 import React from 'react';
-
+import { useParams } from 'react-router-dom';
 const RoomDeatils = () => {
+  const {id} = useParams();
   // Sample data for room information
   const room = {
-    roomNumber: 'CE-101',
+    roomNumber: id,
     person1: {
-      name: 'Aarav Patel',
-      email: 'aaravpatel@gmail.com',
-      phone: '123-456-7890'
+      name: 'Devanshu Dhawan',
+      email: '2021CSB1082@iitrpr.ac.in',
+      phone: '9876543210'
     },
     person2: {
-      name: 'adityasharma',
-      email: 'adityasharma@gmail.com',
-      phone: '987-654-3210'
+      name: 'Akanksh Caimi',
+      email: '2021CSB1064@iitrpr.ac.in',
+      phone: '9876543210'
     }
   };
 

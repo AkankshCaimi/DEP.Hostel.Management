@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_("email address"), unique=True)
     # data_from_google = models.BooleanField(default=False)
-    name= models.CharField(max_length=100)
+    name= models.CharField(max_length=100, default='None')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     gender = models.CharField(max_length=100, default='Not Specified')
@@ -103,5 +103,8 @@ class Warden(models.Model):
 class Caretaker(models.Model):
     caretaker = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
     hostel = models.OneToOneField(Hostel, on_delete=models.CASCADE, default=None, null=True, blank=True)
+
+    def __str__(self):
+        return self.hostel.hostel_name
     
     
