@@ -7,47 +7,24 @@ import {
   Typography,
   Button,
   CardBody,
-  Chip,
   CardFooter,
   Tabs,
   TabsHeader,
   Tab,
-  Avatar,
-  IconButton,
-  Tooltip,
   Select,
   Option,
 } from "@material-tailwind/react";
 import axios from "axios";
-import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router-dom";
 
-const TABS = [
-  {
-    label: "All",
-    value: "all",
-  },
-  {
-    label: "Monitored",
-    value: "monitored",
-  },
-  {
-    label: "Unmonitored",
-    value: "unmonitored",
-  },
-];
-
 const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
+const backendUrl = process.env.REACT_APP_BASE_URL; // Define backendUrl
 
 export default function MembersTable() {
-  const [data, setData] = useState([]);
-  const backendUrl = process.env.REACT_APP_BASE_URL;
-  // State to manage applications
-  const { currentUser } = useAuth();
-  const [applications, setApplications] = useState(null);
+  const [applications, setApplications] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState({});
-  // const [applications] = useState(initialApplications);
-  // console.log("applications:", applications);
+  const [currentTab, setCurrentTab] = useState("Pending Faculty Approval");
+
   useEffect(() => {
     axios
       .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
@@ -63,43 +40,51 @@ export default function MembersTable() {
   const navigate = useNavigate();
 
   const handleApplicationClick = (appId) => {
-    // Add logic for handling the click on an application
-    // console.log(`Application ${appId} clicked`);
     navigate(`./application/${appId}`);
   };
 
   const handleOption = (appId, e) => {
     setSelectedOptions({ ...selectedOptions, [appId]: e });
     console.log(selectedOptions);
-    // console.log(appId, e)
   };
 
   if (!applications) {
     return <div>Loading...</div>;
   }
 
+  const filteredApplications = currentTab === "all" ? applications : applications.filter(app => app.status === currentTab);
+
+  // Define options based on the current tab
+  const options = currentTab === "Pending Faculty Approval" ? ["Approve Faculty", "Reject"] :
+                  currentTab === "Pending HOD Approval" ? ["Approve HOD", "Reject"] :
+                  currentTab === "Pending Admin Approval" ? ["Approve Admin", "Reject"] : [];
+
   return (
-    <div className="flex justify-center h-full">
+    <div className="flex justify-center h-full mt-4 mb-4">
       <Card className="h-full w-full lg:w-4/5">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Members list
+                Application Status
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                See information about all members
+                See information about all applications
               </Typography>
             </div>
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
+            <Tabs value="Pending Faculty Approval" className="w-full md:w-max">
               <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
+                <Tab value="Pending Faculty Approval" onClick={() => setCurrentTab("Pending Faculty Approval")}>
+                  &nbsp;&nbsp;Faculty&nbsp;&nbsp;
+                </Tab>
+                <Tab value="Pending HOD Approval" onClick={() => setCurrentTab("Pending HOD Approval")}>
+                  &nbsp;&nbsp;HOD&nbsp;&nbsp;
+                </Tab>
+                <Tab value="Pending Admin Approval" onClick={() => setCurrentTab("Pending Admin Approval")}>
+                  &nbsp;&nbsp;Admin&nbsp;&nbsp;
+                </Tab>
               </TabsHeader>
             </Tabs>
             <div className="w-full md:w-72">
@@ -131,109 +116,92 @@ export default function MembersTable() {
               </tr>
             </thead>
             <tbody>
-              {applications.map(
-                (
-                  { application_id, student, faculty, status, affiliation },
-                  index
-                ) => {
-                  const isLast = index === applications.length - 1;
-                  const classes = isLast
-                    ? "p-4 border-b border-blue-gray-50"
-                    : "p-4 border-b border-blue-gray-50";
-
-                  return (
-                    <tr
-                      key={application_id}
-                      className="hover:bg-gray-200 hover:cursor-pointer"
-                      onClick={() => handleApplicationClick(application_id)}
+              {filteredApplications.map(
+                ({ application_id, student, faculty, status, affiliation }) => (
+                  <tr
+                    key={application_id}
+                    className="hover:bg-gray-200 hover:cursor-pointer"
+                    onClick={() => handleApplicationClick(application_id)}
+                  >
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {application_id}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {student}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {affiliation}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {faculty}
+                        </Typography>
+                      </div>
+                      </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {status}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td
+                      className="p-4 border-b border-blue-gray-50 w-10"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {application_id}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {student}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {affiliation}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {faculty}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {status}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td
-                        className="p-4 border-b border-blue-gray-50 w-10"
-                        onClick={(e) => e.stopPropagation()}
+                      <Select
+                        label="Change Status"
+                        onChange={(e) => handleOption(application_id, e)}
                       >
-                        <Tooltip className="bg-gray-200">
-                          {/* <Select label="Change Status" onChange={e=>handleOption(application_id, e)}> */}
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <Select
-                              label="Change Status"
-                              onChange={(e) => handleOption(application_id, e)}
-                            >
-                              <Option value="Approve">Approve</Option>
-                              <Option value="Approve Faculty">
-                                Approve Faculty
-                              </Option>
-                              <Option value="Approve HOD">Approve HOD</Option>
-                              <Option value="Reject">Reject</Option>
-                              {/* <Option>Material Tailwind Svelte</Option> */}
-                            </Select>
-                          </div>
-                        </Tooltip>
-                      </td>
-                    </tr>
-                  );
-                }
+                        {options.map((option) => (
+                          <Option key={option} value={option}>
+                            {option}
+                          </Option>
+                        ))}
+                      </Select>
+                    </td>
+                  </tr>
+                )
               )}
             </tbody>
           </table>
         </CardBody>
-        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4 ">
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 10
+            Page 1 of 1
           </Typography>
-          <Button variant="outlined" size="sm" className="bg-green-500">
+          <Button variant="outlined" size="sm" className="bg-blue-600 text-white" >
             Submit
           </Button>
           <div className="flex gap-2">

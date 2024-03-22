@@ -28,6 +28,7 @@ import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
 import Allotment from "./screens/Allotment";
+import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -76,6 +77,7 @@ function App() {
           <Route path="add-student" element={<AddStudents />} />
           <Route path="add-faculty" element={<AddFaculty />} />
           <Route path="application-status" element={<ApplicationStatus />} />
+          <Route path="application-status-2" element={<ApplicationStatus2 />} />
           <Route path="complaint-status" element={<ComplaintStatus />} />
           <Route path="application-status/application/:id" element={<ApplicationView />}/>
         </Route>
