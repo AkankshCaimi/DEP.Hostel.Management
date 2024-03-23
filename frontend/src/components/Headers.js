@@ -17,10 +17,10 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "../styles/tailwind.css";
 import { useAuth } from "../contexts/authContext";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 const excludedRoutes = ["/login", "/signup"];
 
@@ -232,8 +232,8 @@ export default function Headers() {
   );
   const handleLogout = async () => {
     try {
-      console.log("inside handleLogout");
-      logout().then(()=>navigate("/"));
+      // console.log("inside handleLogout");
+      logout().then(()=>{console.log('here after logout');navigate("/home")});
       // navigate("/");
     } catch (err) {
       console.log(err);

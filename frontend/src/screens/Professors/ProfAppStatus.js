@@ -1,189 +1,57 @@
-import React, { useState, useEffect } from "react";
-import "../../styles/tailwind.css";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  Card,
+  CardHeader,
+  Input,
+  Typography,
+  Button,
+  CardBody,
+  CardFooter,
+  Tabs,
+  TabsHeader,
+  Tab,
+  Select,
+  Option,
+} from "@material-tailwind/react";
 import axios from "axios";
-import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router-dom";
-const ApplicationList = ({ applications, data, setData, idx }) => {
-  const [openDropdown, setOpenDropdown] = useState({});
-  const navigate = useNavigate();
-  const dropdownRefs = {};
+import { useComments } from "../../contexts/commentsContext";
+import { useAuth } from "../../contexts/authContext";
+const backendUrl = process.env.REACT_APP_BASE_URL; // Define backendUrl
+
+export default function MembersTable() {
+  const [applications, setApplications] = useState([]);
   const { currentUser } = useAuth();
-  const handleButtonClick = (appId) => {
-    setOpenDropdown({ ...openDropdown, [appId]: !openDropdown[appId] });
-  };
-
-  const handleApplicationClick = (appId) => {
-    // Add logic for handling the click on an application
-    // console.log(`Application ${appId} clicked`);
-    navigate(`./application/${appId}`);
-  };
-
-  const handleClickOutside = (event, appId) => {
-    if (dropdownRefs[appId] && !dropdownRefs[appId].contains(event.target)) {
-      setOpenDropdown({ ...openDropdown, [appId]: false });
-    }
-  };
-  const handleActionClick = (appId, action) => {
-    // console.log(`Application ${appId} action ${action} clicked`);
-    setData([...data, { appId, action }]);
-  };
-  useEffect(() => {
-    const handleDocumentClick = (event) => {
-      for (const appId in openDropdown) {
-        handleClickOutside(event, appId);
-      }
-    };
-
-    document.addEventListener("mousedown", handleDocumentClick);
-
-    return () => {
-      document.removeEventListener("mousedown", handleDocumentClick);
-    };
-  }, [openDropdown]);
-  // console.log("applications:", applications);
-  if (!applications) {
-    return <div>Loading...</div>;
+  // const [selectedOptions, setSelectedOptions] = useState({});
+  const [currentTab, setCurrentTab] = useState(currentUser && currentUser.is_hod ? "Pending HOD Approval" : "Pending Faculty Approval");
+  const { comments, selectedOptions, setSelectedOptions } = useComments();
+  // const [filteredApplications, setFilteredApplications] = useState([]);
+  // const filteredApplications = currentTab === "All" ? applications : applications.filter(app => app.status === currentTab);
+  const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
+  const TABLE_HEAD2 = ["ID", "Name", "Professor", "Status"];
+  const renderHeading = ()=>{
+    if(currentTab==="Pending Admin Approval")
+      return TABLE_HEAD2;
+    else return TABLE_HEAD;
   }
-  // console.log(currentUser)
-  return (
-    <div className="overflow-y-auto">
-      <ul className="divide-y divide-gray-300">
-        {applications.map((app) => {
-          const isHidden = app.status === "Pending HOD Approval" && currentUser.is_hod && idx === 1;
-          const isDisabled = app.status === "Pending Admin Approval" || app.status === "Pending Caretaker Action" || (app.status === "Pending HOD Approval" && !currentUser.is_hod);
-          // console.log("inside loop:", app);
-          // console.log("Application:",app.application_id,"isHidden:", isHidden, "isDisabled:", isDisabled);
-          return (
-            !isHidden && (
-              <li key={app.application_id} className="py-2">
-                <div
-                  className={`border border-gray-200 p-3 rounded bg-gray-100 flex items-center justify-between ${
-                    isDisabled ? "opacity-50" : ""
-                  }`}
-                >
-                  <div>
-                    <p
-                      className="text-m font-medium text-gray-900 cursor-pointer"
-                      onClick={() => handleApplicationClick(app.application_id)}
-                    >
-                      {app.student} - {app.faculty} - {app.application_id}
-                    </p>
-                    <p
-                      className={`text-sm text-${
-                        app.status === "Pending Faculty Approval"
-                          ? "green"
-                          : isDisabled
-                          ? "gray"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      Status: {app.status}
-                    </p>
-                  </div>
-                  {!isDisabled && (
-                    <div
-                      className="mt-2 relative group"
-                      ref={(ref) => (dropdownRefs[app.id] = ref)}
-                    >
-                      <button
-                        type="button"
-                        className={`bg-blue-500 text-white px-4 py-2 rounded group-hover:bg-blue-600 flex items-center focus:outline-none`}
-                        onClick={() => handleButtonClick(app.application_id)}
-                      >
-                        <span className="mr-2">Action</span>
-                        <svg
-                          className={`h-4 w-4 transition-transform ${
-                            openDropdown[app.application_id]
-                              ? "transform rotate-180"
-                              : ""
-                          }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          ></path>
-                        </svg>
-                      </button>
-                      {openDropdown[app.application_id] && (
-                        <div className="absolute z-10 mt-2 bg-white border border-gray-200 shadow-lg rounded">
-                          <button type="button" className={`block w-full text-left px-4 py-2 text-gray-800 ${
-                            data.some(
-                              (action) =>
-                                action.appId === app.application_id &&
-                                action.action === (currentUser.is_hod ? 2 : 1)
-                            )
-                              ? "bg-green-400 text-white hover:bg-green-400 focus:outline-none" // Selected state
-                              : "hover:bg-gray-100 border focus:outline-none"
-                          }` // Default or non-selected state
-                            }
-                            onClick={() =>
-                              handleActionClick(
-                                app.application_id,
-                                currentUser.is_hod ? 2 : 1
-                              )
-                            }
-                          >
-                            Approve
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </li>
-            )
-          );
-        })}
-      </ul>
-    </div>
-  );
-};
-
-const ApplicationStatus = () => {
-  // Sample data for applications
-  const initialApplications = [
-    {
-      application_id: 1,
-      student: "Application 1",
-      status: "Active",
-      faculty: "Faculty 1",
-    },
-    {
-      application_id: 2,
-      student: "Application 2",
-      status: "Pending",
-      faculty: "Faculty 1",
-    },
-    // { application_id: 3, student: 'Application 3', status: 'Inactive' , faculty: "Faculty 1""},
-    // { application_id: 4, student: 'Application 4', status: 'Active' , faculty: "Faculty 1"},
-    // { application_id: 5, student: 'Application 5', status: 'Inactive' , faculty: "Faculty 1""},
-    // { application_id: 6, student: 'Application 6', status: 'Pending' , faculty:  "Faculty 1""},
-    // { application_id: 7, student: 'Application 7', status: 'Active' , faculty: "Faculty 1"},
-    // { application_id: 8, student: 'Application 8', status: 'Pending' , faculty:  "Faculty 1""},
-    {
-      application_id: 9,
-      student: "Application 9",
-      status: "Inactive",
-      faculty: "Faculty 1",
-    },
-  ];
-
-  const backendUrl = process.env.REACT_APP_BASE_URL;
-  // State to manage applications
-  const { currentUser } = useAuth();
-  const [data, setData] = useState([]);
-  const [applications, setApplications] = useState(null);
-  // const [applications] = useState(initialApplications);
-  // console.log("applications:", applications);
+  const filteredApplications = useMemo(() => {
+    if (!applications.own) return [];
+    if (currentTab === "Pending HOD Approval") {
+      return applications.hod;
+    } else if (currentTab === "Pending Faculty Approval") {
+      return applications.own.filter((app) => app.status === "Pending Faculty Approval");
+    } else if(currentTab === "Pending Admin Approval"){
+      if (currentUser.is_hod) {
+        return applications.own.filter((app) => app.status === "Pending Admin Approval" || app.status === "Pending Caretaker Action" || app.status.includes('Rejected'));
+      }
+      return applications.own.filter((app) => app.status === "Pending Admin Approval" || app.status === "Pending Caretaker Action" || app.status === "Pending HOD Approval" || app.status.includes('Rejected') );
+    }
+  }, [applications, currentTab]);
   useEffect(() => {
     axios
       .get(`${backendUrl}/api/view_applications`, { withCredentials: true })
+      // .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
       .then((res) => {
         console.log("here:", res.data.data);
         setApplications(res.data.data);
@@ -192,50 +60,241 @@ const ApplicationStatus = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  const navigate = useNavigate();
+  const handleApplicationClick = (appId) => {
+    navigate(`./application/${appId}`);
+  };
+  const setEvent = (e) => {
+    if (e === "Approve") {
+      if(currentUser.is_hod)
+        return "Pending Admin Approval";
+      else return "Pending HOD Approval";
+    }
+    else {
+      if (currentUser.is_hod) return "Rejected by HOD";
+      else return "Rejected by Faculty";
+    }
+  };
+  const handleOption = (appId, e) => {
+    if (e === "Reject") {
+      if (!comments[appId]) {
+        alert("Please add comments for rejection");
+        // setSelectedOptions({ ...selectedOptions, [appId]: {value: e} });
+        navigate(`./application/${appId}`);
+      } else {
+        setSelectedOptions({
+          ...selectedOptions,
+          [appId]: { value: e, comments: comments[appId] },
+        });
+      }
+    } else {
+      setSelectedOptions({ ...selectedOptions, [appId]: { value: e } });
+    }
+    console.log(selectedOptions);
+  };
+
+  if (!applications) {
+    return <div>Loading...</div>;
+  }
+
+  // Define options based on the current tab
+  // const options = currentTab === "Pending Faculty Approval" ? ["Approve Faculty", "Reject"] :
+  //                 currentTab === "Pending HOD Approval" ? ["Approve HOD", "Reject"] :
+  //                 currentTab === "Pending Admin Approval" ? ["Approve Admin", "Reject"] : [];
   const handleSubmit = () => {
+    console.log("Data to be submitted:", selectedOptions);
+    const updatedSelectedOptions = {};
+
+    for (const id in selectedOptions) {
+      if (selectedOptions.hasOwnProperty(id)) {
+        updatedSelectedOptions[id] = { ...selectedOptions[id] };
+        updatedSelectedOptions[id].value = setEvent(selectedOptions[id].value);
+        console.log(updatedSelectedOptions[id].value);
+      }
+    }
     axios
       .post(
         `${backendUrl}/api/update_application`,
-        { data },
+        { updatedSelectedOptions },
         { withCredentials: true }
       )
       .then((res) => {
-        // console.log(res.data);
-        alert("Data updated successfully");
-        // trigger reload
+        console.log(res.data);
+        alert("Data submitted successfully");
         window.location.reload();
       });
   };
   return (
-    <div className="p-8 border border-gray-200 rounded">
-      <h1 className="text-3xl font-bold mb-4">Application Status</h1>
-      {applications && applications.hod && <h4>Faculty Approval</h4>}
-      <ApplicationList
-        applications={applications ? applications.own : null}
-        data={data}
-        setData={setData}
-        idx={1}
-      />
-      {applications && applications.hod && <h4>HOD Approval</h4>}
-      {applications && applications.hod && (
-        <ApplicationList
-          applications={applications ? applications.hod : null}
-          data={data}
-          setData={setData}
-          idx={2}
-        />
-      )}
-      <div className="mt-4 flex justify-center">
-        <button
-          type="button"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          onClick={() => handleSubmit()}
-        >
-          Update
-        </button>
-      </div>
+    <div className="flex justify-center h-full mt-4 ">
+      <Card className="h-full w-full lg:w-4/5">
+        <CardHeader floated={false} shadow={false} className="rounded-none">
+          <div className=" flex items-center justify-between gap-8">
+            <div>
+              <Typography variant="h5" color="blue-gray">
+                Application Status
+              </Typography>
+              <Typography color="gray" className="mt-1 font-normal">
+                See information about all applications
+              </Typography>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <Tabs className="w-full md:w-max pt-3">
+              <TabsHeader>
+                {currentUser && currentUser.is_hod && (<Tab
+                  value="Pending HOD Approval"
+                  onClick={() => setCurrentTab("Pending HOD Approval")}
+                >
+                  &nbsp;&nbsp;HOD&nbsp;&nbsp;
+                </Tab>)}
+                <Tab
+                  value="Pending Faculty Approval"
+                  onClick={() => setCurrentTab("Pending Faculty Approval")}
+                >
+                  &nbsp;&nbsp;Unreviewed&nbsp;&nbsp;
+                </Tab>
+                <Tab
+                  value="Pending Admin Approval"
+                  onClick={() => setCurrentTab("Pending Admin Approval")}
+                >
+                  &nbsp;&nbsp;Reviewed&nbsp;&nbsp;
+                </Tab>
+              </TabsHeader>
+            </Tabs>
+            <div className="w-full md:w-max">
+              <Input
+                label="Search"
+                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardBody className="px-0">
+          <table className="mt-4 w-full min-w-max table-auto text-left">
+            <thead>
+              <tr>
+                {renderHeading().map((head) => (
+                  <th
+                    key={head}
+                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                  >
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal leading-none opacity-70"
+                    >
+                      {head}
+                    </Typography>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            {/* insert here */}
+            {filteredApplications && (<tbody>
+              {filteredApplications.map(
+                ({ application_id, student, faculty, status, affiliation }) => (
+                  <tr
+                    key={application_id}
+                    className="hover:bg-gray-200 hover:cursor-pointer"
+                    onClick={() => handleApplicationClick(application_id)}
+                  >
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {application_id}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {student}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {affiliation}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {faculty}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {status}
+                        </Typography>
+                      </div>
+                    </td>
+                    <td
+                      className="p-4 border-b border-blue-gray-50 w-10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {currentTab!=="Pending Admin Approval" && (<Select
+                        label={
+                          selectedOptions[application_id]?.value || "Select"
+                        }
+                        onChange={(e) => handleOption(application_id, e)}
+                      >
+                        <Option value="Approve">Approve</Option>
+                        <Option value="Reject">Reject</Option>
+                        {/* <Option>Material Tailwind Svelte</Option> */}
+                      </Select>)}
+                    </td>
+                  </tr>
+                )
+              )}
+            </tbody>)}
+          </table>
+        </CardBody>
+        <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
+          <Typography variant="small" color="blue-gray" className="font-normal">
+            Page 1 of 1
+          </Typography>
+          <Button
+            variant="outlined"
+            size="sm"
+            className="bg-blue-600 text-white"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outlined" size="sm">
+              Previous
+            </Button>
+            <Button variant="outlined" size="sm">
+              Next
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
-};
-
-export default ApplicationStatus;
+}

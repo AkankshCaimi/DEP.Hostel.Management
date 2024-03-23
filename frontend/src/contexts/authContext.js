@@ -10,6 +10,7 @@ export function useAuth() {
 export function AuthProvider({children}) {
     const backendUrl = process.env.REACT_APP_BASE_URL;
     const [currentUser, setCurrentUser] = useState(null);
+    // const navigate=useNavigate();
     const [loading, setLoading] = useState(false);
     // const [shouldRunEffect, setShouldRunEffect] = useState(true);
 
@@ -47,7 +48,9 @@ export function AuthProvider({children}) {
         .catch((err) => {
             console.error(err)
         })
-        setLoading(false);
+        .finally(()=>{
+            setLoading(false)
+        })
     }
     useEffect(()=>{
         const unsubscribe =()=>{

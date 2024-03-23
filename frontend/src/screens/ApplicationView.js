@@ -4,12 +4,18 @@ import "../styles/tailwind.css";
 import { useParams, useLocation, NavLink } from "react-router-dom";
 import axios from "axios";
 import Modal from "react-modal";
-
+import { useComments } from "../contexts/commentsContext";
+import { useNavigate } from "react-router-dom";
 Modal.setAppElement("#root");
 export default function TableWithStripedColumns() {
   const location = useLocation();
-  const renderButtons=location.pathname.includes("/caretaker/application-status/application")
+  const {state}=location;
+  const navigate = useNavigate();
+  const renderButtons = location.pathname.includes(
+    "/caretaker/application-status/application"
+  );
   // console.log("location:", location, renderButtons);
+  const { comments, setComments, commentSection, setCommentSection, selectedOptions, setSelectedOptions} = useComments();
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const [formData, setFormData] = useState({
     student: "Devanshu Dhawan",
@@ -26,6 +32,7 @@ export default function TableWithStripedColumns() {
   const [application, setApplication] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpen2, setModalIsOpen2] = useState(false);
+  // const [commentSection, setCommentSection] = useState(false);
   const { id } = useParams();
   const variableClassName = (idx) =>
     idx <= 7 ? "border-b" : "border-b hover:cursor-pointer";
@@ -43,6 +50,15 @@ export default function TableWithStripedColumns() {
     "Institute ID",
     "Institute Letter",
   ];
+  const handleSubmit = () => {
+    console.log("Data to be submitted:", comments[id]);
+    // setAddedComments(comments)
+    // state.setAddedComments({...state.addedComments, [id]:comments});
+    // setComments({...comments, [id]:comment});
+    setSelectedOptions({...selectedOptions, [id]:{value: "Reject", comments:comments[id]}});
+    navigate("../application-status");
+    
+  }
   useEffect(() => {
     // Fetch application data from backend using the application ID
     axios
@@ -116,12 +132,12 @@ export default function TableWithStripedColumns() {
                             className="h-full flex flex-col justify-center items-center bg-transparent"
                           >
                             {/* <div className="hidden md:block"> */}
-                              <iframe
-                                title="Institute Letter"
-                                src={`data:application/pdf;base64,${value}`}
-                                width="80%"
-                                height="80%"
-                              />
+                            <iframe
+                              title="Institute Letter"
+                              src={`data:application/pdf;base64,${value}`}
+                              width="80%"
+                              height="80%"
+                            />
                             {/* </div> */}
                             <div className="md:hidden">
                               <a
@@ -160,12 +176,12 @@ export default function TableWithStripedColumns() {
                             className="h-full flex flex-col justify-center items-center bg-transparent"
                           >
                             {/* <div className="hidden md:block"> */}
-                              <iframe
-                                title="Institute Letter"
-                                src={`data:application/pdf;base64,${value}`}
-                                width="80%"
-                                height="80%"
-                              />
+                            <iframe
+                              title="Institute Letter"
+                              src={`data:application/pdf;base64,${value}`}
+                              width="80%"
+                              height="80%"
+                            />
                             {/* </div> */}
                             <div className="md:hidden">
                               <a
@@ -193,19 +209,52 @@ export default function TableWithStripedColumns() {
                 </tr>
               );
             })}
+            {commentSection && (
+              <tr>
+                <td className="p-4 border border-blue-gray-50">
+                  <Typography
+                    variant="medium"
+                    color="blue-gray"
+                    className="font-bold"
+                  >
+                    Comments
+                  </Typography>
+                </td>
+                <td className="p-4 border border-blue-gray-50">
+                  <textarea value={comments[id]? comments[id]: null} onChange={(event)=>setComments({...comments, [id]:event.target.value})} className="w-full h-24 px-3 py-2 border border-gray-300 rounded-md resize-none" placeholder="Add comments here..."/>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </Card>
-      {renderButtons && <div>
-      <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
-        onClick={()=>{alert("Payment details sent via email")}}
-      >
-        Send Payment details
-      </button>
-      <NavLink to="/room-view" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline">
-        Allot Room
-      </NavLink >
-      </div>}
+      {renderButtons ? (
+        <>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+            onClick={() => {
+              alert("Payment details sent via email");
+            }}
+          >
+            Send Payment details
+          </button>
+          <NavLink
+            to="/room-view"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
+          >
+            Allot Room
+          </NavLink>
+        </>
+      ) : (
+        <>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+            onClick={()=>{ return (comments[id] ? handleSubmit() : setCommentSection(!commentSection))}}
+          >
+            {comments[id] ? "Submit" : "Add comments"}
+          </button>
+        </>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import Form from "./screens/Form";
 import AboutUs from "./screens/AboutUs";
 import Headers from "./components/Headers";
 import "bootstrap/dist/css/bootstrap.min.css";
+import {CommentsProvider} from "./contexts/commentsContext";
 import StudentSignup from "./screens/Signup";
 import Home from "./screens/Home";
 import Contact from "./screens/Contact";
@@ -62,6 +63,7 @@ function App() {
     font-[Poppins] md:bg-top bg-center"
     >
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />
+      <CommentsProvider>
       <Routes>
         <Route path="/" element={<LandingPage />}/>
         <Route path="/home" element={<Home />} />
@@ -76,8 +78,8 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="add-student" element={<AddStudents />} />
           <Route path="add-faculty" element={<AddFaculty />} />
-          <Route path="application-status" element={<ApplicationStatus />} />
-          <Route path="application-status-2" element={<ApplicationStatus2 />} />
+          <Route path="application-status" element={<ApplicationStatus2 />} />
+          {/* <Route path="application-status-2" element={<ApplicationStatus2 />} /> */}
           <Route path="complaint-status" element={<ComplaintStatus />} />
           <Route path="application-status/application/:id" element={<ApplicationView />}/>
         </Route>
@@ -99,6 +101,7 @@ function App() {
         </Route>
 
       </Routes>
+      </CommentsProvider>
       <Footer showPopup={showPopup} setShowPopup={setShowPopup} />
     </section>
   );

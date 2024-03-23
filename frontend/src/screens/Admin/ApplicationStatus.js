@@ -3,6 +3,7 @@ import "../../styles/tailwind.css";
 import axios from "axios";
 import { useAuth } from "../../contexts/authContext";
 import { useNavigate } from "react-router-dom";
+import { useComments } from "../../contexts/commentsContext";
 const ApplicationList = ({ applications, data, setData }) => {
   const [openDropdown, setOpenDropdown] = useState({});
   const navigate = useNavigate();  
@@ -197,16 +198,18 @@ const ApplicationStatus = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
+  const {comments, setComments} = useComments();
   const handleSubmit = () => {
     console.log("Data to be submitted:", data);
     // Add logic to submit the data to the backend
     const backendUrl=process.env.REACT_APP_BASE_URL;
-    axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
-    .then((res)=>{
-      console.log(res.data);
-      alert("Data submitted successfully");
-      window.location.reload();
-    })
+    // axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
+    // .then((res)=>{
+    //   console.log(res.data);
+    //   alert("Data submitted successfully");
+    //   window.location.reload();
+    // })
+    console.log(comments)
     
   }
   return (

@@ -2,11 +2,20 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "../styles/tailwind.css";
 import { useAuth } from "../contexts/authContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 const Form = () => {
   const backendUrl = process.env.REACT_APP_BASE_URL;
+  const [commentDiv, setCommentDiv] = useState(false);
   const { currentUser } = useAuth();
   const navigate=useNavigate();
+  const location=useLocation();
+  const { filled } = location.state || {};
+  // console.log("state:", filled)
+  // if(filled.comments){
+  //   // alert(`Your application has been ${filled.status}. Comments: ${filled.comments}`)
+  //   setCommentDiv(true)
+  //   console.log("Comments:", filled.comments)
+  // }
   // console.log(currentUser);
   const [formData, setFormData] = useState({
     studentName: '',
@@ -49,7 +58,7 @@ const Form = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // console.log("Form submitted:", formData);
-    if(formData.arrivalDate > formData.departureDate || formData.arrivalDate <= new Date().toISOString().split('T')[0] || formData.departureDate <= new Date().toISOString().split('T')[0]) {
+    if((formData.arrivalDate > formData.departureDate || formData.arrivalDate <= new Date().toISOString().split('T')[0] || formData.departureDate <= new Date().toISOString().split('T')[0]) && (!filled) ) {
       alert("Please enter valid dates");
       return;
     }
@@ -67,7 +76,9 @@ const Form = () => {
     data.append("instituteID", file1Data);
     data.append("instituteLetter", file2Data);
     data.append("remarks", formData.remarks);
-
+    if (filled) {
+      data.append("correction", filled.application_id);
+    }
     axios.post(`${backendUrl}/api/internship`, data,{withCredentials: true}, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -91,16 +102,21 @@ const Form = () => {
         // Update other fields accordingly
       }));
     }
-  }, [currentUser]);
+    if (filled && filled.comments) {
+      setCommentDiv(true);
+      console.log("Comments:", filled.comments);
+    }
+  }, [currentUser, filled]);
   return (
     <div >
+      {filled && (<div className="text-red-500">Your application has been {filled.status}. Comments: {filled.comments}</div>)}
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-0 p-8 rounded bg-white lg:px-20"
       >
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Name of the student Intern: <span className="text-red-500">*</span>
+          Name of the student Intern: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -109,12 +125,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Gender: <span className="text-red-500">*</span>
+          Gender: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <select
           name="gender"
@@ -122,7 +138,7 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         >
           <option value="">Select</option>
           <option value="male">Male</option>
@@ -132,7 +148,7 @@ const Form = () => {
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Affiliation of the student intern: <span className="text-red-500">*</span>
+          Affiliation of the student intern: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -141,12 +157,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Address: <span className="text-red-500">*</span>
+          Address: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <textarea
           name="address"
@@ -154,12 +170,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Contact Number: <span className="text-red-500">*</span>
+          Contact Number: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -168,12 +184,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Email: <span className="text-red-500">*</span>
+          Email: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -182,12 +198,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Name of the Faculty Mentor: <span className="text-red-500">*</span>
+          Name of the Faculty Mentor: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -196,12 +212,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Faculty Mentor's Email: <span className="text-red-500">*</span>
+          Faculty Mentor's Email: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="text"
@@ -210,12 +226,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Date of arrival: <span className="text-red-500">*</span>
+          Date of arrival: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="date"
@@ -224,12 +240,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Date of departure: <span className="text-red-500">*</span>
+          Date of departure: {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="date"
@@ -238,12 +254,12 @@ const Form = () => {
           onChange={handleChange}
           aria-required="true"
           className="mt-1 p-2 w-full border rounded"
-          required
+          required={filled && filled.comments ? false : true}
         />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Copy of your Institute ID Card (pdf): <span className="text-red-500">*</span>
+          Copy of your Institute ID Card (pdf): {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="file"
@@ -253,12 +269,12 @@ const Form = () => {
           onChange={(e) => handleFileChange(e, 1)}
           aria-required="true"
           className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
-          required
+          required={filled && filled.comments ? false : true}
           />
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
-          Copy of Official Letter from your Institute (pdf): <span className="text-red-500">*</span>
+          Copy of Official Letter from your Institute (pdf): {filled ? null : <span className="text-red-500">*</span>}
         </label>
         <input
           type="file"
@@ -268,7 +284,7 @@ const Form = () => {
           onChange={(e) => handleFileChange(e, 2)}
           aria-required="true"
           className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700" style={{ color: '#000' }}
-          required
+          required={filled && filled.comments ? false : true}
           />
       </div>
       <div className="mb-4">

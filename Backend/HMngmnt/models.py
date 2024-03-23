@@ -43,7 +43,8 @@ class Application(models.Model):
     instiId= models.FileField(upload_to='documents/')
     letter= models.FileField(upload_to='documents/')
     status = models.CharField(max_length=100, default='Pending Faculty Approval')
-
+    comments = models.CharField(max_length=300, default='None')
+    
     def __str__(self):
         return f"Application id: {self.application_id}"
     def get_faculty_name(self):
@@ -51,8 +52,6 @@ class Application(models.Model):
     def get_student_name(self):
         return self.student.name
 
-class Application_Final(models.Model):
-    application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
 
 class Hostel(models.Model):
     hostel_no = models.CharField(primary_key=True, max_length=20)
@@ -62,6 +61,10 @@ class Hostel(models.Model):
     capacity = models.IntegerField(default=1)
     def __str__(self):
         return self.hostel_name
+    
+class Application_Final(models.Model):
+    application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
+    hostel= models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None, null=True)
 
 class Room(models.Model):
     room_no = models.CharField(primary_key=True, max_length=20)

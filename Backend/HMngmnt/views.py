@@ -27,6 +27,46 @@ def internship(request):
     facultyE= request.POST.get('facultyEmail')
     student= request.POST.get('studentEmail')
     gender= request.POST.get('gender')
+    correction= request.POST.get('correction')
+    if correction is not None:
+        application=Application.objects.get(application_id=correction)
+        print(request.POST)
+        for key, val in request.POST.items():
+            print(key, val)
+            if key=='correction' or key=='studentName' or key=='studentEmail':
+                continue
+            if val:
+                if key=='gender':
+                    application.student.gender=val
+                    application.student.save()
+                elif key=='affiliation':
+                    application.affiliation=val
+                elif key=='address':
+                    application.address=val
+                elif key=='contactNumber':
+                    application.phone=val
+                elif key=='facultyEmail':
+                    application.faculty=Faculty.objects.get(faculty__email=val)
+                elif key=='arrivalDate':
+                    application.arrival=val
+                elif key=='departureDate':
+                    application.departure=val
+
+        if request.FILES.get('instituteID'):
+            application.instiId=request.FILES.get('instituteID')
+        if request.FILES.get('instituteLetter'):
+            application.letter=request.FILES.get('instituteLetter')
+        application.comments='None'
+        if "Faculty" in application.status:
+            application.status='Pending Faculty Approval'
+        elif "HOD" in application.status:
+            application.status='Pending HOD Approval'
+        elif "Admin" in application.status:
+            application.status='Pending Admin Approval'
+        application.save()
+
+        # print(application, 'hahaha', request.POST)
+        return HttpResponse("Application corrected successfully", status=200)
     if CustomUser.objects.get(email=student) is None:
         return HttpResponse("Student not found", status=300)
     if CustomUser.objects.get(email=facultyE) is None:
@@ -150,6 +190,8 @@ def get_application_status(request):
         'instiId': handle_file_attachment(application.instiId.path),
         'letter': handle_file_attachment(application.letter.path)
     }
+    if "Rejected" in application.status:
+        applicationX['comments']=application.comments
     # print('here: ', application.letter.path, application.instiId.path)
     return JsonResponse({'message': 'Student page', 'data': applicationX})
 
@@ -308,39 +350,51 @@ def view_applications(request):
 @csrf_exempt
 @staff_required
 def view_final_applications(request):
-    applications=Application_Final.objects.select_related('application', 'application__student', 'application__faculty')
-    application_list = [
-        {
-            'application_id': application.application.application_id,
-            'student': application.application.student.name,
-            'affiliation': application.application.affiliation,
-            'faculty': application.application.faculty.faculty.name,
-            'status': application.application.status
-        }
-        for application in applications
-    ]
-    print('application_list:', application_list)
-    return JsonResponse({'message': 'Staff page', 'data': {'own':application_list}})    
+    user=request.new_param
+    user=CustomUser.objects.get(pk=user.get('id'))
+    hostel=user.caretaker.hostel
+    print('hostel:', hostel)
+    # applications=Application_Final.objects.select_related('application', 'application__student', 'application__faculty')
+    # application_list = [
+    #     {
+    #         'application_id': application.application.application_id,
+    #         'student': application.application.student.name,
+    #         'affiliation': application.application.affiliation,
+    #         'faculty': application.application.faculty.faculty.name,
+    #         'status': application.application.status
+    #     }
+    #     for application in applications
+    # ]
+    # print('application_list:', application_list)
+    return JsonResponse({'message': 'Staff page', 'data': {'own': []}})
+    # return JsonResponse({'message': 'Staff page', 'data': {'own':application_list}})    
 
 
 @csrf_exempt
 @staff_required
 def update_application(request):
     try:
-        data=json.loads(request.body)
-        data=data['data']
-        mapping={
-            0: 'Pending Caretaker Action',
-            1: 'Pending HOD Approval',
-            2: 'Pending Admin Approval',
-        }
-        for obj in data:
-            application=Application.objects.get(application_id=obj['appId'])
-            application.status=mapping[int(obj['action'])]
+        # print(request.body.decode('utf-8'))
+        data=json.loads(request.body.decode('utf-8'))
+        data=data['updatedSelectedOptions']
+        # print('here',data)
+        # print(request.path)
+        for application_id, status in data.items():
+            # print('application_id:', application_id)
+            print('status:', status['hostel'])
+            application=Application.objects.get(application_id=int(application_id))
+            # print('application:', application)
+            application.status=status['value']
+            if 'Rejected' in status['value']:
+                application.comments=status['comments']
+            elif status['value']=='Pending Caretaker Action':
+                # Application_Final(application=application, hostel=Hostel.objects.get(hostel_name=status['hostel'])).save()
+                hostel=Hostel.objects.get(hostel_name=str(status['hostel']))
+                print('here')
+                print('hostel:', hostel)
+                new_app=Application_Final(application=application, hostel=hostel)
+                new_app.save()
             application.save()
-            if int(obj['action']) == 0:
-                application_final=Application_Final(application=application)
-                application_final.save()
         return JsonResponse({'message': 'Applications updated successfully.'})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
