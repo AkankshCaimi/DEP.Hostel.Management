@@ -79,6 +79,19 @@ const Internship = () => {
               <th className="border-r border-black px-2 py-1">Status:</th>
               <td className="px-2 py-1">
                 {application.status}
+                {application.status === "Pending Payment Action" && (
+                    <>
+                      <span>,&nbsp;&nbsp;&nbsp;</span>
+                      <button
+                        onClick={() => {
+                          window.open("https://www.onlinesbi.sbi/sbicollect/icollecthome.htm", "_blank");
+                        }}
+                        className="text-blue-500 underline hover:text-blue-700"
+                      >
+                        Pay here
+                      </button>
+                    </>
+                  )}
                 {application.status && application.status.includes("Rejected") && " - Edit your application!"}
               </td>
             </tr>
@@ -106,7 +119,7 @@ const Internship = () => {
                 </th>
                 <td className="px-2 py-1 hover:cursor-pointer text-blue-500">
                   <span
-                    className="hover:underline"
+                    className="underline hover:text-blue-700"
                     onClick={() => {
                       setModalIsOpen(true);
                     }}
@@ -127,7 +140,7 @@ const Internship = () => {
                   />
                   <button
                     onClick={() => setModalIsOpen(false)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline"
+                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline mt-2"
                   >
                     Close
                   </button>
@@ -139,7 +152,7 @@ const Internship = () => {
                 </th>
                 <td className="px-2 py-1 hover:cursor-pointer text-blue-500">
                   <span
-                    className="hover:underline"
+                    className="underline hover:text-blue-700"
                     onClick={() => {
                       setModalIsOpen2(true);
                     }}
@@ -160,7 +173,7 @@ const Internship = () => {
                   />
                   <button
                     onClick={() => setModalIsOpen2(false)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline"
+                    className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline mt-2"
                   >
                     Close
                   </button>
