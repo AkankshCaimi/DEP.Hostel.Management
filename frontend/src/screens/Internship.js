@@ -12,8 +12,12 @@ const Internship = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpen2, setModalIsOpen2] = useState(false);
   const [editButton, setEditButton] = useState(false);
+  const [paymentProof, setPaymentProof] = useState("");
+  const [transactionId, setTransactionId] = useState("");
+  const [uploadButtonDisabled, setUploadButtonDisabled] = useState(true);
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_BASE_URL;
+
   useEffect(() => {
     // Dummy API call to fetch application status
     const fetchApplicationStatus = async () => {
@@ -24,16 +28,10 @@ const Internship = () => {
             withCredentials: true,
           })
           .then((data) => {
-            // console.log("Data:", data.data.data, typeof data.data.data.status);
             setApplication(data.data.data);
             if (data.data.data.status.includes("Rejected")) {
-              // alert(
-              //   `Your application has been ${data.data.data.status}! Edit your application`
-              // );
-              // navigate("/form", { state: { filled: data.data.data } });
               setEditButton(true);
             }
-            // console.log("here:", data.data.data);
           })
           .catch((error) => {
             console.error("Error fetching application status:", error);
@@ -46,16 +44,42 @@ const Internship = () => {
 
     currentUser && fetchApplicationStatus();
   }, []);
-  // if (application && application.status.includes("Rejected")) {
-  //   console.log(application);
-  //   alert(
-  //     `Your application has been ${application.status}! Edit your application`
-  //   );
-  //   navigate("/form", { state: { filled: application } });
-  // }
+
+  // Handle upload button enable/disable based on form fields
+  useEffect(() => {
+    // Enable/disable upload button based on form fields
+    if (application.status === "Pending Payment Action") {
+      setUploadButtonDisabled(!(paymentProof && transactionId));
+    }
+  }, [application.status, paymentProof, transactionId]);
+
+
+  // Handle change in payment proof input
+  const handlePaymentProofChange = (event) => {
+    setPaymentProof(event.target.files[0]);
+  };
+
+  // Handle change in transaction ID input
+  const handleTransactionIdChange = (event) => {
+    setTransactionId(event.target.value);
+  };
+
+  // Handle upload button click
+  const handleUpload = () => {
+    // Implement upload functionality here
+    // Example: Make API call to upload payment proof and transaction ID
+    alert("Payment proof and transaction ID uploaded successfully!");
+  };
+
   return currentUser ? (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Internship Application</h1>
+
+      {application.status === "Pending Payment Action" && (
+        <div>
+          <span className="text-red-500">*</span> Required fields
+        </div>
+      )}
 
       {application ? (
         <>
@@ -66,9 +90,7 @@ const Internship = () => {
                 <td className="px-2 py-1">{application.application_id}</td>
               </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Student Name:
-                </th>
+                <th className="border-r border-black px-2 py-1">Student Name:</th>
                 <td className="px-2 py-1">{application.student}</td>
               </tr>
               <tr className="border-b border-black">
@@ -76,47 +98,26 @@ const Internship = () => {
                 <td className="px-2 py-1">{application.faculty}</td>
               </tr>
               <tr className="border-b border-black">
-              <th className="border-r border-black px-2 py-1">Status:</th>
-              <td className="px-2 py-1">
-                {application.status}
-                {application.status === "Pending Payment Action" && (
-                    <>
-                      <span>,&nbsp;&nbsp;&nbsp;</span>
-                      <button
-                        onClick={() => {
-                          window.open("https://www.onlinesbi.sbi/sbicollect/icollecthome.htm", "_blank");
-                        }}
-                        className="text-blue-500 underline hover:text-blue-700"
-                      >
-                        Pay here
-                      </button>
-                    </>
-                  )}
-                {application.status && application.status.includes("Rejected") && " - Edit your application!"}
-              </td>
-            </tr>
+                <th className="border-r border-black px-2 py-1">Status:</th>
+                <td className="px-2 py-1">
+                  {application.status}
+                  {application.status && application.status.includes("Rejected") && " - Edit your application!"}
+                </td>
+              </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Affiliation:
-                </th>
+                <th className="border-r border-black px-2 py-1">Affiliation:</th>
                 <td className="px-2 py-1">{application.affiliation}</td>
               </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Arrival Date:
-                </th>
+                <th className="border-r border-black px-2 py-1">Arrival Date:</th>
                 <td className="px-2 py-1">{application.arrival}</td>
               </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Departure Date:
-                </th>
+                <th className="border-r border-black px-2 py-1">Departure Date:</th>
                 <td className="px-2 py-1">{application.departure}</td>
               </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Institute ID:
-                </th>
+                <th className="border-r border-black px-2 py-1">Institute ID:</th>
                 <td className="px-2 py-1 hover:cursor-pointer text-blue-500">
                   <span
                     className="underline hover:text-blue-700"
@@ -147,9 +148,7 @@ const Internship = () => {
                 </Modal>
               </tr>
               <tr className="border-b border-black">
-                <th className="border-r border-black px-2 py-1">
-                  Institute Letter:
-                </th>
+                <th className="border-r border-black px-2 py-1">Institute Letter:</th>
                 <td className="px-2 py-1 hover:cursor-pointer text-blue-500">
                   <span
                     className="underline hover:text-blue-700"
@@ -179,8 +178,58 @@ const Internship = () => {
                   </button>
                 </Modal>
               </tr>
+              {/* Add conditional rendering for Payment Proof and Transaction ID */}
+              {application.status === "Pending Payment Action" && (
+                <>
+                  <tr className="border-b border-black">
+                    <th className="border-r border-black px-2 py-1">
+                      <span className="text-red-500">*</span> Upload Payment Proof:
+                    </th>
+                    <td className="px-2 py-1">
+                      <input
+                        type="file"
+                        accept=".pdf"
+                        className=""
+                        onChange={handlePaymentProofChange} // Add onChange handler
+                      />
+                    </td>
+                  </tr>
+                  <tr className="border-b border-black">
+                    <th className="border-r border-black px-2 py-1">
+                      <span className="text-red-500">*</span> Transaction ID:
+                    </th>
+                    <td className="px-2 py-1">
+                      <input
+                        type="text"
+                        className="bg-white border border-black p-1"
+                        onChange={handleTransactionIdChange} // Add onChange handler
+                      />
+                    </td>
+                  </tr>
+                </>
+              )}
+
             </tbody>
+
           </table>
+          {application.status === "Pending Payment Action" && (
+        <div> 
+          <span className="text-gray-600">Fill the required fields to update the information</span>
+        </div>
+      )}
+
+          {application.status === "Pending Payment Action" && (
+            <div className="flex justify-center"> {/* Center the button */}
+              <button
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none ${uploadButtonDisabled ? 'cursor-not-allowed opacity-50' : 'hover:cursor-pointer'}`}
+                onClick={handleUpload} // Add onClick handler
+                disabled={uploadButtonDisabled} // Disable button when necessary
+              >
+                Update
+              </button>
+            </div>
+          )}
+
           {editButton && (
             <NavLink
               to="/form"
@@ -197,7 +246,6 @@ const Internship = () => {
           <NavLink
             to="/form"
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 no-underline"
-            // state={{ filled: application }}
           >
             Submit an Application
           </NavLink>
