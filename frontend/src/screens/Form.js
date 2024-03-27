@@ -29,6 +29,7 @@ const Form = () => {
     arrivalDate: "",
     departureDate: "",
     remarks: "",
+    termsAccepted: false,
   });
   const [file1Data, setFile1Data] = useState(null);
   const file1Ref= useRef(null);
@@ -55,8 +56,20 @@ const Form = () => {
 
     // console.log(e.target.files[0])
   };
+
+  const handleCheckboxChange = () => {
+    setFormData({
+      ...formData,
+      termsAccepted: !formData.termsAccepted,
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.termsAccepted) {
+      alert("Please accept the terms and conditions");
+      return;
+    }
     // console.log("Form submitted:", formData);
     if((formData.arrivalDate > formData.departureDate || formData.arrivalDate <= new Date().toISOString().split('T')[0] || formData.departureDate <= new Date().toISOString().split('T')[0]) && (!filled) ) {
       alert("Please enter valid dates");
@@ -108,13 +121,15 @@ const Form = () => {
     }
   }, [currentUser, filled]);
   return (
-    <div >
+    <div className="bg-white">
+      <div className="bg-white pt-2"><span className="text-red-500 ml-20 bg-white">*</span> Required fields</div>
       {filled && (<div className="text-red-500">Your application has been {filled.status}. Comments: {filled.comments}</div>)}
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-0 p-8 rounded bg-white lg:px-20"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mt-0 pt-8 rounded bg-white lg:px-20"
       >
-      <div className="mb-4">
+        
+      <div className="">
         <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
           Name of the student Intern: {filled ? null : <span className="text-red-500">*</span>}
         </label>
@@ -287,31 +302,63 @@ const Form = () => {
           required={filled && filled.comments ? false : true}
           />
       </div>
-      <div className="mb-4">
-    <label className="block text-sm font-medium text-gray-600" style={{ color: '#000' }}>
+    </form>
+    <div className="ml-20 mr-20">
+    <label className="text-sm font-medium text-gray-600" style={{ color: '#000' }}>
       Remarks:
     </label>
     <textarea
       name="remarks"
       value={formData.remarks}
       onChange={handleChange}
-      className="mt-1 p-2 w-full border rounded"
+      className="p-1 w-full border rounded"
     />
-  </div>
-    
-
-      <div className="mt-4 text-sm text-gray-500" style={{ color: '#000' }}>
+    <div className="text-sm text-gray-500 mt-4 mb-4" style={{ color: '#000' }}>
     *Hostel room rent: Rs. 150/- per day per person or Rs. 3000/- per month which is less. Security (refundable) Rs. 10000/-
   </div>
-  <div className="mt-8 my-10 flex justify-center">
-  <button
-    type="submit"
-    className="bg-color text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
-  >
-    Submit
-  </button>
-</div>
-    </form>
+    {/* Scrollable box for terms and conditions */}
+        <h2 className="text-lg font-bold mb-2">Terms and Conditions:</h2>
+    <div className="bg-gray-100 rounded-md max-h-48 overflow-y-auto border border-black p-2">
+        <p>1. The request for accommodation should be submitted prior to arrival as per existing rules.</p>
+        <p>2. The Internship students are required to pay hostel room rent and food charges in advance to
+Student Affairs Section.</p>
+<p>3. Separate rooms on shared basis are allotted for boys and girls in hostels.</p>
+<p>4. One day minimum charge shall be levied for all bookings unless these are cancelled at least 48 hrs.
+before the commencement of the occupancy. Similarly, in case a guest fails to occupy the booked
+accommodation, the same will be cancelled after one day of the booking date.</p>
+<p>5. Booking is not permitted for student undergoing medical treatment/ advice and who are suffering
+from communicable disease or bed ridden or are under post-delivery case.</p>
+<p>6. In case of cancelled one day will be counted on 24 hrs. basis or a part thereof commencing the time
+of arrival.</p>
+<p>7. Pets/Dogs/Cats etc. are not allowed in the hostel premises.
+</p>
+      </div>
+
+      {/* Checkbox for accepting terms and conditions */}
+      <div className="mt-4 flex items-center">
+        <input
+          type="checkbox"
+          id="termsCheckbox"
+          name="termsAccepted"
+          checked={formData.termsAccepted}
+          onChange={handleCheckboxChange}
+          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+        />
+        <label htmlFor="termsCheckbox" className="ml-2 block text-sm text-gray-900">
+          I agree to the terms and conditions
+        </label>
+      </div>
+      
+      {/* Submit button */}
+      <div className="mt-8 my-10 flex justify-center">
+        <button
+          type="submit"
+          className="bg-color text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 mb-4"
+        >
+          Submit
+        </button>
+      </div>
+      </div>
     </div>
   );
 };
