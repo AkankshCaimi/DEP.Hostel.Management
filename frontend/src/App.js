@@ -24,7 +24,7 @@ import { useAuth } from "./contexts/authContext";
 import CaretakerDashboard from "./screens/Caretaker/CaretakerDashboard";
 import Admin from "./screens/Admin/Admin";
 import Professor from "./screens/Professors/Professors";
-import RoomView from "./screens/Caretaker/RoomView";
+import HostelView from "./screens/Caretaker/HostelView";
 import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
@@ -96,7 +96,7 @@ function App() {
           <Route index element={<CaretakerDashboard />} />
           <Route path='application-status' element={<FinalAppStatus />} />
           <Route path='application-status/application/:id' element={<ApplicationView />} />
-          <Route path="room-view" element={<RoomView />} />
+          <Route path="hostel-view/:hostel" element={<HostelView />} />
           <Route path="room-details/:id" element={<RoomDetails />} />
         </Route>
 

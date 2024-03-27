@@ -28,17 +28,20 @@ export default function TableWithStripedColumns() {
     departure: "2024-03-15",
     instiId: "institute-id.pdf",
     letter: "institute-letter.pdf",
+    // payment: "payment-proof.pdf",
   });
   const [application, setApplication] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpen2, setModalIsOpen2] = useState(false);
+  const [modalIsOpen3, setModalIsOpen3] = useState(false);
+  const [email, setEmail] = useState("");
   // const [commentSection, setCommentSection] = useState(false);
   const { id } = useParams();
   const variableClassName = (idx) =>
     idx <= 7 ? "border-b" : "border-b hover:cursor-pointer";
   console.log("Application ID:", id);
   // Hardcoded field names
-  const fieldNames = [
+  const [fieldNames, setFieldNames] = useState([
     "Student Name",
     "Application ID",
     "Affiliation",
@@ -49,7 +52,8 @@ export default function TableWithStripedColumns() {
     "Departure Date",
     "Institute ID",
     "Institute Letter",
-  ];
+    // "Payment Proof",
+  ]);
   const handleSubmit = () => {
     console.log("Data to be submitted:", comments[id]);
     // setAddedComments(comments)
@@ -59,20 +63,48 @@ export default function TableWithStripedColumns() {
     navigate("../application-status");
     
   }
+  const handlePayment=()=>{
+    axios.get(`${backendUrl}/api/send_email?recipient=${email}&template=${0}&id=${formData.application_id}`, {withCredentials: true})
+    .then((res)=>{
+      console.log(res)
+      alert("Email sent successfully")
+      window.location.reload()
+    })
+    // console.log(email)
+  }
+  const viewPdf = ()=>{
+    axios.get(`${backendUrl}/api/generate_pdf?application_id=${id}`, {withCredentials: true, responseType: 'blob'})
+    .then((res)=>{
+      console.log('here')
+      const file = new Blob([res.data], {type: 'application/pdf'});
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL);
+    })
+  }
   useEffect(() => {
     // Fetch application data from backend using the application ID
     axios
       .get(`${backendUrl}/api/get_application/${id}`, { withCredentials: true })
       .then((res) => {
-        console.log(res.data);
+        console.log('here', res.data);
         setApplication({
           instiId: res.data.data.instiId,
           letter: res.data.data.letter,
+          payment: res.data.data.payment_proof ? res.data.data.payment_proof : null,
         });
         const newObj = { ...res.data.data };
         newObj.instiId = "View PDF";
         newObj.letter = "View PDF";
+        newObj.payment= res.data.data.payment_proof ? "View PDF" : null;
+        // newObj.payment_id= res.data.data.payment_proof ? res.data.data.payment_id : null;
+        // add payment to the fieldNames array
+        if (res.data.data.payment_proof && !fieldNames.includes("Payment Proof")) {
+          // fieldNames.push("Payment Proof");
+          // fieldNames.push("Payment ID");
+          setFieldNames([...fieldNames, "Payment Proof", "Payment ID"]);
+        }
         setFormData(newObj);
+        setEmail(res.data.data.student_email);
       })
       .catch((err) => {
         console.log(err);
@@ -201,7 +233,53 @@ export default function TableWithStripedColumns() {
                             </button>
                           </Modal>
                         </>
-                      ) : (
+                      ) : fieldName === "Payment Proof" ? (
+                        <>
+                          <button
+                            onClick={() => {
+                              setModalIsOpen3(true);
+                            }}
+                            target="_blank"
+                            rel="noopener noreferrer "
+                            className="underline text-blue-500 hover:text-blue-800"
+                          >
+                            View PDF
+                          </button>
+                          <Modal
+                            isOpen={modalIsOpen3}
+                            onRequestClose={() => setModalIsOpen3(false)}
+                            contentLabel="Institute Letter"
+                            className="h-full flex flex-col justify-center items-center bg-transparent"
+                          >
+                            {/* <div className="hidden md:block"> */}
+                            <iframe
+                              title="Institute Letter"
+                              src={`data:application/pdf;base64,${value}`}
+                              width="80%"
+                              height="80%"
+                            />
+                            {/* </div> */}
+                            <div className="md:hidden">
+                              <a
+                                href={`data:application/pdf;base64,${value}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline text-blue-500 hover:text-blue-800"
+                              >
+                                Open in New Tab
+                              </a>
+                            </div>
+                            <button
+                              onClick={() => setModalIsOpen3(false)}
+                              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700"
+                            >
+                              Close
+                            </button>
+                          </Modal>
+
+                        </>
+                      ) 
+                      :(
                         value // Render normal value if not PDF
                       )}
                     </Typography>
@@ -228,24 +306,28 @@ export default function TableWithStripedColumns() {
           </tbody>
         </table>
       </Card>
-      {renderButtons ? (
+      {renderButtons? 
+      (
+        <>
+        {(application && application.status && !application.status.includes("Payment")) ?
         <>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
-            onClick={() => {
-              alert("Payment details sent via email");
-            }}
-          >
+            onClick={handlePayment}
+            >
             Send Payment details
           </button>
-          <NavLink
-            to="/room-view"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
+        </> :
+        <></>}
+        <NavLink
+          to="/hostel-view"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
           >
-            Allot Room
-          </NavLink>
+          Allot Room
+        </NavLink>
         </>
-      ) : (
+      ) : application && !(application.status.includes("Payment") || application.status.includes("Caretaker")) ?
+      (
         <>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
@@ -254,7 +336,16 @@ export default function TableWithStripedColumns() {
             {comments[id] ? "Submit" : "Add comments"}
           </button>
         </>
-      )}
+      ):
+      <></>
+      }
+      <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 flex" onClick={viewPdf}>
+        Generate PDF
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+        </svg>
+
+        </button>
     </div>
   );
 }

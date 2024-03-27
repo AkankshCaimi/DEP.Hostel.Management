@@ -17,7 +17,7 @@ const Internship = () => {
   const [uploadButtonDisabled, setUploadButtonDisabled] = useState(true);
   const navigate = useNavigate();
   const backendUrl = process.env.REACT_APP_BASE_URL;
-
+  // console.log(currentUser);
   useEffect(() => {
     // Dummy API call to fetch application status
     const fetchApplicationStatus = async () => {
@@ -28,9 +28,14 @@ const Internship = () => {
             withCredentials: true,
           })
           .then((data) => {
-            setApplication(data.data.data);
-            if (data.data.data.status.includes("Rejected")) {
-              setEditButton(true);
+            if(!data || !data.data){
+              setApplication(null);
+            }else{
+              setApplication(data.data.data);
+              // console.log(data.data.data);
+              if (data.data.data.status.includes("Rejected")) {
+                setEditButton(true);
+              }
             }
           })
           .catch((error) => {
@@ -48,10 +53,10 @@ const Internship = () => {
   // Handle upload button enable/disable based on form fields
   useEffect(() => {
     // Enable/disable upload button based on form fields
-    if (application.status === "Pending Payment Action") {
+    if (application && application.status === "Pending Payment") {
       setUploadButtonDisabled(!(paymentProof && transactionId));
     }
-  }, [application.status, paymentProof, transactionId]);
+  }, [application, paymentProof, transactionId]);
 
 
   // Handle change in payment proof input
@@ -66,16 +71,25 @@ const Internship = () => {
 
   // Handle upload button click
   const handleUpload = () => {
+    const data= new FormData();
+    data.append('payment_proof', paymentProof);
+    data.append('payment_id', transactionId);
+    data.append('application_id', application.application_id);
+    axios.post(`${backendUrl}/api/update_payment`, data, {withCredentials: true})
+    .then((response) => {
     // Implement upload functionality here
     // Example: Make API call to upload payment proof and transaction ID
+    console.log(response);
     alert("Payment proof and transaction ID uploaded successfully!");
+    // navigate("/internship");
+  })
   };
 
   return currentUser ? (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Internship Application</h1>
 
-      {application.status === "Pending Payment Action" && (
+      {application&& application.status === "Pending Payment" && (
         <div>
           <span className="text-red-500">*</span> Required fields
         </div>
@@ -179,7 +193,7 @@ const Internship = () => {
                 </Modal>
               </tr>
               {/* Add conditional rendering for Payment Proof and Transaction ID */}
-              {application.status === "Pending Payment Action" && (
+              {application.status === "Pending Payment" && (
                 <>
                   <tr className="border-b border-black">
                     <th className="border-r border-black px-2 py-1">
@@ -212,13 +226,13 @@ const Internship = () => {
             </tbody>
 
           </table>
-          {application.status === "Pending Payment Action" && (
+          {application.status === "Pending Payment" && (
         <div> 
           <span className="text-gray-600">Fill the required fields to update the information</span>
         </div>
       )}
 
-          {application.status === "Pending Payment Action" && (
+          {application.status === "Pending Payment" && (
             <div className="flex justify-center"> {/* Center the button */}
               <button
                 className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none ${uploadButtonDisabled ? 'cursor-not-allowed opacity-50' : 'hover:cursor-pointer'}`}

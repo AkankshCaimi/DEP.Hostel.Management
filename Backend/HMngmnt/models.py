@@ -42,6 +42,8 @@ class Application(models.Model):
     departure = models.DateField()
     instiId= models.FileField(upload_to='documents/')
     letter= models.FileField(upload_to='documents/')
+    payment_proof= models.FileField(upload_to='documents/', default=None, null=True, blank=True)
+    payment_id= models.CharField(max_length=100, default='None', null=True, blank=True)
     status = models.CharField(max_length=100, default='Pending Faculty Approval')
     comments = models.CharField(max_length=300, default='None')
     
@@ -73,14 +75,28 @@ class Room(models.Model):
     room_occupancy = models.IntegerField(default=1)
     current_occupancy = models.IntegerField(default=0)
 
+class Batch(models.Model):
+    batch = models.IntegerField(primary_key=True, default=0)
+    number_of_students = models.IntegerField(default=0)
+    number_of_girls= models.IntegerField(default=0)
+    number_of_boys= models.IntegerField(default=0)
+    def __str__(self):
+        return str(self.batch)
+
 class Student(models.Model):
     student= models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
     department = models.CharField(max_length=100)
     student_phone = models.CharField(max_length=10)
     student_roll = models.CharField(max_length=15)
     student_year = models.IntegerField(default=None)
-    student_room = models.OneToOneField(Room, on_delete=models.CASCADE, null=True, blank=True, default=None)
-    is_backlog = models.BooleanField(default=False)
+    student_room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    student_batch = models.ForeignKey(Batch, on_delete=models.CASCADE, default=None, null=True, blank=True)
+    # def save(self, *args, **kwargs):
+    #     if self.student_room is not None:
+    #         if self.student_room.current_occupancy >= self.student_room.room_occupancy:
+    #             raise ValidationError("Room occupancy is full.")
+    #     super().save(*args, **kwargs)
+
     def __str__(self):
         return self.student.name
 

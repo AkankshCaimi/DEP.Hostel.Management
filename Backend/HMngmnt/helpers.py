@@ -3,8 +3,9 @@ import json
 import base64
 from .models import CustomUser, Faculty, Hostel
 import pandas as pd
-def get_user_dict(user, params):
+def get_user_dict(user):
     roles=[]
+    user_json={}
     if hasattr(user, 'student'):
         roles.append('student')
         roles.append('college student')
@@ -23,10 +24,12 @@ def get_user_dict(user, params):
         roles.append('staff')
         if hasattr(user, 'caretaker'):
             roles.append('caretaker')
+            user_json['hostel']=user.caretaker.hostel.hostel_no
+            user_json['hostel_name']=user.caretaker.hostel.hostel_name
     else:
         roles.append('outside student')
         roles.append('student')
-    user_json={}
+    
     user_json['name']=user.name
     user_json['email']=user.email
     user_json['roles']=roles
@@ -35,6 +38,7 @@ def get_user_dict(user, params):
     if 'faculty' in roles:
         user_json['department']=user.faculty.department
         user_json['is_hod']=user.faculty.is_hod
+    # print(user_json)
     return user_json
 
 def handle_file_attachment(field):

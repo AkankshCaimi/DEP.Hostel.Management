@@ -4,7 +4,9 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
-from .models import Application, Faculty, CustomUser, Hostel, Student, Room, Application_Final
+
+from .email import send, templates
+from .models import Application, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
@@ -12,6 +14,14 @@ import jwt, datetime
 from .decorators import token_required, admin_required, validate_token, staff_required
 from .helpers import get_user_dict, handle_file_attachment, parse_xl
 import os
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+
 @csrf_exempt
 def index(request):
     # add_fac('Dr. Puneet Goyal')
@@ -22,7 +32,6 @@ def index(request):
 
 @csrf_exempt
 @token_required
-# write again
 def internship(request):
     facultyE= request.POST.get('facultyEmail')
     student= request.POST.get('studentEmail')
@@ -91,6 +100,18 @@ def internship(request):
     return HttpResponse("Application submitted successfully", status=200)
 
 @csrf_exempt
+def update_payment(request):
+    if request.method=='POST':
+        # data=json.loads(request.body)
+        application=Application.objects.get(application_id=request.POST.get('application_id'))
+        application.payment_proof=request.FILES.get('payment_proof')
+        application.payment_id=request.POST.get('payment_id')
+        application.status='Payment Proof Uploaded'
+        application.save()
+        return JsonResponse({'message': 'Payment verified successfully'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@csrf_exempt
 # add user info
 def signup_ep(request):
     if request.method == 'POST':
@@ -130,7 +151,7 @@ def login_ep(request):
         password = data.get('password')
         user=authenticate(request, username=email,password=password)
         if user is not None:
-            user_json=get_user_dict(user, ['email', 'name', 'is_staff', 'is_superuser'])
+            user_json=get_user_dict(user)
             # login(request, user)
             payload = {
                 'id': user.id,
@@ -166,7 +187,7 @@ def get_user_info(request):
             return JsonResponse({'error': 'User is not found'}, status=301)
         user=CustomUser.objects.get(pk=decoded.get('id'))
         
-        user=get_user_dict(user, ['email', 'name', 'is_staff', 'is_superuser'])
+        user=get_user_dict(user)
 
         return JsonResponse({'message': 'User page', 'data': user})
 
@@ -209,7 +230,10 @@ def get_application(request, id):
         'arrival_date': application.arrival,
         'departure_date': application.departure,
         'institute_id': handle_file_attachment(application.instiId.path),
-        'institute_letter': handle_file_attachment(application.letter.path)
+        'institute_letter': handle_file_attachment(application.letter.path),
+        'student_email': application.student.email,
+        'payment_proof': handle_file_attachment(application.payment_proof.path) if application.payment_proof else None,
+        'payment_id': application.payment_id if application.payment_id else None
     }
     # print('here:', application.instiId.path, application.letter.path)
     return JsonResponse({'message': 'Student page', 'data': applicationX})
@@ -296,7 +320,9 @@ def get_applications(request):
             'student': application.student.name,
             'affiliation': application.affiliation,
             'faculty': application.faculty.faculty.name,
-            'status': application.status
+            'status': application.status,
+            'gender': application.student.gender,
+            'hostel': application.application_final.hostel.hostel_name if application.status=='Pending Caretaker Action' else None
         }
         for application in applications
     ]
@@ -354,20 +380,20 @@ def view_final_applications(request):
     user=CustomUser.objects.get(pk=user.get('id'))
     hostel=user.caretaker.hostel
     print('hostel:', hostel)
-    # applications=Application_Final.objects.select_related('application', 'application__student', 'application__faculty')
-    # application_list = [
-    #     {
-    #         'application_id': application.application.application_id,
-    #         'student': application.application.student.name,
-    #         'affiliation': application.application.affiliation,
-    #         'faculty': application.application.faculty.faculty.name,
-    #         'status': application.application.status
-    #     }
-    #     for application in applications
-    # ]
-    # print('application_list:', application_list)
-    return JsonResponse({'message': 'Staff page', 'data': {'own': []}})
-    # return JsonResponse({'message': 'Staff page', 'data': {'own':application_list}})    
+    applications=Application_Final.objects.select_related('application', 'application__student', 'application__faculty').filter(hostel=hostel)
+    application_list = [
+        {
+            'application_id': application.application.application_id,
+            'student': application.application.student.name,
+            'affiliation': application.application.affiliation,
+            'faculty': application.application.faculty.faculty.name,
+            'status': application.application.status
+        }
+        for application in applications
+    ]
+    print('application_list:', application_list)
+    # return JsonResponse({'message': 'Staff page', 'data': {'own': []}})
+    return JsonResponse({'message': 'Staff page', 'data': {'own':application_list}})    
 
 
 @csrf_exempt
@@ -381,7 +407,7 @@ def update_application(request):
         # print(request.path)
         for application_id, status in data.items():
             # print('application_id:', application_id)
-            print('status:', status['hostel'])
+            # print('status:', status['hostel'])
             application=Application.objects.get(application_id=int(application_id))
             # print('application:', application)
             application.status=status['value']
@@ -399,6 +425,67 @@ def update_application(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+@csrf_exempt
+@staff_required
+def send_email(request):
+    recipient=request.GET.get('recipient')
+    template=int(request.GET.get('template'))
+    if(template==0):
+        id=int(request.GET.get('id')) or None
+        application=Application.objects.get(application_id=id)
+        application.status='Pending Payment'
+        application.save()
+    template=templates[int(template)]
+    send(template, [recipient])
+    return JsonResponse({'message': 'Email sent successfully.'})
+
+@csrf_exempt
+# @staff_required
+def generate_pdf(request):
+    application_id = request.GET.get('application_id')
+    application = Application.objects.get(application_id=application_id)
+
+    # Create a list to hold the data for the PDF
+    data = []
+
+    # Add the text fields to the data list
+    data.append(['Student Name:', application.student.name])
+    data.append(['Affiliation:', application.affiliation])
+    data.append(['Faculty:', application.faculty.faculty.name])
+    # data.append(['Status:', application.status])
+    data.append(['Address:', application.address])
+    data.append(['Arrival Date:', application.arrival])
+    data.append(['Departure Date:', application.departure])
+
+    # Create a PDF document
+    doc = SimpleDocTemplate("./documents/datagen.pdf", pagesize=letter)
+
+    # Create a list to hold the flowables (elements) of the document
+    elements = []
+
+    # Create a style for the text fields
+    styles = getSampleStyleSheet()
+    style = styles["Normal"]
+
+    # Add the text fields to the document
+    for field in data:
+        text = f"{field[0]} {field[1]}"
+        p = Paragraph(text, style)
+        elements.append(p)
+        elements.append(Spacer(1, 12))
+
+    # Build the document and save it
+    doc.build(elements)
+
+    # Send the PDF file as a response to the frontend
+    with open("./documents/datagen.pdf", "rb") as f:
+        response = HttpResponse(f.read(), content_type="application/pdf")
+        response["Content-Disposition"] = "inline; filename=output.pdf"
+    
+    # delete the file
+    os.remove("./documents/datagen.pdf")
+    return response
+    
 # ----------------WARDEN FUNCTIONS----------------
 @csrf_exempt
 # @staff_required
@@ -415,17 +502,22 @@ def get_hostels(request):
     return JsonResponse({'message': 'Warden page', 'data': hostels_list})
 
 @csrf_exempt
-# @staff_required
-def get_rooms(request):
-    hostel=request.GET.get('hostel')
-    floor=request.GET.get('floor')
-    rooms=Room.objects.filter(hostel__hostel_name=hostel, floor=int(floor))
+@staff_required
+def get_hostel_rooms(request, hostel_no):
+    # hostel=request.GET.get(hostel_no=hostel_no)
+    rooms=Room.objects.filter(hostel__hostel_no=hostel_no).order_by('room_no')
+    # floor=request.GET.get('floor')
+    # rooms=Room.objects.filter(hostel__hostel_name=hostel, floor=int(floor))
     rooms_list=[{
         'room_no': room.room_no,
-        'room_occupancy': room.room_occupancy
+        'room_occupancy': room.room_occupancy,
+        'room_current_occupancy': room.current_occupancy,
+        'floor': room.floor,
+        'students': [{'name': st.student.name, 'email': st.student.email} for st in room.student_set.all()] if hasattr(room, 'student_set') else []
+
     } for room in rooms]
     return JsonResponse({'message': 'Warden page', 'data': rooms_list})
-    # return JsonResponse({'message':'Warden page'})
+    # return JsonResponse({'message': 'Warden page', 'data': []})
 
 @csrf_exempt
 def download_pdf(request):
@@ -437,3 +529,35 @@ def download_pdf(request):
         'letter': letter
     }
     return JsonResponse(resp)
+
+
+@csrf_exempt
+def add_rooms(req):
+    mp={
+        1: 'Chenab',
+        2: 'Beas',
+        3: 'Satluj',
+        4: 'Raavi',
+        5: 'Brahmaputra Boys',
+        6: 'T6',
+        7: 'Brahmaputra Girls'
+    }
+    for i in range(1, 8):
+        hostel=Hostel.objects.get(hostel_no=i)
+        email='.'.join(mp[i].lower().split(' '))
+        email="caretaker1."+email+"@iitrpr.ac.in"
+        print(email)
+        user=CustomUser(name=mp[i], email=email)
+        user.set_password('devanshu')
+        user.is_staff=True
+        user.save()
+        caretaker=Caretaker(caretaker=user, hostel=hostel)
+        caretaker.save()
+        random_faculty = Faculty.objects.order_by('?').first()
+        warden = Warden(warden=random_faculty, hostel=hostel)
+        warden.save()
+    return JsonResponse({'message': 'Success'})
+
+def get_batches():
+    # number of students per batch
+    pass

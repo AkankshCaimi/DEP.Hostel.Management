@@ -22,38 +22,69 @@ import Modal from "react-modal";
 const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
 const TABLE_HEAD2 = ["ID", "Name", "Professor", "Status"];
 const backendUrl = process.env.REACT_APP_BASE_URL; // Define backendUrl
-const ModalComponent = ({showPopup, application_id, setShowPopup, selectedOptions, setSelectedOptions}) => {
+
+const ModalComponent = ({
+  showPopup,
+  application_id,
+  setShowPopup,
+  selectedOptions,
+  setSelectedOptions,
+  gender
+}) => {
+  let options;
+  if(gender==='male'){
+    options = [
+      <Option value="Chenab">Chenab</Option>,
+      <Option value="Beas">Beas</Option>,
+      <Option value="Satluj">Satluj</Option>,
+      <Option value="Brahmaputra Boys">Brahmaputra Boys</Option>,
+      <Option value="T6">T6</Option>
+    ];
+  }else{
+    options = [
+      <Option value="Raavi">Raavi</Option>,
+      <Option value="Brahmaputra Girls">Brahmaputra Girls</Option>,
+    ];
+  }
   return (
-    <Modal isOpen={showPopup} onRequestClose={()=>setShowPopup(false)} contentLabel="Select Hostel">
+    <Modal
+      isOpen={showPopup}
+      onRequestClose={() => setShowPopup(false)}
+      contentLabel="Select Hostel"
+    >
       <div className="flex flex-col gap-4 p-4">
         <Typography variant="h6" color="blue-gray">
           Select Hostel
         </Typography>
-        <Select label="Select Hostel" onChange={(e)=>{setSelectedOptions({...selectedOptions, [application_id]:{value:'Approve', hostel:e}}); setShowPopup(false)}}>
-          <Option value="Chenab">Chenab</Option>
-          <Option value="Beas">Beas</Option>
-          <Option value="Satluj">Satluj</Option>
-          <Option value="Brahmaputra Boys">Brahmaputra Boys</Option>
-          <Option value="T6">T6</Option>
+        <Select
+          label="Select Hostel"
+          onChange={(e) => {
+            setSelectedOptions({
+              ...selectedOptions,
+              [application_id]: { value: "Approve", hostel: e },
+            });
+            setShowPopup(false);
+          }}
+        >
+          {options}
         </Select>
       </div>
     </Modal>
   );
-}
+};
 export default function MembersTable() {
   const [applications, setApplications] = useState([]);
   const { currentUser } = useAuth();
   // const [selectedOptions, setSelectedOptions] = useState({});
   const [currentTab, setCurrentTab] = useState("All");
   const [showPopup, setShowPopup] = useState(false);
-  const { comments, setComments, selectedOptions, setSelectedOptions } = useComments();
+  const { comments, setComments, selectedOptions, setSelectedOptions } =useComments();
   // const [filteredApplications, setFilteredApplications] = useState([]);
   // const filteredApplications = currentTab === "All" ? applications : applications.filter(app => app.status === currentTab);
-  const renderHeading = ()=>{
-    if(currentTab==="Pending Caretaker Action")
-      return TABLE_HEAD2;
+  const renderHeading = () => {
+    if (currentTab === "Pending Caretaker Action") return TABLE_HEAD2;
     else return TABLE_HEAD;
-  }
+  };
   const filteredApplications = useMemo(() => {
     return currentTab === "All"
       ? applications
@@ -76,32 +107,35 @@ export default function MembersTable() {
   const handleApplicationClick = (appId) => {
     navigate(`./application/${appId}`);
   };
-  const setEvent=(e)=>{
-    if(e === "Approve Faculty"){
-      return "Pending HOD Approval"
-    }else if(e === "Approve HOD"){
-      return "Pending Admin Approval"
-    }else if(e === "Approve"){
-      return "Pending Caretaker Action"
-    }else{
-      return "Rejected by Admin"
+  const setEvent = (e) => {
+    if (e === "Approve Faculty") {
+      return "Pending HOD Approval";
+    } else if (e === "Approve HOD") {
+      return "Pending Admin Approval";
+    } else if (e === "Approve") {
+      return "Pending Caretaker Action";
+    } else {
+      return "Rejected by Admin";
     }
-  }
-  const handleOption = (appId, e) => {
-    if(e === "Reject" ){
-      if(!comments[appId]){
+  };
+  const handleOption = (appId, e, currentStatus) => {
+    // if(!isPlausible(setEvent(e), currentStatus)){}
+    if (e === "Reject") {
+      if (!comments[appId]) {
         alert("Please add comments for rejection");
         // setSelectedOptions({ ...selectedOptions, [appId]: {value: e} });
         navigate(`./application/${appId}`);
-      }else{
-        setSelectedOptions({ ...selectedOptions, [appId]: {value: e, comments: comments[appId]} });
+      } else {
+        setSelectedOptions({
+          ...selectedOptions,
+          [appId]: { value: e, comments: comments[appId] },
+        });
       }
-    }else if(e=="Approve"){
+    } else if (e == "Approve") {
       // setShowPopup(true);
       console.log(appId);
-    }
-    else{
-      setSelectedOptions({ ...selectedOptions, [appId]: {value: e} });
+    } else {
+      setSelectedOptions({ ...selectedOptions, [appId]: { value: e } });
     }
     console.log(selectedOptions);
   };
@@ -116,7 +150,7 @@ export default function MembersTable() {
   //                 currentTab === "Pending Admin Approval" ? ["Approve Admin", "Reject"] : [];
   const handleSubmit = () => {
     const updatedSelectedOptions = {};
-    
+
     for (const id in selectedOptions) {
       if (selectedOptions.hasOwnProperty(id)) {
         updatedSelectedOptions[id] = { ...selectedOptions[id] };
@@ -126,13 +160,18 @@ export default function MembersTable() {
     }
     console.log("Data to be submitted:", updatedSelectedOptions);
 
-    axios.post(`${backendUrl}/api/update_application`, { updatedSelectedOptions }, { withCredentials: true })
-    .then((res)=>{
-      console.log(res.data);
-      alert("Data submitted successfully");
-      window.location.reload();
-    })
-  }
+    axios
+      .post(
+        `${backendUrl}/api/update_application`,
+        { updatedSelectedOptions },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        console.log(res.data);
+        alert("Data submitted successfully");
+        window.location.reload();
+      });
+  };
   return (
     <div className="flex justify-center h-full mt-4 ">
       <Card className="h-full w-full lg:w-4/5">
@@ -198,8 +237,8 @@ export default function MembersTable() {
                   >
                     <Typography
                       variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
+                      color="black"
+                      className="font-normal"
                     >
                       {head}
                     </Typography>
@@ -209,93 +248,118 @@ export default function MembersTable() {
             </thead>
             <tbody>
               {filteredApplications.map(
-                ({ application_id, student, faculty, status, affiliation }) => 
-                {
+                ({
+                  application_id,
+                  student,
+                  faculty,
+                  status,
+                  affiliation,
+                  hostel,
+                  gender,
+                }) => {
                   // const [id, setId]=useState(null);
-                  const handleApprove=()=>{
+                  const handleApprove = () => {
                     setShowPopup(application_id);
-                  }
-                  return(
-                  <tr
-                    key={application_id}
-                    className="hover:bg-gray-200 hover:cursor-pointer"
-                    onClick={() => handleApplicationClick(application_id)}
-                  >
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="flex items-center gap-3">
+                  };
+                  return (
+                    <tr
+                      key={application_id}
+                      className="hover:bg-gray-200 hover:cursor-pointer"
+                      onClick={() => handleApplicationClick(application_id)}
+                    >
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              className="text-blue-gray-500 font-normal text-lg font-bold"
+                            >
+                              {application_id}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-4 border-b border-blue-gray-50">
                         <div className="flex flex-col">
                           <Typography
                             variant="small"
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {application_id}
+                            {student}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {affiliation}
                           </Typography>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {student}
-                        </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {affiliation}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {faculty}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {status}
-                        </Typography>
-                      </div>
-                    </td>
-                    <td
-                      className="p-4 border-b border-blue-gray-50 w-10"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <Select
-                        label={selectedOptions[application_id]?.value || "Select"}
-                        onChange={(e) => handleOption(application_id, e)}
+                      </td>
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {faculty}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {status}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal leading-none opacity-70"
+                          >
+                            {hostel}
+                          </Typography>
+                        </div>
+                      </td>
+                      <td
+                        className="p-4 border-b border-blue-gray-50 w-10"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <Option value="Approve" onClick={handleApprove}>Approve</Option>
-                        <Option value="Approve Faculty">Approve Faculty</Option>
-                        <Option value="Approve HOD">Approve HOD</Option>
-                        <Option value="Reject">Reject</Option>
-                        {/* <Option>Material Tailwind Svelte</Option> */}
-                      </Select>
-                      <ModalComponent showPopup={showPopup===application_id} application_id={application_id} setShowPopup={setShowPopup} selectedOptions={selectedOptions} setSelectedOptions={setSelectedOptions}/>
-                    </td>
-                  </tr>
-                )}
+                        <Select
+                          label={
+                            selectedOptions[application_id]?.value || "Select"
+                          }
+                          onChange={(e) => handleOption(application_id, e, status)}
+                        >
+                          <Option value="Approve" onClick={handleApprove}>
+                            Approve
+                          </Option>
+                          <Option value="Approve Faculty">
+                            Approve Faculty
+                          </Option>
+                          <Option value="Approve HOD">Approve HOD</Option>
+                          <Option value="Reject">Reject</Option>
+                        </Select>
+                        <ModalComponent
+                          showPopup={showPopup === application_id}
+                          application_id={application_id}
+                          setShowPopup={setShowPopup}
+                          selectedOptions={selectedOptions}
+                          setSelectedOptions={setSelectedOptions}
+                          gender={gender}
+                        />
+                      </td>
+                    </tr>
+                  );
+                }
               )}
             </tbody>
           </table>
-          
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">

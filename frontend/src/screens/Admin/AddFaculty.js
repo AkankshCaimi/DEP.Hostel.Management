@@ -66,6 +66,7 @@ const AddFaculty = () => {
         axios.post(`${backendUrl}/api/add_users`,data,{withCredentials:true}, {headers: {'Content-Type': 'multipart/form-data'}})
         .then((res)=>{
             console.log(res);
+            alert('Faculty Added Successfully');
         })
     };
 
