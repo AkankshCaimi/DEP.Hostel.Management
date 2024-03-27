@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import React, { useState } from 'react';
 import '../../styles/tailwind.css';
 import axios from 'axios';
@@ -14,6 +15,7 @@ const AddStudent = () => {
         year:'',
         department:''
     });
+    const [isMobile, setIsMobile] = useState(false);
     const [file, setFile] = useState(null);
     const [isManual, setIsManual] = useState(true);
     const handleChange=(e)=>{
@@ -70,11 +72,25 @@ const AddStudent = () => {
             console.log(res);
             alert('Students Added Successfully');
         })
-    };
+    };    
+
+    useEffect(() => {
+        function handleResize() {
+            setIsMobile(isMobileScreen());
+        }
+
+        handleResize(); // Call it once to set initial state
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    function isMobileScreen() {
+        return window.innerWidth < 768; // Adjust the threshold as needed
+    }
 
     return (
         <div className="container mx-auto">
-            <h1 className="text-2xl font-bold mb-4">Add Students</h1> 
+            <h1 className="text-2xl font-bold my-4">Add Students</h1> 
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block font-bold mb-2">
@@ -98,9 +114,10 @@ const AddStudent = () => {
                         Upload Excel File
                     </label>
                 </div>
-                <div className="flex flex-column gap-4">
+                <div className="flex flex-row gap-4">
                     <div
-                        className={`w-full mb-4 ${isManual ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        className={`max-w-screen-full lg:w-full mb-4 ${isManual ? '' : 'opacity-50 cursor-not-allowed'}`}
+                        style={{ width: isMobile ? '100%' : '50%' }}
                     >
                         <h2 className="text-xl mb-2 font-semibold ">Fill the Details:</h2>
                         <div className={`mb-4 ${isManual ? '' : 'cursor-not-allowed'}`}>

@@ -20,21 +20,17 @@ function TextUpdaterNode({ data, isConnectable }) {
   console.log('here', data)
   return (
     <div className='nodrag'>
-      <Handle type="source" position={Position.Right} id="b" isConnectable={isConnectable} className='w-16 nodrag'/>
-      <Card className="mt-6 w-48 nodrag">
-        <CardBody className='bg-transparent'>
-          <Typography variant="h5" color="blue-gray" className="mb-2 bg-transparent">
+      <Handle type="target" position={Position.Left} id="b" isConnectable={isConnectable} className='w-16'/>
+      <Card className="w-auto pt-1 px-3 pb-0">
+          <Typography variant="h6" color="blue-gray" className="mb-2 bg-transparent">
             {/* {data.name} */}
-            Btech 21
           </Typography>
           <Typography>
-            Strength: 400<br/>
+            <span className='font-bold'>Bhramputra boys | </span>
+            Strength: 400
             Unallocated: {num}
+          <Button onClick={()=>{handleClick()} } className="ml-4 py-2.5">EDIT</Button>
           </Typography>
-        </CardBody>
-        <CardFooter className="pt-0 nodrag flex justify-center">
-          <Button onClick={()=>{handleClick()} } className="py-2.5">EDIT</Button>
-        </CardFooter>
       </Card>
     </div>
 

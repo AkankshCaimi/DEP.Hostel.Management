@@ -27,6 +27,7 @@ const excludedRoutes = ["/login", "/signup"];
 function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <React.Fragment>
@@ -37,33 +38,37 @@ function NavListMenu() {
         placement="bottom"
         allowHover={true}
       >
-        <MenuHandler>
-          <Typography
-            as="div"
-            variant="small"
-            className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900"
-          >
-            <ListItem
-              className="text-white bg-color no-underline flex items-center gap-2 py-2 pr-4 text-md"
-              selected={isMenuOpen || isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-            >
-              Programs
-              <ChevronDownIcon
-                strokeWidth={2.5}
-                className={`hidden h-3 w-3 transition-transform lg:block ${
-                  isMenuOpen ? "rotate-180" : ""
-                }`}
-              />
-              <ChevronDownIcon
-                strokeWidth={2.5}
-                className={`block h-3 w-3 transition-transform lg:hidden ${
-                  isMobileMenuOpen ? "rotate-180" : ""
-                }`}
-              />
-            </ListItem>
-          </Typography>
-        </MenuHandler>
+      <MenuHandler>
+      <Typography
+        as="div"
+        variant="small"
+        className="flex items-center justify-center lg:mt-0 lg:mb-0"
+      >
+        <ListItem
+          className={`text-white bg-color no-underline flex items-center gap-2 py-2 pr-4 text-md ${
+            (isMenuOpen || isMobileMenuOpen) && 'text-blue-gray-900'
+          }`}
+          selected={isMenuOpen || isMobileMenuOpen}
+          onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+          onMouseEnter={() => setIsMenuOpen(true)}
+          onMouseLeave={() => setIsMenuOpen(false)}
+        >
+          Programs
+          <ChevronDownIcon
+            strokeWidth={2.5}
+            className={`hidden h-3 w-3 transition-transform lg:block ${
+              isMenuOpen ? 'rotate-180' : ''
+            }`}
+          />
+          <ChevronDownIcon
+            strokeWidth={2.5}
+            className={`block h-3 w-3 transition-transform lg:hidden ${
+              isMobileMenuOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </ListItem>
+      </Typography>
+    </MenuHandler>
         <MenuList className="no-underline hidden max-w-screen-xl rounded-xl lg:block">
           <ul className="no-underline grid grid-cols-1 gap-y-2 outline-none outline-0 pl-1">
             <NavLink to="/" className="no-underline">

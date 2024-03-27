@@ -60,7 +60,7 @@ function App() {
   return (
     <section
       className="bg-Hero bg-cover
-    font-[Poppins] md:bg-top bg-center"
+    font-[Poppins] md:bg-top bg-center p-0 m-0"
     >
       <Headers showPopup={showPopup} setShowPopup={setShowPopup} />
       <CommentsProvider>
@@ -70,7 +70,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
-        <Route path="/test" element={<Allotment />} />
+        <Route path="/allotment" element={<Allotment />} />
+        <Route path="/test" element={<Test />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         {/* Admin Routes */}
