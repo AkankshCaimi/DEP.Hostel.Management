@@ -25,11 +25,11 @@ function TextUpdaterNode({ data, isConnectable }) {
         <CardBody className='bg-transparent'>
           <Typography variant="h5" color="blue-gray" className="mb-2 bg-transparent">
             {/* {data.name} */}
-            Btech 21
+            {data.label}
           </Typography>
           <Typography>
-            Strength: 400<br/>
-            Unallocated: {num}
+            Strength: {data.strength}<br/>
+            Unallocated: {data.unallocated}<br/>
           </Typography>
         </CardBody>
         <CardFooter className="pt-0 nodrag flex justify-center">

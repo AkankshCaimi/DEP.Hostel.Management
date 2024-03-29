@@ -23,12 +23,16 @@ import CustomNode from '../components/CustomNodes'
 import HostelNode from '../components/HostelNode'
 const data = [
   {
-    label: "HTML",
-    value: "html",
+    label: "Btech 21",
+    value: "Btech 21",
+    strength: 400,
+    unallocated: 400,
   },
   {
-    label: "React",
-    value: "react",
+    label: "Btech 22",
+    value: "Btech 22",
+    strength: 450,
+    unallocated: 400,
   },
   {
     label: "Vue",
@@ -44,31 +48,43 @@ const data = [
   },
 ];
 const nodeTypes={custom: CustomNode,hostel: HostelNode}
-const initialNodes = [
-  { id: "1", type: 'custom', position: { x: 50, y: 50 }, data: { label: "Btech 21", test: 50 }, sourcePosition: 'right', style:{'.port':{width: '20px', height: '20px'}} },
-  // { id: "2", type: 'input', position: { x: 50, y: 120 }, data: { label: "Btech 22" }, sourcePosition: 'right' },
-  // { id: "3", type: 'input', position: { x: 50, y: 190 }, data: { label: "Btech 23" }, sourcePosition: 'right' },
-  // { id: "4", type: 'input', position: { x: 50, y: 260 }, data: { label: "Btech 24" }, sourcePosition: 'right' },
-  // { id: "5", type: 'input', position: { x: 50, y: 330 }, data: { label: "Btech 20" }, sourcePosition: 'right' },
-  // { id: "6", type: 'input', position: { x: 50, y: 400 }, data: { label: "Mtech 21" }, sourcePosition: 'right' },
 
-  { id: '7', type: 'hostel', data: { label: 'Chenab' }, position: { x: 600, y: 50 }, targetPosition: 'left' },
-  { id: '8', type: 'hostel', data: { label: 'Satluj' }, position: { x: 600, y: 120 }, targetPosition: 'left' },
-  { id: '9', type: 'hostel', data: { label: 'Beas' }, position: { x: 600, y: 190 }, targetPosition: 'left' },
-  { id: '10', type: 'hostel', data: { label: 'Brahmaputra' }, position: { x: 600, y: 260 }, targetPosition: 'left' },
-  { id: '11', type: 'hostel', data: { label: 'T6' }, position: { x: 600, y: 330 }, targetPosition: 'left' },
+const addingEdgesPopup=({open, Opendialoge, })=>{
 
-];
-const initialEdges = [];
+
+
+  return (
+    <Dialog size="xs" open={open} handler={Opendialoge} className="bg-transparent shadow-none">
+      
+    </Dialog>
+  )
+}
 
 export default function Allotment() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, setNodes, onNodesChange] = useNodesState([
+    { id: "Btech 21", type: 'custom', position: { x: 50, y: 50 }, data: { label: "Btech 21", test: 50 }, sourcePosition: 'right', style:{'.port':{width: '20px', height: '20px'}} },
+    { id: '7', type: 'hostel', data: { label: 'Chenab', capacity: 500, unallocated: 120 }, position: { x: 600, y: 50 }, targetPosition: 'left' },
+    { id: '8', type: 'hostel', data: { label: 'Satluj', capacity: 400, unallocated: 120 }, position: { x: 600, y: 120 }, targetPosition: 'left' },
+    { id: '9', type: 'hostel', data: { label: 'Beas', capacity: 400, unallocated: 120 }, position: { x: 600, y: 190 }, targetPosition: 'left' },
+    { id: '10', type: 'hostel', data: { label: 'Brahmaputra Boys', capacity: 600, unallocated: 120 }, position: { x: 600, y: 260 }, targetPosition: 'left' },
+    { id: '11', type: 'hostel', data: { label: 'T6', capacity: 300, unallocated: 120 }, position: { x: 600, y: 330 }, targetPosition: 'left' },
+  
+  ]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [currentTab, setCurrentTab]=useState("None");
+  const [currentTab, setCurrentTab]=useState("Btech 21");
   const onConnect = useCallback(
     (params) => {
+      const value=prompt("Enter the number of students you want to put in hostel ");
+      if(value<40){
+        console.log('params', params)
+        return;
+      }
       setEdges((eds) => {
-        const newEdges = addEdge(params, eds);
+        const newEdge={
+          ...params,
+          label: value,
+        }
+        const newEdges = addEdge(newEdge, eds);
         // console.log("New Edges:", newEdges); // Log the new edges here
         return newEdges;
       });
@@ -78,10 +94,12 @@ export default function Allotment() {
   useEffect(()=>{
     // setNodes(...nodes)
     const updatedNodes = nodes.map(node => {
-      if (node.id === '1') {
-        return { ...node, data: { ...node.data, label: currentTab } };
+      if (node.type === 'custom') {
+        const entry=data.find(({value})=>value===currentTab);
+        console.log("Node:", entry);
+        return { id: currentTab, type: 'custom', position: { x: node.position.x, y: node.position.y }, data: { ...entry }, sourcePosition: 'right', style:{'.port':{width: '20px', height: '20px'}}}
       }
-      return node;
+        return node;
     });
     setNodes(updatedNodes);
   }, [currentTab])

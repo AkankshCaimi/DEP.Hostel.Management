@@ -26,9 +26,9 @@ function TextUpdaterNode({ data, isConnectable }) {
             {/* {data.name} */}
           </Typography>
           <Typography>
-            <span className='font-bold'>Bhramputra boys | </span>
-            Strength: 400
-            Unallocated: {num}
+            <span className='font-bold'>{data.label} | </span>
+            Capcity: {data.capacity} |
+            Unallocated: {data.unallocated} 
           <Button onClick={()=>{handleClick()} } className="ml-4 py-2.5">EDIT</Button>
           </Typography>
       </Card>
