@@ -11,7 +11,7 @@ export default function DefaultAccordion() {
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
  
   return (
-    <div className="m-4">
+    <div className="mx-4 mb-80 mt-4 lg:mb-20">
       <Accordion open={open === 1} >
         <AccordionHeader onClick={() => handleOpen(1)}>Welcome Note</AccordionHeader>
         <AccordionBody>
@@ -33,7 +33,7 @@ export default function DefaultAccordion() {
         <AccordionHeader onClick={() => handleOpen(3)}>
           Contact Us
         </AccordionHeader>
-        <AccordionBody>
+        <AccordionBody> 
         Feel free to explore our website for more information about our facilities and services.
         If you have any questions or inquiries, don't hesitate to contact us.
         </AccordionBody>

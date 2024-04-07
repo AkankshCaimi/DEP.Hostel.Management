@@ -279,8 +279,9 @@ const Form = () => {
           />
         </div>
         <div className="mb-4">
-          <Input
-          label="Copy of your Institute ID Card (pdf):"
+          <div className="text-xs text-gray-600 mb-1">Copy of your Institute ID Card (pdf):</div>
+          <input
+            
             color="blue"
             variant="standard"
             type="file"
@@ -289,14 +290,14 @@ const Form = () => {
             ref={file1Ref}
             onChange={(e) => handleFileChange(e, 1)}
             aria-required="true"
-            className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
+            className="text-sm text-stone-500 pb-8 mt-2 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
             style={{ color: "#000" }}
             required={filled && filled.comments ? false : true}
           />
         </div>
         <div className="mb-4">
-          <Input
-            label="Copy of Official Letter from your Institute (pdf):"
+        <div className="text-xs text-gray-600 mb-1">Copy of Official Letter from your Institute (pdf):<span></span></div>
+          <input
             color="blue"
             variant="standard"
             type="file"
@@ -305,7 +306,7 @@ const Form = () => {
             ref={file2Ref}
             onChange={(e) => handleFileChange(e, 2)}
             aria-required="true"
-            className="text-sm text-stone-500 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
+            className="text-sm text-stone-500 mt-2 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
             style={{ color: "#000" }}
             required={filled && filled.comments ? false : true}
           />

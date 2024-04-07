@@ -82,6 +82,10 @@ const AddFaculty = () => {
       .then((res) => {
         console.log(res);
         alert("Faculty Added Successfully");
+      })
+      .catch((error) => {
+        console.error("Error:", error.name);
+        alert(`Error: ${error.name}`);
       });
   };
 
@@ -134,7 +138,7 @@ const AddFaculty = () => {
                         isManual ? "" : " cursor-not-allowed"
                       }`}
                     >
-                      Name
+                      Name *
                     </label>
                     <input
                       type="text"
@@ -146,6 +150,7 @@ const AddFaculty = () => {
                       value={oneData.name}
                       onChange={isManual ? handleChange : null}
                       disabled={!isManual}
+                      required
                     />
                   </div>
                   <div
@@ -157,7 +162,7 @@ const AddFaculty = () => {
                         isManual ? "" : "cursor-not-allowed"
                       }`}
                     >
-                      Phone Number
+                      Phone Number *
                     </label>
                     <input
                       type="phone"
@@ -169,6 +174,7 @@ const AddFaculty = () => {
                       value={oneData.phoneNumber}
                       onChange={isManual ? handleChange : null}
                       disabled={!isManual}
+                      required
                     />
                   </div>
                   <div
@@ -180,7 +186,7 @@ const AddFaculty = () => {
                         isManual ? "" : "cursor-not-allowed"
                       }`}
                     >
-                      Email
+                      Email *
                     </label>
                     <input
                       type="email"
@@ -192,6 +198,7 @@ const AddFaculty = () => {
                       value={oneData.email}
                       onChange={isManual ? handleChange : null}
                       disabled={!isManual}
+                      required
                     />
                   </div>
                   <div
@@ -203,7 +210,7 @@ const AddFaculty = () => {
                         isManual ? "" : "cursor-not-allowed"
                       }`}
                     >
-                      Department
+                      Department *
                     </label>
                     <input
                       type="text"
@@ -215,6 +222,7 @@ const AddFaculty = () => {
                       value={oneData.department}
                       onChange={isManual ? handleChange : null}
                       disabled={!isManual}
+                      required
                     />
                   </div>
                   <div
@@ -226,17 +234,18 @@ const AddFaculty = () => {
                         isManual ? "" : "cursor-not-allowed"
                       }`}
                     >
-                      Gender
+                      Gender *
                     </label>
                     <select
                       id="gender"
-                      className={`border border-gray-300 rounded px-4 py-2 w-full ${
+                      className={`border border-gray-300 rounded px-4 py-2.5 w-full ${
                         isManual ? "" : "cursor-not-allowed"
                       }`}
                       value={oneData.gender}
                       name="gender"
                       onChange={isManual ? handleChange : null}
                       disabled={!isManual}
+                      required
                     >
                       <option value="">Select</option>
                       <option value="Male">Male</option>
@@ -247,8 +256,8 @@ const AddFaculty = () => {
                   <button
                     type="submit"
                     className={`${
-                      isManual ? "hover:bg-blue-700" : "cursor-not-allowed"
-                    } bg-color  text-white font-bold py-2 px-4 rounded`}
+                      isManual ? "hover:bg-blue-800" : "cursor-not-allowed"
+                    } bg-color  text-white font-semibold py-2 px-4 rounded`}
                     disabled={!isManual} // Disable button when not in manual mode
                   >
                     Submit
@@ -289,8 +298,8 @@ const AddFaculty = () => {
                 <button
                   type="submit"
                   className={`${
-                    isManual ? "cursor-not-allowed" : "hover:bg-blue-700 "
-                  } bg-color  text-white font-bold py-2 px-4 rounded`}
+                    isManual ? "cursor-not-allowed" : "hover:bg-blue-800 "
+                  } bg-color  text-white font-semibold py-2 px-4 rounded`}
                   disabled={isManual}
                 >
                   Submit

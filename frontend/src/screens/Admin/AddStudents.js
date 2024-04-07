@@ -4,10 +4,11 @@ import axios from "axios";
 import {
   Tabs,
   TabsHeader,
-  TabsBody,
   Tab,
+  TabsBody,
   TabPanel,
-  Input,
+  Card,
+  Typography,
 } from "@material-tailwind/react";
 
 const AddStudent = () => {
@@ -35,6 +36,8 @@ const AddStudent = () => {
     setIsManual(option === "manual");
   };
 
+  const TABLE_HEAD = ["Name", "Email", "Gender", "Department", "Year","Phone No."];
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = new FormData();
@@ -56,6 +59,10 @@ const AddStudent = () => {
       .then((res) => {
         console.log(res);
         alert("Students Added Successfully");
+      })
+      .catch((error) => {
+        console.error("Error:", error.name);
+        alert(`Error: ${error.name}`);
       });
   };
 
@@ -110,7 +117,7 @@ const AddStudent = () => {
                     isManual ? "" : " cursor-not-allowed"
                   }`}
                 >
-                  Name
+                  Name *
                 </label>
                 <input
                   type="text"
@@ -122,6 +129,7 @@ const AddStudent = () => {
                   value={oneData.name}
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 />
               </div>
               <div className={`mb-4 ${isManual ? "" : "cursor-not-allowed"}`}>
@@ -131,7 +139,7 @@ const AddStudent = () => {
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                 >
-                  Email
+                  Email *
                 </label>
                 <input
                   type="email"
@@ -143,6 +151,7 @@ const AddStudent = () => {
                   value={oneData.email}
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 />
               </div>
               <div className={`mb-4 ${isManual ? "" : "cursor-not-allowed"}`}>
@@ -152,17 +161,18 @@ const AddStudent = () => {
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                 >
-                  Gender
+                  Gender *
                 </label>
                 <select
                   id="gender"
-                  className={`border border-gray-300 rounded px-4 py-2 w-full ${
+                  className={`border border-gray-300 rounded px-4 py-2.5 w-full ${
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                   value={oneData.gender}
                   name="gender"
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 >
                   <option value="">Select</option>
                   <option value="Male">Male</option>
@@ -177,7 +187,7 @@ const AddStudent = () => {
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                 >
-                  Department
+                  Department *
                 </label>
                 <input
                   type="text"
@@ -189,6 +199,7 @@ const AddStudent = () => {
                   value={oneData.department}
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 />
               </div>
               <div className={`mb-4 ${isManual ? "" : "cursor-not-allowed"}`}>
@@ -198,7 +209,7 @@ const AddStudent = () => {
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                 >
-                  Year of admission
+                  Year of admission *
                 </label>
                 <input
                   type="text"
@@ -210,6 +221,7 @@ const AddStudent = () => {
                   value={oneData.year}
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 />
               </div>
               <div className={`mb-4 ${isManual ? "" : "cursor-not-allowed"}`}>
@@ -219,7 +231,7 @@ const AddStudent = () => {
                     isManual ? "" : "cursor-not-allowed"
                   }`}
                 >
-                  Phone No.
+                  Phone No. *
                 </label>
                 <input
                   type="phone"
@@ -231,11 +243,12 @@ const AddStudent = () => {
                   value={oneData.phoneNumber}
                   onChange={isManual ? handleChange : null}
                   disabled={!isManual}
+                  required
                 />
               </div>
               <button
                 type="submit"
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                className="bg-color hover:bg-blue-800 text-white font-bold py-2 px-4 rounded"
               >
                 Submit
               </button>
@@ -246,7 +259,7 @@ const AddStudent = () => {
               <h2 className="text-xl mb-2 font-semibold">Upload Excel File:</h2>
               <div className={`mb-4 ${isManual ? "cursor-not-allowed" : ""}`}>
                 <label htmlFor="file" className="block font-bold mb-2">
-                  Upload File
+                  Upload File *
                 </label>
                 <input
                   type="file"
@@ -256,15 +269,62 @@ const AddStudent = () => {
                   }`}
                   onChange={isManual ? null : handleFileChange}
                   disabled={isManual}
+                  required
                 />
               </div>
               <button
                 type="submit"
-                className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                className="bg-color hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded"
               >
                 Submit
               </button>
             </form>
+            <div>
+                  <h2 className="text-xl mt-10 font-semibold">
+                    Excel Template:
+                  </h2>
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    className="mt-2 flex items-center gap-1 font-normal"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      className="-mt-px h-4 w-4"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 01.67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 11-.671-1.34l.041-.022zM12 9a.75.75 0 100-1.5.75.75 0 000 1.5z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Make sure to flow the below template for uploading the excel
+                  </Typography>
+                </div>
+                <Card className="mt-10 h-full w-full overflow-x-scroll lg:overflow-none rounded-none">
+                  <table className="w-full min-w-max table-auto text-left bg-white">
+                    <thead>
+                      <tr>
+                        {TABLE_HEAD.map((head) => (
+                          <th
+                            key={head}
+                            className=" p-4 border border-gray-800 w-20 h-4"
+                          >
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-100"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                  </table>
+                </Card>
           </TabPanel>
         </TabsBody>
       </Tabs>

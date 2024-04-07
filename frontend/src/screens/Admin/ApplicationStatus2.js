@@ -17,7 +17,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useComments } from "../../contexts/commentsContext";
-import { useAuth } from "../../contexts/authContext";
+// import { useAuth } from "../../contexts/authContext";
 import Modal from "react-modal";
 const TABLE_HEAD = ["ID", "Name", "Professor", "Status", "Change Status"];
 const TABLE_HEAD2 = ["ID", "Name", "Professor", "Status"];
@@ -74,11 +74,24 @@ const ModalComponent = ({
 };
 export default function MembersTable() {
   const [applications, setApplications] = useState([]);
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth();
   // const [selectedOptions, setSelectedOptions] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
   const [currentTab, setCurrentTab] = useState("All");
   const [showPopup, setShowPopup] = useState(false);
   const { comments, setComments, selectedOptions, setSelectedOptions } =useComments();
+  const applicationsPerPage = 10;
+  const [search, setSearch] = useState("");
+  
+  // Calculate index of the last application on the current page
+  const indexOfLastApplication = currentPage * applicationsPerPage;
+  // Calculate index of the first application on the current page
+  const indexOfFirstApplication = indexOfLastApplication - applicationsPerPage;
+  // Get current applications to display
+  
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
   // const [filteredApplications, setFilteredApplications] = useState([]);
   // const filteredApplications = currentTab === "All" ? applications : applications.filter(app => app.status === currentTab);
   const renderHeading = () => {
@@ -86,24 +99,57 @@ export default function MembersTable() {
     else return TABLE_HEAD;
   };
   const filteredApplications = useMemo(() => {
+    if(search.length === 0){
     return currentTab === "All"
-      ? applications
-      : applications.filter((app) => app.status === currentTab);
-  }, [applications, currentTab]);
+    ? applications
+    : applications.filter((app) => app.status === currentTab);}
+    else{
+      const filteredApps = applications.filter(app => {
+        const nameMatches = app.student.toLowerCase().startsWith(search.toLowerCase());
+        const professorMatches = app.faculty.toLowerCase().startsWith(search.toLowerCase());
+        if (currentTab === "All") {
+          return nameMatches || professorMatches;
+        } else {
+          return app.status === currentTab && (nameMatches || professorMatches);
+        }
+      });
+    
+      return filteredApps;
+    }
+  }, [applications, currentTab,search]);
+  
+  const CurrentApplications = useMemo(() => {
+    return filteredApplications.slice(indexOfFirstApplication, indexOfLastApplication);
+  }, [filteredApplications, currentPage]);
+  
+  // const totalPages = Math.ceil(totalApplications / applicationsPerPage);
+  
+  const totalApplications = useMemo(() => {
+    if(filteredApplications.length === 0 )
+    setCurrentPage(0);
+    else
+    setCurrentPage(1);
+    return filteredApplications.length;
+  }, [filteredApplications]);
+  
+  const totalPages = useMemo(() => {
+    return Math.ceil(totalApplications / applicationsPerPage);
+  }, [totalApplications, applicationsPerPage]);
+  
   useEffect(() => {
     axios
-      .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
-      .then((res) => {
-        console.log("here:", res.data.data);
-        setApplications(res.data.data);
-      })
+    .get(`${backendUrl}/api/get_applications`, { withCredentials: true })
+    .then((res) => {
+      // console.log("here:", res.data.data);
+      setApplications(res.data.data);
+    })
       .catch((error) => {
-        console.error("Error fetching data:", error);
+        // console.error("Error fetching data:", error);
       });
-  }, []);
-
-  const navigate = useNavigate();
-
+    }, []);
+    
+    const navigate = useNavigate();
+    
   const handleApplicationClick = (appId) => {
     navigate(`./application/${appId}`);
   };
@@ -118,6 +164,12 @@ export default function MembersTable() {
       return "Rejected by Admin";
     }
   };
+
+  const handleInputChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+
   const handleOption = (appId, e, currentStatus) => {
     // if(!isPlausible(setEvent(e), currentStatus)){}
     if (e === "Reject") {
@@ -131,9 +183,9 @@ export default function MembersTable() {
           [appId]: { value: e, comments: comments[appId] },
         });
       }
-    } else if (e == "Approve") {
+    } else if (e === "Approve") {
       // setShowPopup(true);
-      console.log(appId);
+      // console.log(appId);
     } else {
       setSelectedOptions({ ...selectedOptions, [appId]: { value: e } });
     }
@@ -172,10 +224,12 @@ export default function MembersTable() {
         window.location.reload();
       });
   };
+  
+  
   return (
     <div className="flex justify-center h-full mt-4 ">
-      <Card className="h-full w-full lg:w-4/5">
-        <CardHeader floated={false} shadow={false} className="rounded-none">
+      <Card className=" w-screen-max h-full w-full lg:w-4/5">
+        <CardHeader floated={false} shadow={false} className="rounded-none mr-10">
           <div className=" flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
@@ -188,46 +242,48 @@ export default function MembersTable() {
           </div>
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Tabs className="w-full md:w-max pt-3 z-0" value="All">
-              <TabsHeader>
+              <TabsHeader className="">
                 <Tab value="All" onClick={() => setCurrentTab("All")}>
-                  &nbsp;&nbsp;All&nbsp;&nbsp;
+                  &nbsp;All&nbsp;
                 </Tab>
                 <Tab
                   value="Pending Faculty Approval"
                   onClick={() => setCurrentTab("Pending Faculty Approval")}
                 >
-                  &nbsp;&nbsp;Faculty&nbsp;&nbsp;
+                  &nbsp;Faculty&nbsp;&nbsp;
                 </Tab>
                 <Tab
                   value="Pending HOD Approval"
                   onClick={() => setCurrentTab("Pending HOD Approval")}
                 >
-                  &nbsp;&nbsp;HOD&nbsp;&nbsp;
+                  &nbsp;HOD&nbsp;&nbsp;
                 </Tab>
                 <Tab
                   value="Pending Admin Approval"
                   onClick={() => setCurrentTab("Pending Admin Approval")}
                 >
-                  &nbsp;&nbsp;Admin&nbsp;&nbsp;
+                  &nbsp;Admin&nbsp;&nbsp;
                 </Tab>
                 <Tab
                   value="Pending Caretaker Action"
                   onClick={() => setCurrentTab("Pending Caretaker Action")}
                 >
-                  &nbsp;&nbsp;Caretaker&nbsp;&nbsp;
+                  &nbsp;Caretaker&nbsp;
                 </Tab>
               </TabsHeader>
             </Tabs>
             <div className="w-full md:w-max">
               <Input
                 label="Search"
+                onChange= {handleInputChange}
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                className="border border-none "
               />
             </div>
           </div>
         </CardHeader>
-        <CardBody className="px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+        <CardBody className="px-0 mt-4 w-full overflow-x-auto">
+          <table className="w-full min-w-max table-auto text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -247,7 +303,7 @@ export default function MembersTable() {
               </tr>
             </thead>
             <tbody>
-              {filteredApplications.map(
+              {CurrentApplications.map(
                 ({
                   application_id,
                   student,
@@ -272,7 +328,7 @@ export default function MembersTable() {
                           <div className="flex flex-col">
                             <Typography
                               variant="small"
-                              className="text-blue-gray-500 font-normal text-lg font-bold"
+                              className="text-blue-gray-500 font-normal text-lg"
                             >
                               {application_id}
                             </Typography>
@@ -363,23 +419,27 @@ export default function MembersTable() {
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">
-            Page 1 of 1
+          Page {currentPage} of {totalPages}
           </Typography>
           <Button
             variant="outlined"
             size="sm"
-            className="bg-blue-600 text-white"
+            className="bg-color text-white hover:bg-blue-800"
             onClick={handleSubmit}
           >
             Submit
           </Button>
           <div className="flex gap-2">
-            <Button variant="outlined" size="sm">
-              Previous
-            </Button>
-            <Button variant="outlined" size="sm">
-              Next
-            </Button>
+              {currentPage > 1 && (
+                <Button variant="outlined" size="sm" onClick={() => handlePageChange(currentPage - 1)}>
+                  Previous
+                </Button>
+              )}
+              {currentPage < totalPages && (
+                <Button variant="outlined" size="sm" onClick={() => handlePageChange(currentPage + 1)}>
+                  Next
+                </Button>
+              )}
           </div>
         </CardFooter>
       </Card>
