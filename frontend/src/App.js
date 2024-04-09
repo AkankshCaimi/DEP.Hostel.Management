@@ -30,6 +30,7 @@ import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
 import Allotment from "./screens/Allotment";
 import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
+import StudentProfile from "./screens/Students/StudentProfile";
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -67,6 +68,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />}/>
         <Route path="/home" element={<Home />} />
+        <Route path="/student-profile" element={<StudentProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
