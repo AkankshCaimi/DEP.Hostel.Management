@@ -354,6 +354,7 @@ of arrival.</p>
         <button
           type="submit"
           className="bg-color text-white px-6 py-2 rounded-lg w-80 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 mb-4"
+          onClick={handleSubmit}
         >
           Submit
         </button>

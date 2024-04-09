@@ -17,10 +17,16 @@ function TextUpdaterNode({ data, isConnectable }) {
     setNum(num + 1);
     updateNodeInternals(num);
   }, [num, updateNodeInternals]);
-  console.log('here', data)
+  // console.log('here', data)
   return (
-    <div className='nodrag'>
-      <Handle type="source" position={Position.Right} id="b" isConnectable={isConnectable} className='w-16 nodrag'/>
+    <div className=''>
+      <Handle type="source" position={Position.Right} id="b" isConnectable={isConnectable} style={{
+        borderRadius: '10%',
+        width: '50px',
+        height: '30px',
+        background: '#365899'
+        // marginRight: '10px',
+      }}/>
       <Card className="mt-6 w-48 nodrag">
         <CardBody className='bg-transparent'>
           <Typography variant="h5" color="blue-gray" className="mb-2 bg-transparent">

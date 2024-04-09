@@ -17,19 +17,22 @@ function TextUpdaterNode({ data, isConnectable }) {
     setNum(num + 1);
     updateNodeInternals(num);
   }, [num, updateNodeInternals]);
-  console.log('here', data)
+  // console.log('here', data)
   return (
     <div className='nodrag'>
-      <Handle type="target" position={Position.Left} id="b" isConnectable={isConnectable} className='w-16'/>
+      <Handle type="target" position={Position.Left} id="b" isConnectable={isConnectable} style={{
+        borderRadius: '10%',
+        width: '50px',
+        height: '30px',
+        background: '#365899'
+        // marginRight: '10px',
+      }}/>
       <Card className="w-auto pt-1 px-3 pb-0">
-          <Typography variant="h6" color="blue-gray" className="mb-2 bg-transparent">
-            {/* {data.name} */}
-          </Typography>
           <Typography>
             <span className='font-bold'>{data.label} | </span>
-            Capcity: {data.capacity} |
+            Capacity: {data.capacity} |
             Unallocated: {data.unallocated} 
-          <Button onClick={()=>{handleClick()} } className="ml-4 py-2.5">EDIT</Button>
+          {/* <Button onClick={()=>{handleClick()} } className="ml-4 py-2.5">EDIT</Button> */}
           </Typography>
       </Card>
     </div>

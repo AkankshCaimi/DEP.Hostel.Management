@@ -18,9 +18,11 @@ urlpatterns = [
     path('update_application', views.update_application, name='update_application'),
     path('get_hostels', views.get_hostels, name='get_hostels'),
     path('get_hostel_rooms/<int:hostel_no>', views.get_hostel_rooms, name='get_hostel_rooms'),
-    path('add_rooms', views.add_rooms, name='add_rooms'),
-    # path('get_rooms', views.get_rooms, name='get_rooms'),
+    path('rooms/<str:id>', views.room, name='get_rooms'),
+    path('allot_room', views.allot_room, name='allot_room'),
     path('send_email', views.send_email, name='send_email'),
     path('generate_pdf', views.generate_pdf, name='generate_pdf'),
-    path('test', views.download_pdf, name='test')
+    path('receive_from_sandbox', views.receive_from_sandbox, name='receive_from_sandbox'),  
+    path('add_data', views.add_data, name='add_data'),
+    path('test', views.sandbox, name='sandbox')
 ]

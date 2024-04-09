@@ -12,8 +12,6 @@ import AdminDashboard from "./screens/Admin/AdminDashboard";
 import AddStudents from "./screens/Admin/AddStudents";
 import AddFaculty from "./screens/Admin/AddFaculty";
 import { useState, useEffect } from "react";
-import Test from "./screens/Test";
-import ApplicationStatus from "./screens/Admin/ApplicationStatus";
 import ComplaintStatus from "./screens/ComplaintStatus";
 import ProfessorDashboard from "./screens/Professors/ProfessorDashboard";
 import ProfAppStatus from "./screens/Professors/ProfAppStatus";
@@ -28,8 +26,9 @@ import HostelView from "./screens/Caretaker/HostelView";
 import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
-import Allotment from "./screens/Allotment";
 import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
+import Allotment from "./screens/Allotment";
+import Obj from './screens/Test2'
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -71,7 +70,7 @@ function App() {
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
         <Route path="/allotment" element={<Allotment />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="/test" element={<Obj/>} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         {/* Admin Routes */}

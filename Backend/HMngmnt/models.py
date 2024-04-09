@@ -54,29 +54,59 @@ class Application(models.Model):
     def get_student_name(self):
         return self.student.name
 
-
 class Hostel(models.Model):
-    hostel_no = models.CharField(primary_key=True, max_length=20)
+    hostel_no = models.CharField(auto_created=True, primary_key=True, max_length=20)
     hostel_name = models.CharField(max_length=100)
-    hostel_type = models.CharField(max_length=100) # Male, Female, Mixed
-    num_floors = models.IntegerField(default=1)
+    hostel_type = models.CharField(max_length=100)
     capacity = models.IntegerField(default=1)
+    current_capacity = models.IntegerField(default=0)
+    def get_capacity(self):
+        return sum([wing.capacity for wing in self.wing_set.all()])
+    def get_current_capacity(self):
+        return sum([wing.current_capacity for wing in self.wing_set.all()])
     def __str__(self):
         return self.hostel_name
-    
-class Application_Final(models.Model):
-    application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
-    hostel= models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None, null=True)
+
+class Wing(models.Model):
+    wing_name= models.CharField(max_length=100, primary_key=True)
+    hostel=models.ForeignKey(Hostel, on_delete=models.CASCADE)
+    wing_type = models.CharField(max_length=100) # Male, Female, Mixed
+    num_floors = models.IntegerField(default=1)
+    capacity = models.IntegerField(default=1)
+    current_capacity = models.IntegerField(default=0)
+    def get_capacity(self):
+        return sum([room.room_occupancy for room in self.room_set.all()])
+    def get_current_capacity(self):
+        return sum([room.current_occupancy for room in self.room_set.all()])
+    def __str__(self):
+        return self.wing_name
+
 
 class Room(models.Model):
     room_no = models.CharField(primary_key=True, max_length=20)
-    floor= models.IntegerField(default=1)
-    hostel= models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None)
+    floor= models.IntegerField(default=0)
+    hostel_wing= models.ForeignKey(Wing, on_delete=models.CASCADE, default=None)
+    hostel=models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None)
     room_occupancy = models.IntegerField(default=1)
     current_occupancy = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.room_no
+    def save(self, *args, **kwargs):
+        if self.current_occupancy > self.room_occupancy:
+            raise ValidationError("Room occupancy is full.")
+        if self.hostel_wing.hostel != self.hostel:
+            raise ValidationError("Hostel Wing and Hostel do not match.")
+        super().save(*args, **kwargs)
+
+class Application_Final(models.Model):
+    application= models.OneToOneField(Application, on_delete=models.CASCADE, primary_key=True, default=None)
+    hostel= models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None, null=True)
+    room= models.ForeignKey(Room, on_delete=models.CASCADE, default=None, null=True)
+    occupied_date_range= models.CharField(max_length=100, default='None')
+
 class Batch(models.Model):
-    batch = models.IntegerField(primary_key=True, default=0)
+    batch = models.CharField(primary_key=True,max_length=20, default="None")
     number_of_students = models.IntegerField(default=0)
     number_of_girls= models.IntegerField(default=0)
     number_of_boys= models.IntegerField(default=0)
@@ -102,7 +132,7 @@ class Student(models.Model):
 
 
 class Warden(models.Model):
-    warden = models.OneToOneField(Faculty, on_delete=models.CASCADE, primary_key=True, default=None)
+    warden = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)
     hostel = models.OneToOneField(Hostel, on_delete=models.CASCADE, default=None, null=True, blank=True)
     is_chief_warden = models.BooleanField(default=False, null=True, blank=True)
 
@@ -117,7 +147,7 @@ class Warden(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.warden.faculty.name
+        return self.warden.name
 
 class Caretaker(models.Model):
     caretaker = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True, default=None)

@@ -6,14 +6,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 
 from .email import send, templates
-from .models import Application, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden
+from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
 import jwt, datetime
 from .decorators import token_required, admin_required, validate_token, staff_required
-from .helpers import get_user_dict, handle_file_attachment, parse_xl
+from .helpers import get_user_dict, handle_file_attachment, parse_xl, extract_roll_number_info
 import os
+import random
 
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
@@ -270,12 +271,18 @@ def add_users(request):
                 user=CustomUser(name=userX[0], email=userX[1], gender=userX[3])
                 user.set_password('devanshu')
                 user.is_active=True
-                user.save()
+                try:
+                    user.save()
+                except:
+                    pass
+                batch, roll=extract_roll_number_info(userX[1])
+            
+                batch, is_created=Batch.objects.get_or_create(batch=batch)
                 try:
                     room=Room.objects.get(room_no=userX[6])
                 except:
                     room=None
-                student=Student(student=user, department=userX[2], student_phone=userX[4], student_roll=userX[1].split('@')[0], student_year=userX[5], student_room=room)
+                student=Student(student=user, department=userX[2], student_phone=userX[4], student_roll=roll, student_year=userX[5], student_room=room, student_batch=batch)
                 student.save()
         # delete file temp.xlsx
         os.remove('temp.xlsx')
@@ -304,8 +311,14 @@ def add_users(request):
             user.set_password('devanshu')
             user.is_active=True
             # print(department, phone, year)
+            batch, roll=extract_roll_number_info(email)
+            print(batch, roll)
+            # save only if dont exist
+
+            batch, is_created=Batch.objects.get_or_create(batch=batch)
+            print(batch)
+            student=Student(student=user, department=department, student_phone=phone, student_roll=roll, student_year=year, student_batch=batch)
             user.save()
-            student=Student(student=user, department=department, student_phone=phone, student_roll=email.split('@')[0], student_year=year)
             student.save()
         return JsonResponse({'message': 'Success'})
 
@@ -486,6 +499,44 @@ def generate_pdf(request):
     os.remove("./documents/datagen.pdf")
     return response
     
+@csrf_exempt
+@staff_required
+def room(request, id):
+    print('id:', id)
+    room=Room.objects.get(room_no=id)
+    students=room.student_set.all()
+    if len(students):
+        students_list=[{
+            'name': student.student.name,
+            'email': student.student.email,
+        } for student in students]
+        print('students_list:', students_list)
+        return JsonResponse({'message': 'Staff page', 'data': students_list})
+    students=room.application_final_set.all()
+    print('students:', students)
+    if len(students):
+        students_list=[{
+            'name': student.application.student.name,
+            'email': student.application.student.email,
+            'phone': student.application.phone
+        } for student in students]
+        print('students_list:', students_list)
+        return JsonResponse({'message': 'Staff page', 'data': students_list})
+    return JsonResponse({'message': 'Staff page', 'data': []})
+
+@csrf_exempt
+@staff_required
+def allot_room(request):
+    application_id = request.GET.get('application_id')
+    room_no = request.GET.get('room_id')
+    application = Application.objects.get(application_id=application_id)
+    application.status='Room Allotted'
+    room = Room.objects.get(room_no=room_no)
+    application_final=application.application_final
+    application_final.room=room
+    application.save()
+    application_final.save()
+    return JsonResponse({'message': 'Room allotted successfully.'})
 # ----------------WARDEN FUNCTIONS----------------
 @csrf_exempt
 # @staff_required
@@ -505,7 +556,7 @@ def get_hostels(request):
 @staff_required
 def get_hostel_rooms(request, hostel_no):
     # hostel=request.GET.get(hostel_no=hostel_no)
-    rooms=Room.objects.filter(hostel__hostel_no=hostel_no).order_by('room_no')
+    rooms=Room.objects.filter(hostel__main__hostel_no=hostel_no).order_by('room_no')
     # floor=request.GET.get('floor')
     # rooms=Room.objects.filter(hostel__hostel_name=hostel, floor=int(floor))
     rooms_list=[{
@@ -532,32 +583,170 @@ def download_pdf(request):
 
 
 @csrf_exempt
-def add_rooms(req):
-    mp={
-        1: 'Chenab',
-        2: 'Beas',
-        3: 'Satluj',
-        4: 'Raavi',
-        5: 'Brahmaputra Boys',
-        6: 'T6',
-        7: 'Brahmaputra Girls'
-    }
-    for i in range(1, 8):
-        hostel=Hostel.objects.get(hostel_no=i)
-        email='.'.join(mp[i].lower().split(' '))
-        email="caretaker1."+email+"@iitrpr.ac.in"
-        print(email)
-        user=CustomUser(name=mp[i], email=email)
-        user.set_password('devanshu')
-        user.is_staff=True
-        user.save()
-        caretaker=Caretaker(caretaker=user, hostel=hostel)
-        caretaker.save()
-        random_faculty = Faculty.objects.order_by('?').first()
-        warden = Warden(warden=random_faculty, hostel=hostel)
-        warden.save()
+def add_data(req):
+    # mp={
+    #     0: 'Chenab',
+    #     1: 'Beas',
+    #     2: 'Satluj',
+    #     3: 'Brahmaputra',
+    #     4: 'Raavi',
+    #     5: 'T6',
+    # }
+    # for i in range(0, 6):
+    #     if True:
+    #         hostel=Hostel.objects.get(hostel_no=i)
+    #         user=CustomUser(name=f'Warden {mp[i]}', email='warden1.'+mp[i].lower()+'@iitrpr.ac.in', is_staff=True)
+    #         user.set_password('devanshu')
+    #         warden=Warden(warden=user, hostel=hostel)
+    #         user.save()
+    #         warden.save()
+    #     else:
+    #         hostel=Hostel.objects.get(hostel_no=i)
+    #         user=CustomUser(name=f'Warden {mp[i]}', email='warden1.'+mp[i].lower()+'.boys'+'@iitrpr.ac.in', is_staff=True)
+    #         user.set_password('devanshu')
+    #         caretaker=Caretaker(caretaker=user, hostel=hostel)
+    #         user.save()
+    #         caretaker.save()
+    #         user=CustomUser(name=f'Warden {mp[i]}', email='warden1.'+mp[i].lower()+'.girls'+'.@iitrpr.ac.in', is_staff=True)
+    #         user.set_password('devanshu')
+    #         caretaker=Caretaker(caretaker=user, hostel=hostel)
+    #         user.save()
+
+    for b in ['2019B', '2020B', '2021B', '2022B', '2023B', '2021M', '2022M', '2023M', '2020Z', '2021Z', '2022Z', '2023Z']:
+    #     batch, bool=Batch.objects.get_or_create(batch=b)
+    #     # batch.save()     
+    #     for _ in range(0,20):
+    #         roll=random.randint(1001, 1999)
+    #         dep=random.choice(['CSE', 'EE', 'ME', 'CE', 'HSS', 'MNC'])
+    #         roll=b[:4]+dep[:2]+b[4:]+str(roll)
+    #         user=CustomUser(name=f'Student {_}', email=f'{roll}@iitrpr.ac.in', gender=random.choice(['Male', 'Male', 'Female']))
+    #         user.set_password('devanshu')
+    #         # print(roll, end="  ")
+    #         student=Student(student=user, department=dep, student_phone=f'{random.randint(7000000000, 9999999999)}',
+    #                         student_roll=roll, student_year=int(b[:4]), student_batch=batch)
+    #         user.save()
+    #         student.save()
+        students=Student.objects.filter(student_batch__batch=b)
+        for student in students:
+            if student.student.gender=='Male':
+                continue
+                hostel=Hostel.objects.get(hostel_no=random.choice([0, 1, 2, 3,5]))
+                wing=random.choice(Wing.objects.filter(hostel=hostel, wing_type='Boys'))
+                # occ=random.randint(1, 3)
+                init=wing.wing_name.split(' ')
+                init=init[0][0]+init[1][0]
+                room_no=init+'-'+str(random.randint(101, (wing.num_floors+1)*100 - 1))
+                room, _=Room.objects.get_or_create(room_no=room_no,
+                                      floor=int(room_no.split('-')[1][0]),
+                                      hostel=hostel,
+                                      hostel_wing=wing,
+                                      room_occupancy=2)
+                student.student_room=room
+                student.save()
+            else:
+                hostel=Hostel.objects.get(hostel_no=random.choice([4,3]))
+                wing=random.choice(Wing.objects.filter(hostel=hostel, wing_type='Girls'))
+                init=wing.wing_name.split(' ')
+                init=init[0][0]+init[1][0]
+                room_no=init+'-'+str(random.randint(101, (wing.num_floors+1)*100 - 1))
+                room, _=Room.objects.get_or_create(room_no=room_no,
+                                        floor=int(room_no.split('-')[1][0]),
+                                        hostel=hostel,
+                                        hostel_wing=wing,
+                                        room_occupancy=2)
+                student.student_room=room
+                student.save()
+            # room=Room.objects.create(room_no=f')
+    # for student in Student.objects.all():
+    #     student.student_room=None
+    #     student.save()
+    # for i in range(1, 100):
+    #     user=CustomUser(name=f'Faculty{i}', 
+    #                     email=f'faculty{i}@iitrpr.ac.in',
+    #                     is_staff=True,
+    #                     gender=random.choice(['M', 'F'])
+    #                     )
+    #     user.set_password('devanshu')
+    #     faculty=Faculty(faculty=user, department=random.choice(['CSE', 'EE', 'ME', 'CE', 'HSS', 'MNC']), 
+    #                     faculty_phone=f'{random.randint(7000000000, 9999999999)}', 
+    #     )
+    #     user.save()
+    #     faculty.save()
     return JsonResponse({'message': 'Success'})
 
-def get_batches():
-    # number of students per batch
-    pass
+# @csrf_exempt
+# def sandbox(request):
+#     # Get all the hostels
+#     wings = Wing.objects.all()
+
+#     # Get all the batches
+#     batches = Batch.objects.all()
+
+#     girls_matrix = {}
+#     boys_matrix = {}
+
+#     # Iterate over each batch
+#     for batch in batches:
+#         # Create empty dictionaries for the current batch for girls and boys
+#         girls_batch_dict = {}
+#         boys_batch_dict = {}
+        
+#         # Iterate over each hostel
+#         for wing in wings:
+#             if wing.wing_type=='Boys':
+#                 num_girls = Student.objects.filter(student_batch=batch, student_room__hostel=hostel, student__gender='Male').count()
+#                 girls_batch_dict[wing.wing_name] = num_girls
+#             else:
+#                 num_boys = Student.objects.filter(student_batch=batch, student_room__hostel=hostel, student__gender='Female').count()
+#                 boys_batch_dict[hostel.hostel_name] = num_boys
+        
+#         # Add the dictionaries for the current batch to the main matrices
+#         girls_matrix[batch.batch] = girls_batch_dict
+#         boys_matrix[batch.batch] = boys_batch_dict
+
+#     # Return both matrices
+#     # return girls_matrix, boys_matrix
+#     print('boys:\n', boys_matrix)
+#     print('girls:\n', girls_matrix)
+#     volumes={}
+#     for hostel in hostels:
+#         volumes[hostel.hostel_name]=hostel.capacity
+#     for batch in batches:
+#         volumes[batch.batch]=batch.number_of_boys
+#     return JsonResponse({'message': 'Success', 'boys': boys_matrix, 'volumes':volumes})
+#     # return JsonResponse({"Success"})
+@csrf_exempt
+def sandbox(request):
+    batches = Batch.objects.all()
+    hostels = Hostel.objects.all()
+    matrix = []
+
+    # Header row for the matrix
+    header_row = ['Batch']
+    for hostel in hostels:
+        wings = Wing.objects.filter(hostel=hostel)
+        header_row.extend([f'{hostel.hostel_name} - {wing.wing_name}' for wing in wings])
+    matrix.append(header_row)
+
+    # Populate matrix with data
+    for batch in batches:
+        batch_row = [batch.batch]
+        for hostel in hostels:
+            # wings = Wing.objects.filter(hostel=hostel)
+            wings=hostel.wing_set.all()
+            wing_data = []
+            for wing in wings:
+                students_count = Student.objects.filter(student_batch=batch, student_room__hostel=hostel, student_room__hostel_wing=wing).count()
+                wing_data.append(students_count)
+            batch_row.extend(wing_data)
+        matrix.append(batch_row)
+
+    return JsonResponse({'data':matrix})
+
+
+@csrf_exempt
+def receive_from_sandbox(request):
+    data = json.loads(request.body)
+    print(data)
+    return JsonResponse({"message":"Success"})
+

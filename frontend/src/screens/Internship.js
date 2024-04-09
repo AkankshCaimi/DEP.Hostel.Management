@@ -146,6 +146,7 @@ const Internship = () => {
                   isOpen={modalIsOpen}
                   onRequestClose={() => setModalIsOpen(false)}
                   contentLabel="Institute ID"
+                  className="h-full flex flex-col justify-center items-center bg-transparent"
                 >
                   <iframe
                     title="Institute ID"
@@ -153,6 +154,16 @@ const Internship = () => {
                     width="80%"
                     height="500px"
                   />
+                  <div className="md:hidden">
+                    <a
+                      href={`data:application/pdf;base64,${application.instiId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-blue-500 hover:text-blue-800"
+                    >
+                      Open in New Tab
+                    </a>
+                  </div>
                   <button
                     onClick={() => setModalIsOpen(false)}
                     className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline mt-2"
@@ -177,13 +188,24 @@ const Internship = () => {
                   isOpen={modalIsOpen2}
                   onRequestClose={() => setModalIsOpen2(false)}
                   contentLabel="Institute Letter"
+                  className="h-full flex flex-col justify-center items-center bg-transparent"
                 >
                   <iframe
                     title="Institute Letter"
                     src={`data:application/pdf;base64,${application.letter}`}
                     width="80%"
-                    height="500px"
+                    height="80%"
                   />
+                  <div className="md:hidden">
+                    <a
+                      href={`data:application/pdf;base64,${application.letter}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-blue-500 hover:text-blue-800"
+                    >
+                      Open in New Tab
+                    </a>
+                  </div>
                   <button
                     onClick={() => setModalIsOpen2(false)}
                     className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 no-underline mt-2"

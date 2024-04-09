@@ -6,14 +6,16 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useComments } from "../contexts/commentsContext";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/authContext";
 Modal.setAppElement("#root");
 export default function TableWithStripedColumns() {
   const location = useLocation();
   const {state}=location;
   const navigate = useNavigate();
+  const {currentUser}=useAuth();
   const renderButtons = location.pathname.includes(
     "/caretaker/application-status/application"
-  );
+  )
   // console.log("location:", location, renderButtons);
   const { comments, setComments, commentSection, setCommentSection, selectedOptions, setSelectedOptions} = useComments();
   const backendUrl = process.env.REACT_APP_BASE_URL;
@@ -103,6 +105,7 @@ export default function TableWithStripedColumns() {
           // fieldNames.push("Payment ID");
           setFieldNames([...fieldNames, "Payment Proof", "Payment ID"]);
         }
+        // console.log("New Object:", newObj);
         setFormData(newObj);
         setEmail(res.data.data.student_email);
       })
@@ -306,39 +309,63 @@ export default function TableWithStripedColumns() {
           </tbody>
         </table>
       </Card>
-      {renderButtons? 
-      (
-        <>
-        {(application && application.status && !application.status.includes("Payment")) ?
-        <>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
-            onClick={handlePayment}
-            >
-            Send Payment details
-          </button>
-        </> :
-        <></>}
-        <NavLink
-          to="/hostel-view"
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
-          >
-          Allot Room
-        </NavLink>
-        </>
-      ) : application && !(application.status.includes("Payment") || application.status.includes("Caretaker")) ?
-      (
-        <>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
-            onClick={()=>{ return (comments[id] ? handleSubmit() : setCommentSection(!commentSection))}}
-          >
-            {comments[id] ? "Submit" : "Add comments"}
-          </button>
-        </>
-      ):
-      <></>
-      }
+      {location.pathname.includes("admin") && (
+  <>
+    <button
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+      onClick={handlePayment}
+    >
+      Send Payment details
+    </button>
+    <NavLink
+      to={`../hostel-view/${currentUser.hostel}`}
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
+    >
+      Allot Room
+    </NavLink>
+    <button
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+      onClick={() => {
+        return comments[id] ? handleSubmit() : setCommentSection(!commentSection);
+      }}
+    >
+      {comments[id] ? "Submit" : "Add comments"}
+    </button>
+  </>
+)}
+
+{location.pathname.includes("professor") &&
+  (formData.status.includes("Faculty") || formData.status.includes("HOD")) && (
+    <button
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+      onClick={() => {
+        return comments[id] ? handleSubmit() : setCommentSection(!commentSection);
+      }}
+    >
+      {comments[id] ? "Submit" : "Add comments"}
+    </button>
+  )}
+
+{location.pathname.includes("caretaker") &&
+  formData.status.includes("Caretaker") && (
+    <button
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 mr-5"
+      onClick={handlePayment}
+    >
+      Send Payment details
+    </button>
+  )}
+
+{location.pathname.includes("caretaker") &&
+  formData.status.includes("payment") && (
+    <NavLink
+      to={`../hostel-view/${currentUser.hostel}`}
+      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"
+    >
+      Allot Room
+    </NavLink>
+  )}
+
       <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 flex" onClick={viewPdf}>
         Generate PDF
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

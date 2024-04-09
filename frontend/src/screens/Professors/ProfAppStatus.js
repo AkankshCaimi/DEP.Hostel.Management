@@ -162,12 +162,12 @@ export default function MembersTable() {
                 </Tab>
               </TabsHeader>
             </Tabs>
-            <div className="w-full md:w-max">
+            {/* <div className="w-full md:w-max">
               <Input
                 label="Search"
                 icon={<MagnifyingGlassIcon className="h-5 w-5" />}
               />
-            </div>
+            </div> */}
           </div>
         </CardHeader>
         <CardBody className="px-0">

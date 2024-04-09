@@ -3,6 +3,23 @@ import json
 import base64
 from .models import CustomUser, Faculty, Hostel
 import pandas as pd
+import re
+
+def extract_roll_number_info(roll_number):
+    pattern = r'(\d{4}|\d{2})([A-Za-z]{3})(\d{4})'
+    match = re.search(pattern, roll_number)
+
+    if match:
+        year = match.group(1)
+        batch = match.group(2)
+        return (year + batch.lower()[2], year+batch.lower()+match.group(3))  # Concatenating year and batch
+    else:
+        return None  # Return None if the roll number doesn't match the pattern
+
+# Test cases
+print(extract_roll_number_info("2023ABC1234"))  # Output: 2023ABC
+print(extract_roll_number_info("syam.21CSZ0018@iitrpr.ac.in"))  # Output: 22XYZ
+
 def get_user_dict(user):
     roles=[]
     user_json={}
