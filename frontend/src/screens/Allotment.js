@@ -98,10 +98,10 @@ export default function Allotment() {
       }))
       if(flag) return;
       setEdges((eds) => {
-        const newEdge={
+        const newEdge = {
           ...params,
           label: value,
-        }
+        };
         const newEdges = addEdge(newEdge, eds);
         // console.log("New Edges:", newEdges); // Log the new edges here
         return newEdges;

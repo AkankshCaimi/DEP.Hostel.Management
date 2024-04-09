@@ -13,16 +13,16 @@ function AdminDashboard() {
           </div>
         </div>
         <div className="flex flex-col items-start space-y-4 px-4 pb-8">
-          <Link to="add-student" className="no-underline  bg-color hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
+          <Link to="add-student" className="no-underline  bg-color hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
             Add Student
           </Link>
-          <Link to="add-faculty" className="no-underline  bg-color hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
+          <Link to="add-faculty" className="no-underline  bg-color hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
             Add Faculty
           </Link>
-          <Link to="application-status" className="no-underline  bg-color hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
+          <Link to="application-status" className="no-underline  bg-color hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
             Application Status
           </Link>
-          <Link to="complaint-status" className="no-underline  bg-color hover:bg-blue-600 text-white font-bold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
+          <Link to="complaint-status" className="no-underline  bg-color hover:bg-blue-800 text-white font-semibold py-2 px-4 rounded w-full lg:w-56 lg:ml-10">
             Complaint Status
           </Link>
         </div>

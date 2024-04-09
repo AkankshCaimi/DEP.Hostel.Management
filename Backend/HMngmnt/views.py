@@ -303,9 +303,9 @@ def add_users(request):
             user.set_password('devanshu')
             user.is_staff=True
             user.is_active=True
-            # user.save()
+            user.save()
             faculty=Faculty(faculty=user, department=department, is_hod=False, faculty_phone=phone)
-            # faculty.save()
+            faculty.save()
         elif type=='student':
             user=CustomUser(name=name, email=email, gender=gender)
             user.set_password('devanshu')

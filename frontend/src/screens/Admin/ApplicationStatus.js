@@ -203,12 +203,12 @@ const ApplicationStatus = () => {
     console.log("Data to be submitted:", data);
     // Add logic to submit the data to the backend
     const backendUrl=process.env.REACT_APP_BASE_URL;
-    // axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
-    // .then((res)=>{
-    //   console.log(res.data);
-    //   alert("Data submitted successfully");
-    //   window.location.reload();
-    // })
+    axios.post(`${backendUrl}/api/update_application`, { data }, { withCredentials: true })
+    .then((res)=>{
+      console.log(res.data);
+      alert("Data submitted successfully");
+      window.location.reload();
+    })
     console.log(comments)
     
   }
@@ -219,7 +219,7 @@ const ApplicationStatus = () => {
       <div className="mt-4 flex justify-center">
         <button
           type="button"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-800"
           onClick={() => handleSubmit()}
         >
           Update

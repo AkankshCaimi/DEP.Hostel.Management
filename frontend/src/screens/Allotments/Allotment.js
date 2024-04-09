@@ -111,5 +111,3 @@ export default function Allotment() {
   );  
   
 }
-
-// in this add 2 cells in which one cell gives the total number of students remain and total number of students in the batch apply these on the left sided cells like btech mtech and on the right handed cells add the total capacity and the capacity remains and when we wants to connect the line between the 2 cells from the left to the right it asks for the number of students you want to put in that hostel and when entered the numbers changed accordingly on the both sides and also give me option to remove the edges by right clicking on the edges and also on the edges give the count of the students of that batch living in that hostel when clicked on the line
