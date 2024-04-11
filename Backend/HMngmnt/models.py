@@ -126,4 +126,8 @@ class Caretaker(models.Model):
     def __str__(self):
         return self.hostel.hostel_name
     
-    
+
+class Circular(models.Model):
+    id = models.AutoField(primary_key=True)
+    text = models.CharField(max_length=200)
+    url = models.CharField(max_length=200)
