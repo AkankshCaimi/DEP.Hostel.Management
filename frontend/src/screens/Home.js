@@ -74,9 +74,6 @@ function Home() {
   //   setDeleteModalIsOpen(true);
   // };
 
-  const closeDeleteModal = () => {
-    setDeleteModalIsOpen(false);
-  };
 
   const handleCircularSelect = (id) => {
     setCirculars(circulars.map(circular => {
