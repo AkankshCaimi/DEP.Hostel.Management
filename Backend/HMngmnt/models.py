@@ -161,4 +161,8 @@ class SavedMappings(models.Model):
     name=models.CharField(max_length=100, auto_created=True, primary_key=True)
     mapping=models.JSONField(null=True, blank=True, default=None)
     wing_room_capacities=models.JSONField(null=True, blank=True, default=None)
-    
+
+class Circular(models.Model):
+    id = models.AutoField(primary_key=True)
+    text = models.CharField(max_length=200)
+    url = models.CharField(max_length=200)

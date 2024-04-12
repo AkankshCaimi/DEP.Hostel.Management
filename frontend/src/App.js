@@ -27,6 +27,7 @@ import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
 import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
+import StudentProfile from "./screens/Students/StudentProfile";
 import Allotment from "./screens/Allotment";
 import Obj from './screens/Test2'
 function LandingPage(){
@@ -66,6 +67,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />}/>
         <Route path="/home" element={<Home />} />
+        <Route path="/student-profile" element={<StudentProfile />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />

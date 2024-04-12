@@ -23,3 +23,13 @@
     padding-top: 0.5rem;
     padding-bottom: 100px;
 }
+
+@keyframes slide {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100%); }
+  }
+  
+  .animate-slide {
+    animation: slide 3s linear infinite;
+  }
+  

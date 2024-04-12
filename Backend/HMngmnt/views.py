@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 
 from .email import send, templates
-from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing, SavedMappings
+from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing, SavedMappings, Circular
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
@@ -22,6 +22,37 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
+
+
+@csrf_exempt
+def circulars(request):
+    print("here")
+    if request.method == 'GET':
+        circulars = Circular.objects.all().values('id','text', 'url')  
+        circulars_list = list(circulars) 
+        return JsonResponse(circulars_list, safe=False)  
+    elif request.method == 'POST':
+        print("here2")
+        data = json.loads(request.body)  # Load the request data
+        circular = Circular(text=data['text'], url=data['url']) 
+        circular.save() 
+        circulars = Circular.objects.all().values('id','text', 'url')  
+        circulars_list = list(circulars) 
+        return JsonResponse(circulars_list, safe=False) 
+    elif request.method == 'DELETE':
+        data = json.loads(request.body)
+        for id in data['ids']:
+            try:
+                print("deleting")
+                circular = Circular.objects.get(id=id)
+                circular.delete()
+            except Circular.DoesNotExist:
+                pass
+        circulars = Circular.objects.all().values('id', 'text', 'url')  
+        circulars_list = list(circulars) 
+        return JsonResponse(circulars_list, safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @csrf_exempt
 def index(request):
@@ -794,6 +825,12 @@ def receive_from_sandbox(request):
     print(converted_data)
     SavedMappings.objects.create(name=save_name,mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'])
     return JsonResponse({"message":"Success"})
+
+@csrf_exempt
+def get_saved_mappings(request):
+    saved_mappings=SavedMappings.objects.all()
+    ret_obj=[]
+    return JsonResponse({'message': 'Success', 'data': list(saved_mappings)})
 
 @csrf_exempt
 def apply_saved_mapping(request):

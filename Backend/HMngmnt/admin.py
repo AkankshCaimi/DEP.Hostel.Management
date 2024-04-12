@@ -1,6 +1,6 @@
 # Register your models here.
 from django.contrib import admin
-from .models import Application, Application_Final, Caretaker, Faculty, CustomUser, Student, Warden, Hostel, Room, Batch, Wing, SavedMappings
+from .models import Application, Application_Final, Caretaker, Faculty, CustomUser, Student, Warden, Hostel, Room, Circular, Batch, Wing, SavedMappings
 from django.contrib.auth.admin import UserAdmin
 
 class CustomUserAdmin(UserAdmin):
@@ -36,6 +36,7 @@ admin.site.register(Hostel)
 admin.site.register(Room)
 admin.site.register(Caretaker)
 admin.site.register(Application_Final)
+admin.site.register(Circular)
 admin.site.register(Batch)
 admin.site.register(SavedMappings)
 
