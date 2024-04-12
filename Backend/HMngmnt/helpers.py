@@ -1,7 +1,7 @@
 from django.core.serializers import serialize
 import json
 import base64
-from .models import CustomUser, Faculty, Hostel
+from .models import CustomUser, Faculty, Hostel, Student, Wing, Room, Batch, Warden, Caretaker
 import pandas as pd
 import re
 
@@ -112,3 +112,4 @@ def room_allocation(incoming_batch, outgoing_batch, type):
         # keep 3rd year students constant
         # transfer 2nd year to 4th year
         # put 1st year in 2nd year
+

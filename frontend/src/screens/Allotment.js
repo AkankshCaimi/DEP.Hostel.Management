@@ -63,7 +63,12 @@ export default function Allotment() {
   const [currentTab, setCurrentTab]=useState("");
   const onConnect = useCallback(
     (params) => {
-      console.log(params, nodes)
+      console.log(params, edges)
+      // check if edge already exists
+      if(edges.find((edge)=>edge.source===params.source && edge.target===params.target)){
+        alert("The edge already exists")
+        return;
+      }
       const value=parseInt(prompt("Enter the number of students you want to put in hostel "));
       // const Sourcenode=nodes.find((node)=>node.id===params.source);
       // const Targetnode=nodes.find((node)=>node.id===params.target);
@@ -176,40 +181,62 @@ export default function Allotment() {
   }, [currentTab])
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const [resData, setResData]=useState(null);
+  function getMatrixData(columnName, batchName, data) {
+    const columnIndex = data[0].findIndex(col => col.includes(columnName));
+    
+    const batchIndex = data.findIndex(row => row[0] === batchName);
+    console.log('here', columnIndex, batchIndex, data[0], columnName, batchName)
+    if (columnIndex === -1 || batchIndex === -1) {
+      return null;
+    }
+    
+    const value = data[batchIndex][columnIndex];
+    
+    return value;
+  }
   // useEffect for fetching data
   useEffect(() => {
     
-    axios.get(`${backendUrl}/api/test`, {withCredentials: true}).then((res) => {
+    axios.get(`${backendUrl}/api/test?gender=Girls`, {withCredentials: true}).then((res) => {
       console.log(res.data);
       setResData(res.data);
     })
   },[])
-  const batches=useMemo(()=>resData?Object.keys(resData.boys):[], [resData]);
-  const hostels=useMemo(()=>resData?Object.keys(resData.boys[batches[0]]):[], [resData, batches]);
+  const batches=useMemo(()=>resData?resData.data.slice(1).map(row=>row[0]):[], [resData]);
+  const hostels=useMemo(()=>resData?resData.data[0].slice(1).map(wing => wing.split(' - ')[0]):[], [resData, batches]);
   useEffect(()=>{
     if(!resData){
       return;
     }
+    console.log(batches, hostels)
     setData(batches.map((batch, index) => {
+      const row=resData.data.find((row)=>row[0]===batch)
+      const allocated=row.slice(1).reduce((a,c)=>a+parseInt(c),0)
+      const unallocated=parseInt(resData.batch_strengths[batch])-allocated
       return {
         label: batch,
         value: batch,
-        strength: parseInt(resData.volumes[batch]),
-        unallocated: parseInt(resData.volumes[batch])-Object.values(resData.boys[batch]).reduce((a,c)=>a+parseInt(c),0)
+        strength: parseInt(resData.batch_strengths[batch]),
+        unallocated: unallocated,
     }}));
     batches.forEach((batch, index) => {
-      const left=Object.values(resData.boys[batch]).reduce((a,c)=>a+parseInt(c),0)
+      const row=resData.data.find((row)=>row[0]===batch)
+      const allocated=row.slice(1).reduce((a,c)=>a+parseInt(c),0)
+      const left=parseInt(resData.batch_strengths[batch])-allocated
+      // const left=Object.values(resData.boys[batch]).reduce((a,c)=>a+parseInt(c),0)
       hostels.forEach((hostel, index) => {
         let total=0;
         batches.forEach((batch, index) => {
-          total+=parseInt(resData.boys[batch][hostel])
+          total+=parseInt(getMatrixData(hostel, batch, resData.data))
         })
+        console.log('total', total)
         const node={
           id: hostel,
           type: 'hostel',
           position: {x:900,y:100+100*index},
-          data: {label: hostel, capacity: parseInt(resData.volumes[hostel]), unallocated:parseInt(resData.volumes[hostel])-total},
+          data: {setRoomCapcity: setRoomCapcity,label: hostel, capacity: parseInt(resData.wing_capacities[hostel]), unallocated:parseInt(resData.wing_capacities[hostel])-total, per_room_capacity: parseInt(resData.wing_room_capacities[hostel])},
         }
+        console.log('here', node)
         setNodes((prev)=>prev.concat(node))
         // nodes.concat(node)
       })
@@ -217,25 +244,23 @@ export default function Allotment() {
         id: batch,
         type: 'batch',
         position: {x:400,y:200},
-        data: {label: batch, strength: parseInt(resData.volumes[batch]), unallocated:parseInt(resData.volumes[batch])-left},
+        data: {label: batch, strength: parseInt(resData.batch_strengths[batch]), unallocated:left},
         hidden: true,
       }
       setNodes((prev)=>prev.concat(node))
-      Object.entries(resData.boys[batch]).forEach(([key, value]) => {
-        // console.log(key, value)
-        if (parseInt(value)>0){
-          console.log('batch:', batch, 'key:', key, 'value:', value)
+      hostels.forEach((hostel, index) => {
+        const val=parseInt(getMatrixData(hostel, batch, resData.data))
+        if(val>0){
           const edge={
-            id: `${batch}-${key}`,
+            id: `${batch}-${hostel}`,
             source: batch,
-            target: key,
-            label: value,
+            target: hostel,
+            label: val,
             // animated: true,
           }
           setEdges((prev)=>prev.concat(edge))
         }
       })
-      // nodes.concat(node)
     })
   },[batches, hostels, resData])
   const [open, setOpen] = React.useState(false);
@@ -276,7 +301,20 @@ export default function Allotment() {
     'id': '',
     'capacity': '',
   });
-
+  const setRoomCapcity = (value, hostel) => {
+    console.log('here2')
+    if(value>0){
+      setNodes((prev)=>prev.map((node)=>{
+        if(node.id===hostel){
+          const prev_val=node.data.per_room_capacity
+          const prev_total=node.data.capacity
+          const num_of_Rooms=Math.ceil(prev_total/prev_val)
+          return {...node, data: {...node.data, per_room_capacity: value, capacity: num_of_Rooms*value, unallocated: num_of_Rooms*value-node.data.capacity+node.data.unallocated}}
+        }
+        return node;
+      }))
+    }
+  }
   const handleSubmit=()=>{
     const finalData={};
     edges.forEach(edge=>{
@@ -288,8 +326,21 @@ export default function Allotment() {
       }
       finalData[batch][hostel]=num;
     })
-    // console.log(finalData)
-    axios.post(`${backendUrl}/api/receive_from_sandbox`, finalData, {withCredentials: true}).then((res)=>{})
+    const room_capacities={}
+    nodes.forEach(node=>{
+      if(node.type==='hostel'){
+        room_capacities[node.id]=node.data.per_room_capacity
+      }
+    })
+    console.log(finalData, room_capacities)
+    axios.post(`${backendUrl}/api/receive_from_sandbox`, {
+      data: finalData,
+      room_capacities: room_capacities,
+      gender: 'Girls',
+    }, {withCredentials: true}).then((res)=>{
+      console.log(res)
+      alert("Data saved successfully")
+    })
   }
   return (
     <>
@@ -353,9 +404,9 @@ export default function Allotment() {
       <Background variant="dots" gap={12} size={2} />
       <Controls style={{ position: "absolute", bottom: 10, left: 10 }} className="border-transparent">
       </Controls>
-      {/* <div style={{ position: 'absolute', bottom: 10, right: 10 , zIndex: 2}}> */}
-      <div style={{ zIndex: 5}}>
-        <Button onClick={handleSubmit}>Click</Button>
+      <div style={{ position: 'absolute', bottom: 10, right: 10 , zIndex: 5}}>
+      {/* <div style={{ zIndex: 5}}> */}
+        <Button onClick={handleSubmit}>Save</Button>
       </div>
     </ReactFlow>
     </div>

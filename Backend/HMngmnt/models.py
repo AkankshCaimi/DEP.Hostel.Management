@@ -156,4 +156,9 @@ class Caretaker(models.Model):
     def __str__(self):
         return self.hostel.hostel_name
     
+
+class SavedMappings(models.Model):
+    name=models.CharField(max_length=100, auto_created=True, primary_key=True)
+    mapping=models.JSONField(null=True, blank=True, default=None)
+    wing_room_capacities=models.JSONField(null=True, blank=True, default=None)
     

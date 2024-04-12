@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 
 from .email import send, templates
-from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing
+from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing, SavedMappings
 from django.contrib.auth import authenticate
 from django.http import JsonResponse
 import json
@@ -719,34 +719,88 @@ def add_data(req):
 def sandbox(request):
     batches = Batch.objects.all()
     hostels = Hostel.objects.all()
-    matrix = []
-
-    # Header row for the matrix
-    header_row = ['Batch']
-    for hostel in hostels:
-        wings = Wing.objects.filter(hostel=hostel)
-        header_row.extend([f'{hostel.hostel_name} - {wing.wing_name}' for wing in wings])
-    matrix.append(header_row)
-
-    # Populate matrix with data
-    for batch in batches:
-        batch_row = [batch.batch]
+    gender=request.GET.get('gender')
+    if SavedMappings.objects.filter(name=f'current {gender}').exists():
+        data=SavedMappings.objects.get(name=f'current {gender}')
+        matrix=data.mapping
+        wing_room_capacities=data.wing_room_capacities
+    else:
+        matrix = []
+        # Header row for the matrix
+        header_row = ['Batch']
         for hostel in hostels:
-            # wings = Wing.objects.filter(hostel=hostel)
-            wings=hostel.wing_set.all()
-            wing_data = []
-            for wing in wings:
-                students_count = Student.objects.filter(student_batch=batch, student_room__hostel=hostel, student_room__hostel_wing=wing).count()
-                wing_data.append(students_count)
-            batch_row.extend(wing_data)
-        matrix.append(batch_row)
+            wings=hostel.wing_set.filter(wing_type=gender)
+            header_row.extend([f'{wing.wing_name}' for wing in wings])
+        # header_row.extend(['Total Strength Allocated'])
+        matrix.append(header_row)
 
-    return JsonResponse({'data':matrix})
+        # Populate matrix with data
+        for batch in batches:
+            batch_row = [batch.batch]
+            # cnt=0
+            for hostel in hostels:
+                # wings = Wing.objects.filter(hostel=hostel)
+                wings=hostel.wing_set.filter(wing_type=gender)
+                wing_data = []
+                for wing in wings:
+                    students_count = Student.objects.filter(student_batch=batch, student_room__hostel=hostel, student_room__hostel_wing=wing).count()
+                    # cnt+=students_count
+                    wing_data.append(students_count)
+                batch_row.extend(wing_data)
+            # batch_row.extend([cnt])
+            matrix.append(batch_row)
+        wing_room_capacities={}
+        for wing in Wing.objects.filter(wing_type=gender):
+            temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+            wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
+        current, _=SavedMappings.objects.get_or_create(name=f'current {gender}')
+    batch_strengths = {}
+    for batch in batches:
+        batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+    wing_capacities= {}
+    for wing in Wing.objects.filter(wing_type=gender):
+        wing_capacities[wing.wing_name]=wing.capacity
+    if _:
+        current.mapping=matrix
+        current.wing_room_capacities=wing_room_capacities
+        current.save()
+    return JsonResponse({'data':matrix, 'message': 'Success',
+                         'batch_strengths': batch_strengths, 'wing_capacities': wing_capacities, 'wing_room_capacities': wing_room_capacities})
 
 
 @csrf_exempt
 def receive_from_sandbox(request):
     data = json.loads(request.body)
+    save_name=data['name']
+    if SavedMappings.objects.filter(name=save_name).exists():
+        return JsonResponse({"message":"Choose a different name"})
+    
+    data=data['data']
     print(data)
+    print()
+    print()
+    converted_data = {
+        'data':[],
+        'wing_room_capacities': data['room_capacities'],
+    }
+    batches=data['data'].keys()
+    converted_data['data'].append(['Batch']+list(data['room_capacities'].keys()))
+    for batch in batches:
+        # converted_data['data'].append([batch]+wing_data)
+        row=[batch]
+        for wing in data['room_capacities'].keys():
+            row.append(data['data'][batch].get(wing, 0))
+        converted_data['data'].append(row)
+    print(converted_data)
+    SavedMappings.objects.create(name=save_name,mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'])
     return JsonResponse({"message":"Success"})
 
+@csrf_exempt
+def apply_saved_mapping(request):
+    name=request.GET.get('name')
+    if not SavedMappings.objects.filter(name=name).exists():
+        return JsonResponse({'message': 'Invalid name'})
+    data=SavedMappings.objects.get(name=name).data
+
+
+    return JsonResponse({'message': 'Success', 'data': data})
