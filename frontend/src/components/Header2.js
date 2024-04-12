@@ -331,78 +331,27 @@ export default function Headers() {
   };
 
   return (
-    <Navbar className="no-underline mx-auto max-w-full lg:px-20 py-0 bg-color rounded-none">
-      <div className="no-underline flex items-center justify-between text-blue-gray-900">
-        <Typography
-          as={NavLink}
-          to="/home"
-          variant="h6"
-          className="no-underline mr-4 cursor-pointer py-1.5 lg:ml-2 flex items-center text-white text-lg"
-        >
-          <img
-            src={require("../images/iitropar.png")}
-            alt="logo"
-            className="no-underline w-16 h-16 mr-4 "
-          />
-          Hostel IIT Ropar
-        </Typography>
-        <div className="no-underline hidden lg:block">
-          <NavList />
-        </div>
-        {currentUser ? (
-          <div className="no-underline hidden gap-2 lg:flex">
-            <Button
-              variant="gradient"
-              size="sm"
-              color="white"
-              onClick={handleLogout}
-            >
-              Sign Out
-            </Button>
-          </div>
-        ) : (
-          <div className="no-underline hidden gap-2 lg:flex">
-            <Button
-              variant="gradient"
-              size="sm"
-              color="white"
-              onClick={handleSignInClick}
-            >
-              Sign In
-            </Button>
-          </div>
-        )}
-        <IconButton
-          variant="text"
-          color="white"
-          className="no-underline lg:hidden"
-          onClick={() => setOpenNav(!openNav)}
-        >
-          {openNav ? (
-            <XMarkIcon className="no-underline h-6 w-6" strokeWidth={2} />
-          ) : (
-            <Bars3Icon className="no-underline h-6 w-6" strokeWidth={2} />
-          )}
-        </IconButton>
-      </div>
-      <Collapse open={openNav} className="no-underline color-white">
-        <NavList />
-       {!currentUser ?(
-          <NavLink to="/login" className="text-decoration-none">
-          <div className="no-underline flex w-full flex-nowrap items-center gap-2 lg:hidden mb-2">
-            <Button variant="gradient" size="sm" fullWidth color="white" onClick={handleSignInClick}>
-              Login
-            </Button>
-          </div>
-        </NavLink>
-      ) : (
-        <div className="no-underline flex w-full flex-nowrap items-center gap-2 lg:hidden mb-2">
-            <Button variant="gradient" size="sm" fullWidth color="white" onClick={handleLogout}>
-              Logout
-            </Button>
-          </div>
-        )}
-      </Collapse>
-    </Navbar>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Features</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Pricing</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link disabled" href="#">Disabled</a>
+      </li>
+    </ul>
+  </div>
+</nav>
   );
 }
