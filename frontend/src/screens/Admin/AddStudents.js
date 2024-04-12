@@ -59,6 +59,7 @@ const AddStudent = () => {
       .then((res) => {
         console.log(res);
         alert("Students Added Successfully");
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error:", error.name);

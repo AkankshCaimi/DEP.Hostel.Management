@@ -82,6 +82,7 @@ const AddFaculty = () => {
       .then((res) => {
         console.log(res);
         alert("Faculty Added Successfully");
+        window.location.reload();
       })
       .catch((error) => {
         console.error("Error:", error.name);

@@ -238,11 +238,13 @@ export default function Headers() {
   const handleLogout = async () => {
     try {
       // console.log("inside handleLogout");
-      logout().then(()=>{console.log('here after logout');navigate("/home")});
+      logout().then(()=>{console.log('here after logout');
+      navigate("/home")});
       // navigate("/");
     } catch (err) {
       console.log(err);
     }
+    navigate("/home");
   };
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
