@@ -17,9 +17,41 @@ import {
   Typography,
   Input,
 } from "@material-tailwind/react";
+<<<<<<< HEAD:frontend/src/screens/Allotment.js
 import CustomNode from '../components/CustomNodes'
 import HostelNode from '../components/HostelNode'
 import axios from "axios";
+=======
+import CustomNode from "../../components/CustomNodes";
+import HostelNode from "../../components/HostelNode";
+const data = [
+  {
+    label: "Btech 21",
+    value: "Btech 21",
+    strength: 400,
+    unallocated: 400,
+  },
+  {
+    label: "Btech 22",
+    value: "Btech 22",
+    strength: 450,
+    unallocated: 400,
+  },
+  {
+    label: "Vue",
+    value: "vue",
+  },
+  {
+    label: "Angular",
+    value: "angular",
+  },
+  {
+    label: "Svelte",
+    value: "svelte",
+  },
+];
+const nodeTypes = { custom: CustomNode, hostel: HostelNode };
+>>>>>>> 8b6a8acee47ea0d7f5458e5e54a357ec1b9f3467:frontend/src/screens/Warden/Allotment.js
 
 const nodeTypes={batch: CustomNode,hostel: HostelNode}
 

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
+from django.db.models.signals import post_save
 
 from .email import send, templates
 from .models import Application, Batch, Caretaker, Faculty, CustomUser, Hostel, Student, Room, Application_Final, Warden, Wing, SavedMappings, Circular
@@ -755,6 +756,7 @@ def sandbox(request):
         data=SavedMappings.objects.get(name=f'current {gender}')
         matrix=data.mapping
         wing_room_capacities=data.wing_room_capacities
+        _=False
     else:
         matrix = []
         # Header row for the matrix
@@ -828,16 +830,67 @@ def receive_from_sandbox(request):
 
 @csrf_exempt
 def get_saved_mappings(request):
-    saved_mappings=SavedMappings.objects.all()
-    ret_obj=[]
+    saved_mappings=SavedMappings.objects.all().values('name')
     return JsonResponse({'message': 'Success', 'data': list(saved_mappings)})
+def get_saved_mapping(request):
+    name=request.GET.get('name')
+    gender='Boys' if 'Boys' in name else 'Girls'
+    if not SavedMappings.objects.filter(name=name).exists():
+        return JsonResponse({'message': 'Invalid name'})
+    mapping=SavedMappings.objects.get(name=name)
+    wing_room_capacities=mapping.wing_room_capacities
+    data=mapping.mapping
+    batch_strengths = {}
+    batches=Batch.objects.all()
+    for batch in batches:
+        batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+    wing_capacities= {}
+    for wing in Wing.objects.filter(wing_type=gender):
+        wing_capacities[wing.wing_name]=wing.capacity
+    return JsonResponse({'message': 'Success', 'data': data, 'wing_room_capacities': wing_room_capacities, 'batch_strengths': batch_strengths, 'wing_capacities': wing_capacities})
 
 @csrf_exempt
 def apply_saved_mapping(request):
     name=request.GET.get('name')
     if not SavedMappings.objects.filter(name=name).exists():
         return JsonResponse({'message': 'Invalid name'})
-    data=SavedMappings.objects.get(name=name).data
-
-
+    data=SavedMappings.objects.get(name=name).mapping
+    wing_room_capacities=SavedMappings.objects.get(name=name).wing_room_capacities
+    # update room capacities
+    for wing in wing_room_capacities:
+        x=Wing.objects.get(wing_name=wing)
+        rooms=x.room_set.all()
+        rooms.update(room_occupancy=wing_room_capacities[wing])
+        for room in rooms:
+            post_save.send(sender=Room, instance=room)
+    # update student rooms
+    # for i in range(1, len(data)):
+    #     batch=data[i][0]
+    #     for j in range(1, len(data[i])):
+    #         wing=data[0][j]
+    #         students=data[i][j]
+    #         if students==0:
+    #             continue
+    #         students=Student.objects.filter(student_batch__batch=batch, student_room__hostel_wing__wing_name=wing)
+    #         for student in students:
+    #             student.student_room=None
+    #             student.save()
+    '''
+     matrix = [
+        ["Batch", "Chenab East", "Chenab West", "Beas West", "Beast East", "Satluj East", "Satluj West", "Brahmaputra Boys", "T6 Boys"],
+        ["2019B", 2, 1, 2, 0, 2, 1, 2, 1],
+        ["2020B", 1, 0, 2, 2, 1, 2, 1, 6],
+        ["2021B", 2, 1, 2, 3, 1, 0, 1, 2],
+        ["2022B", 0, 1, 0, 0, 1, 3, 4, 3],
+        ["2023B", 1, 2, 1, 0, 2, 0, 4, 3],
+        ["2021M", 0, 0, 4, 4, 1, 2, 2, 3],
+        ["2022M", 0, 0, 0, 2, 0, 1, 2, 6],
+        ["2023M", 0, 2, 2, 0, 2, 3, 3, 3],
+        ["2020Z", 0, 2, 1, 1, 2, 0, 4, 2],
+        ["2021Z", 1, 0, 3, 1, 2, 3, 1, 6],
+        ["2022Z", 2, 1, 3, 1, 2, 1, 2, 0],
+        ["2023Z", 1, 0, 1, 0, 2, 0, 1, 5]
+    ]
+    '''    
+    # for i in range(1, )
     return JsonResponse({'message': 'Success', 'data': data})

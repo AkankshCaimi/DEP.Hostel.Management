@@ -24,6 +24,9 @@ urlpatterns = [
     path('send_email', views.send_email, name='send_email'),
     path('generate_pdf', views.generate_pdf, name='generate_pdf'),
     path('receive_from_sandbox', views.receive_from_sandbox, name='receive_from_sandbox'),  
+    path('get_saved_mappings', views.get_saved_mappings, name='get_saved_mappings'),
+    path('get_saved_mapping', views.get_saved_mapping, name='get_saved_mapping'),
+    path('apply_saved_mapping', views.apply_saved_mapping, name='apply_saved_mapping'),
     path('add_data', views.add_data, name='add_data'),
     path('test', views.sandbox, name='sandbox')
 ]
