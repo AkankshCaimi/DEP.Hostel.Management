@@ -1,36 +1,58 @@
+// Imports
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./screens/Login";
-import Form from "./screens/Form";
-import AboutUs from "./screens/AboutUs";
-import Headers from "./components/Headers";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useState, useEffect } from "react";
 import {CommentsProvider} from "./contexts/commentsContext";
-import StudentSignup from "./screens/Signup";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useAuth } from "./contexts/authContext";
+
+// Screens and Components
 import Home from "./screens/Home";
+import Login from "./screens/Login";
+import AboutUs from "./screens/AboutUs";
+// import Headers from "./components/Headers";
+import Headers from "./components/Headers";
 import Contact from "./screens/Contact";
+import Test from "./screens/Test";
+import Footer from "./components/Footer";
+
+// Student Routes
+import StudentSignup from "./screens/Signup";
+import Form from "./screens/Form";
+import Internship from "./screens/Internship";
+import ApplicationView from "./screens/ApplicationView";
+
+//Admin Routes
+import Admin from "./screens/Admin/Admin";
 import AdminDashboard from "./screens/Admin/AdminDashboard";
 import AddStudents from "./screens/Admin/AddStudents";
 import AddFaculty from "./screens/Admin/AddFaculty";
-import { useState, useEffect } from "react";
-import Test from "./screens/Test";
 import ApplicationStatus from "./screens/Admin/ApplicationStatus";
-import ComplaintStatus from "./screens/ComplaintStatus";
+import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
+
+//Warden Routes
+import Warden from "./screens/Warden/Warden";
+import WardenDashboard from "./screens/Warden/WardenDashboard";
+import AllotmentTable from "./screens/Warden/AllotmentTable";
+import Allotment from "./screens/Warden/Allotment";
+import Allotments from "./screens/Warden/Allotments";
+
+// Professor Routes
 import ProfessorDashboard from "./screens/Professors/ProfessorDashboard";
 import ProfAppStatus from "./screens/Professors/ProfAppStatus";
-import Footer from "./components/Footer";
-import ApplicationView from "./screens/ApplicationView";
-import Internship from "./screens/Internship";
-import { useAuth } from "./contexts/authContext";
-import CaretakerDashboard from "./screens/Caretaker/CaretakerDashboard";
-import Admin from "./screens/Admin/Admin";
 import Professor from "./screens/Professors/Professors";
+
+// Caretaker Routes
+import CaretakerDashboard from "./screens/Caretaker/CaretakerDashboard";
 import HostelView from "./screens/Caretaker/HostelView";
 import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
-import Allotment from "./screens/Allotment";
-import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
+import ComplaintStatus from "./screens/ComplaintStatus";
 import StudentProfile from "./screens/Students/StudentProfile";
+
+
+
+// Landing Page
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -56,6 +78,8 @@ function LandingPage(){
   if (redirectTo) return <Navigate to={redirectTo} />;
   return <div>Loading...</div>;
 }
+
+
 function App() {
   const [showPopup, setShowPopup] = useState(false);
   return (
@@ -72,7 +96,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
-        <Route path="/allotment" element={<Allotment />} />
         <Route path="/test" element={<Test />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
@@ -101,6 +124,18 @@ function App() {
           <Route path='application-status/application/:id' element={<ApplicationView />} />
           <Route path="hostel-view/:hostel" element={<HostelView />} />
           <Route path="room-details/:id" element={<RoomDetails />} />
+        </Route>
+        {/* Chief Warden Routes */}
+        <Route path='warden/*' element={<Warden/>}>
+          <Route index element={<WardenDashboard />} />
+          <Route path="hostel-view/:hostel" element={<HostelView />} />
+          <Route path="room-details/:id" element={<RoomDetails />} />
+          <Route path="allotments/girls" element={<Allotments />} />
+          <Route path="allotments/boys" element={<Allotments />} />
+          <Route path="allotment/girls" element={<Allotment />} />
+          <Route path="allotment/boys" element={<Allotment />} />
+          <Route path="allotment-table/boys" element={<AllotmentTable />} />
+          <Route path="allotment-table/girls" element={<AllotmentTable />} />
         </Route>
 
       </Routes>

@@ -131,7 +131,7 @@ const Form = () => {
     }
   }, [currentUser, filled]);
   return (
-    <div className="bg-white">
+    <div className="bg-white px-4 -mt-6 pt-6">
       <h1 className="text-2xl font-semibold text-center lg:text-left ml-2 lg:ml-20  mt-4 -mb-2">Internship Form</h1>
       <div className="bg-white pt-2 text-center lg:text-left">
         <span className="text-red-500 ml-2 lg:ml-20 bg-white">*</span> Required fields
@@ -279,7 +279,7 @@ const Form = () => {
           />
         </div>
         <div className="mb-4">
-          <div className="text-xs text-gray-600 mb-1">Copy of your Institute ID Card (pdf):</div>
+          <div className="text-xs text-gray-600 mb-1">Copy of your Institute ID Card (pdf):<span className="text-red-500 ml-1 bg-white">*</span></div>
           <input
             
             color="blue"
@@ -296,7 +296,7 @@ const Form = () => {
           />
         </div>
         <div className="mb-4">
-        <div className="text-xs text-gray-600 mb-1">Copy of Official Letter from your Institute (pdf):<span></span></div>
+        <div className="text-xs text-gray-600 mb-1">Copy of Official Letter from your Institute (pdf):<span className="text-red-500 ml-1 bg-white">*</span></div>
           <input
             color="blue"
             variant="standard"
@@ -305,22 +305,23 @@ const Form = () => {
             accept=".pdf"
             ref={file2Ref}
             onChange={(e) => handleFileChange(e, 2)}
-            aria-required="true"
+            aria-required="false"
             className="text-sm text-stone-500 mt-2 file:mr-5 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-medium file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700"
             style={{ color: "#000" }}
             required={filled && filled.comments ? false : true}
           />
+          
         </div>
       </form>
       <div className="ml-2 mr-2 md:mx-20">
-        <Textarea
+        <Input
           label="Remarks:"
           variant="standard"
           color="blue"
           name="remarks"
           value={formData.remarks}
-          onChange={handleChange}
-          className="p-1 w-full border rounded"
+          onChange={handleChange} 
+          className="w-full"
         />
         <div
           className="text-sm text-gray-500 mt-4 mb-4"

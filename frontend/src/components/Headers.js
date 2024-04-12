@@ -17,17 +17,16 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "../styles/tailwind.css";
 import { useAuth } from "../contexts/authContext";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
 const excludedRoutes = ["/login", "/signup"];
 
 function NavListMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <React.Fragment>
@@ -38,37 +37,33 @@ function NavListMenu() {
         placement="bottom"
         allowHover={true}
       >
-      <MenuHandler>
-      <Typography
-        as="div"
-        variant="small"
-        className="flex items-center justify-center lg:mt-0 lg:mb-0"
-      >
-        <ListItem
-          className={`text-white bg-color no-underline flex items-center gap-2 py-2 pr-4 text-md ${
-            (isMenuOpen || isMobileMenuOpen) && 'text-blue-gray-900'
-          }`}
-          selected={isMenuOpen || isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-          onMouseEnter={() => setIsMenuOpen(true)}
-          onMouseLeave={() => setIsMenuOpen(false)}
-        >
-          Programs
-          <ChevronDownIcon
-            strokeWidth={2.5}
-            className={`hidden h-3 w-3 transition-transform lg:block ${
-              isMenuOpen ? 'rotate-180' : ''
-            }`}
-          />
-          <ChevronDownIcon
-            strokeWidth={2.5}
-            className={`block h-3 w-3 transition-transform lg:hidden ${
-              isMobileMenuOpen ? 'rotate-180' : ''
-            }`}
-          />
-        </ListItem>
-      </Typography>
-    </MenuHandler>
+        <MenuHandler>
+          <Typography
+            as="div"
+            variant="small"
+            className="flex items-center justify-center lg:mt-0 lg:mb-0 font-medium hover:text-blue-gray-900"
+          >
+            <ListItem
+              className="text-white bg-color no-underline flex items-center gap-2 py-2 pr-4 text-md"
+              selected={isMenuOpen || isMobileMenuOpen}
+              onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+            >
+              Programs
+              <ChevronDownIcon
+                strokeWidth={2.5}
+                className={`hidden h-3 w-3 transition-transform lg:block ${
+                  isMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+              <ChevronDownIcon
+                strokeWidth={2.5}
+                className={`block h-3 w-3 transition-transform lg:hidden ${
+                  isMobileMenuOpen ? "rotate-180" : ""
+                }`}
+              />
+            </ListItem>
+          </Typography>
+        </MenuHandler>
         <MenuList className="no-underline hidden max-w-screen-xl rounded-xl lg:block">
           <ul className="no-underline grid grid-cols-1 gap-y-2 outline-none outline-0 pl-1">
             <NavLink to="/" className="no-underline">
@@ -183,7 +178,7 @@ function NavList() {
     <List className="no-underline mb-6 p-0 lg:mt-0 lg:mb-0 lg:flex-row lg:p-1 lg:mr-10">
       <Typography
         as={NavLink}
-        to="/home"
+        to="/"
         variant="small"
         color="white"
         className="no-underline "
@@ -237,9 +232,9 @@ export default function Headers() {
   );
   const handleLogout = async () => {
     try {
-      // console.log("inside handleLogout");
-      logout().then(()=>{console.log('here after logout');navigate("/home")});
-      // navigate("/");
+      console.log("inside handleLogout");
+      await logout();
+      navigate("/");
     } catch (err) {
       console.log(err);
     }
@@ -263,7 +258,7 @@ export default function Headers() {
       <div className="no-underline flex items-center justify-between text-blue-gray-900">
         <Typography
           as={NavLink}
-          to="/home"
+          to="/"
           variant="h6"
           className="no-underline mr-4 cursor-pointer py-1.5 lg:ml-2 flex items-center text-white text-lg"
         >

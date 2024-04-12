@@ -189,7 +189,7 @@ export default function MembersTable() {
     } else {
       setSelectedOptions({ ...selectedOptions, [appId]: { value: e } });
     }
-    console.log(selectedOptions);
+    // console.log(selectedOptions);
   };
 
   if (!applications) {
@@ -207,10 +207,10 @@ export default function MembersTable() {
       if (selectedOptions.hasOwnProperty(id)) {
         updatedSelectedOptions[id] = { ...selectedOptions[id] };
         updatedSelectedOptions[id].value = setEvent(selectedOptions[id].value);
-        console.log(updatedSelectedOptions[id].value);
+        // console.log(updatedSelectedOptions[id].value);
       }
     }
-    console.log("Data to be submitted:", updatedSelectedOptions);
+    // console.log("Data to be submitted:", updatedSelectedOptions);
 
     axios
       .post(
@@ -219,7 +219,7 @@ export default function MembersTable() {
         { withCredentials: true }
       )
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         alert("Data submitted successfully");
         window.location.reload();
       });
