@@ -26,8 +26,8 @@ import {
   Input,
   Checkbox,
 } from "@material-tailwind/react";
-import CustomNode from "../components/CustomNodes";
-import HostelNode from "../components/HostelNode";
+import CustomNode from "../../components/CustomNodes";
+import HostelNode from "../../components/HostelNode";
 const data = [
   {
     label: "Btech 21",

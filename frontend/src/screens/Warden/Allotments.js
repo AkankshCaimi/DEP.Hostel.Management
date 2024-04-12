@@ -5,33 +5,35 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
  
-export function DefaultAccordion() {
-  const [open, setOpen] = React.useState(1);
+export default function Example() {
+  const [openAcc1, setOpenAcc1] = React.useState(true);
+  const [openAcc2, setOpenAcc2] = React.useState(true);
+  const [openAcc3, setOpenAcc3] = React.useState(true);
  
-  const handleOpen = (value) => setOpen(open === value ? 0 : value);
+  const handleOpenAcc1 = () => setOpenAcc1((cur) => !cur);
+  const handleOpenAcc2 = () => setOpenAcc2((cur) => !cur);
+  const handleOpenAcc3 = () => setOpenAcc3((cur) => !cur);
  
   return (
     <>
-      <Accordion open={open === 1}>
-        <AccordionHeader onClick={() => handleOpen(1)}>What is Material Tailwind?</AccordionHeader>
+      <Accordion open={openAcc1}>
+        <AccordionHeader onClick={handleOpenAcc1}>What is Material Tailwind?</AccordionHeader>
         <AccordionBody>
           We&apos;re not always in the position that we want to be at. We&apos;re constantly
           growing. We&apos;re constantly making mistakes. We&apos;re constantly trying to express
           ourselves and actualize our dreams.
         </AccordionBody>
       </Accordion>
-      <Accordion open={open === 2}>
-        <AccordionHeader onClick={() => handleOpen(2)}>
-          How to use Material Tailwind?
-        </AccordionHeader>
+      <Accordion open={openAcc2}>
+        <AccordionHeader onClick={handleOpenAcc2}>How to use Material Tailwind?</AccordionHeader>
         <AccordionBody>
           We&apos;re not always in the position that we want to be at. We&apos;re constantly
           growing. We&apos;re constantly making mistakes. We&apos;re constantly trying to express
           ourselves and actualize our dreams.
         </AccordionBody>
       </Accordion>
-      <Accordion open={open === 3}>
-        <AccordionHeader onClick={() => handleOpen(3)}>
+      <Accordion open={openAcc3}>
+        <AccordionHeader onClick={handleOpenAcc3}>
           What can I do with Material Tailwind?
         </AccordionHeader>
         <AccordionBody>
