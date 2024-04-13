@@ -2,6 +2,25 @@ import axios from 'axios';
 import { Button,  Dialog, Card, CardBody, Typography, Input, CardFooter, Select, Option} from "@material-tailwind/react";
 import React, {useEffect, useState} from 'react';
 import { useParams } from 'react-router-dom';
+const extractHostel=(id)=>{
+  const acronym= id.split('-')[0]
+  const mapping={
+    'CE': 'Chenab',
+    'CW': 'Chenab',
+    'BE': 'Beas',
+    'BW': 'Beas',
+    'SE': 'Sutlej',
+    'SW': 'Sutlej',
+    'BG': 'Brahmaputra',
+    'BB': 'Brahmaputra',
+    'TG': 'T6',
+    'TB': 'T6',
+    'RE': 'Ravi',
+    'RW': 'Ravi',
+    'RC': 'Ravi',
+  }
+  return mapping[acronym]
+}
 const RoomDetails = () => {
   const { id } = useParams();
   const backendUrl = process.env.REACT_APP_BASE_URL;
@@ -57,6 +76,7 @@ const RoomDetails = () => {
 
   return (
     <div className="container mx-auto mt-8">
+      <h1 className="text-2xl font-bold mb-4">{extractHostel(id)}</h1>
       <h1 className="text-2xl font-bold mb-4">Room Information</h1>
       {room && room.students && room.students.length > 0 ? (
         <table className="min-w-full mb-4">

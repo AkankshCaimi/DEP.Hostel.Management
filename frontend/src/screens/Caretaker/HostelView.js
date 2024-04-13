@@ -4,6 +4,7 @@ import "../../styles/tailwind.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
+import { Spinner } from "@material-tailwind/react";
 function Card({ children }) {
   return <div className="border border-black rounded-md p-1">{children}</div>;
 }
@@ -86,46 +87,54 @@ function HostelRoomCard({ room_no, students }) {
     students.length === 2 ? "hover:bg-gray-400" : "hover:bg-green-300";
   return (
     <Link to={`../room-details/${room_no}`} className="no-underline text-black py-1">
-      <div
-        className={`${backgroundColorClass} rounded-md w-12 h-17 flex items-center justify-center mr-1 hover:cursor-pointer ${backgroundColorClass2}`}
-        onClick={handleClick}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>{room_no}</CardTitle>
-          </CardHeader>
-          <CardFooter>
-            <div className="flex items-center space-x-1">
-              <GroupIcon className="h-3 w-3 text-gray-700" />
-              <p className="h-1 w-2 pt-0.5 text-xs text-gray-700">
-                {students.length}
-              </p>
-            </div>
-          </CardFooter>
-        </Card>
-      </div>
-    </Link>
+  <div className={`${backgroundColorClass} rounded-md flex items-center justify-center mr-1 hover:cursor-pointer ${backgroundColorClass2}`}>
+    <Card className='w-64 h-48'> {/* Adjust width and height as needed */}
+      <CardHeader>
+        <CardTitle>{room_no}</CardTitle>
+      </CardHeader>
+      <CardFooter>
+        <div className="flex items-center space-x-1">
+          <GroupIcon className="h-3 w-3 text-gray-700" />
+          <p className="h-1 w-2 pt-0.5 text-xs text-gray-700">
+            {students.length}
+          </p>
+        </div>
+      </CardFooter>
+    </Card>
+  </div>
+</Link>
+
   );
 }
 
 export default function HostelRooms() {
   const { hostel } = useParams();
-  const { currentUser } = useAuth();
+  const { currentUser , loading} = useAuth();
+  const [hostelDetails, setHostelDetails] = useState({});
   // console.log(hostel);
   const backendUrl = process.env.REACT_APP_BASE_URL;
   useEffect(() => {
-    axios
-      .get(`${backendUrl}/api/get_hostel_rooms/${currentUser.hostel}`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        // handle the response data
-        console.log(response.data);
-        setRooms(response.data.data);
-      })
-      .catch((error) => {
-        // handle the error
-      });
+    axios.get(`${backendUrl}/api/get_hostel/${hostel}`,{withCredentials: true})
+    .then((response) => {
+      console.log('here')
+      console.log(response.data);
+      setRooms(response.data.data);
+      setHostelDetails(response.data.hostel);
+      // setHostelName(response.data.data.hostel_name);
+      // handle the response data
+    })
+    // axios
+    //   .get(`${backendUrl}/api/get_hostel_rooms/${currentUser.hostel}`, {
+    //     withCredentials: true,
+    //   })
+    //   .then((response) => {
+    //     // handle the response data
+    //     console.log(response.data);
+    //     setRooms(response.data.data);
+    //   })
+    //   .catch((error) => {
+    //     // handle the error
+    //   });
   }, []);
   const [rooms, setRooms] = useState([
     { room_no: "CE-101", students: [people[0], people[1]] },
@@ -177,12 +186,12 @@ export default function HostelRooms() {
     { room_no: "CE-147", students: [people[91], people[92]] },
     { room_no: "CE-148", students: [people[93], people[94]] },
   ]);
-
-  return (
+  return loading ? <Spinner/>:
+  !loading && (
     <div className="container mx-auto px-8 m-4">
       <div className="space-y-4">
         <h1 className="text-3xl font-bold">
-          {currentUser.hostel_name} Hostel Rooms
+          {hostelDetails.hostel_name} Hostel Rooms
         </h1>
         <p className="text-gray-500 pb-0">
           Here are all the rooms in the hostel along with the number of students

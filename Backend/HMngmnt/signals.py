@@ -23,7 +23,7 @@ def update_room_occupancy(sender, instance, **kwargs):
             pass
 
     # Check if student_room is assigned
-    if instance.student_room_id:
+    if instance.student_room is not None and instance.student_room_id:
         room = instance.student_room
         if room.current_occupancy >= room.room_occupancy:
             raise ValidationError("Room occupancy is full.")

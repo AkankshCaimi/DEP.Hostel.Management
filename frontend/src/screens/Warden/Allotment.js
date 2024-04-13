@@ -17,85 +17,23 @@ import {
   Typography,
   Input,
 } from "@material-tailwind/react";
-<<<<<<< HEAD:frontend/src/screens/Allotment.js
-import CustomNode from '../components/CustomNodes'
-import HostelNode from '../components/HostelNode'
+import CustomNode from '../../components/CustomNodes'
+import HostelNode from '../../components/HostelNode'
 import axios from "axios";
-=======
-import CustomNode from "../../components/CustomNodes";
-import HostelNode from "../../components/HostelNode";
-const data = [
-  {
-    label: "Btech 21",
-    value: "Btech 21",
-    strength: 400,
-    unallocated: 400,
-  },
-  {
-    label: "Btech 22",
-    value: "Btech 22",
-    strength: 450,
-    unallocated: 400,
-  },
-  {
-    label: "Vue",
-    value: "vue",
-  },
-  {
-    label: "Angular",
-    value: "angular",
-  },
-  {
-    label: "Svelte",
-    value: "svelte",
-  },
-];
-const nodeTypes = { custom: CustomNode, hostel: HostelNode };
->>>>>>> 8b6a8acee47ea0d7f5458e5e54a357ec1b9f3467:frontend/src/screens/Warden/Allotment.js
+import { useParams } from "react-router-dom";
 
 const nodeTypes={batch: CustomNode,hostel: HostelNode}
 
 export default function Allotment() {
-  const [nodes, setNodes, onNodesChange] = useNodesState([
-    // { id: "None", type: 'batch', position: { x: 50, y: 50 }, data: { label: "Btech 21", test: 50 }, sourcePosition: 'right', style:{'.port':{width: '20px', height: '20px'}} },
-    // { id: '7', type: 'hostel', data: { label: 'Chenab', capacity: 500, unallocated: 120 }, position: { x: 600, y: 50 }, targetPosition: 'left' },
-    // { id: '8', type: 'hostel', data: { label: 'Satluj', capacity: 400, unallocated: 120 }, position: { x: 600, y: 120 }, targetPosition: 'left' },
-    // { id: '9', type: 'hostel', data: { label: 'Beas', capacity: 400, unallocated: 120 }, position: { x: 600, y: 190 }, targetPosition: 'left' },
-    // { id: '10', type: 'hostel', data: { label: 'Brahmaputra Boys', capacity: 600, unallocated: 120 }, position: { x: 600, y: 260 }, targetPosition: 'left' },
-    // { id: '11', type: 'hostel', data: { label: 'T6', capacity: 300, unallocated: 120 }, position: { x: 600, y: 330 }, targetPosition: 'left' },
-  
-  ]);
-  const [data, setData] = useState([
-    // {
-    //   label: "Btech 21",
-    //   value: "Btech 21",
-    //   strength: 400,
-    //   unallocated: 400,
-    // },
-    // {
-    //   label: "Btech 22",
-    //   value: "Btech 22",
-    //   strength: 450,
-    //   unallocated: 400,
-    // },
-    // {
-    //   label: "Vue",
-    //   value: "vue",
-    // },
-    // {
-    //   label: "Angular",
-    //   value: "angular",
-    // },
-    // {
-    //   label: "Svelte",
-    //   value: "svelte",
-    // },
-  ]);
+  const {name, gender}=useParams();
+  console.log('name', name)
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [data, setData] = useState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [currentTab, setCurrentTab]=useState("");
   const onConnect = useCallback(
     (params) => {
-      console.log(params, edges)
+      // console.log(params, edges)
       // check if edge already exists
       if(edges.find((edge)=>edge.source===params.source && edge.target===params.target)){
         alert("The edge already exists")
@@ -147,7 +85,7 @@ export default function Allotment() {
     [setEdges, setNodes]
   );
   const onEdgesDelete = useCallback((deleted) => {
-    console.log('here:', deleted)
+    // console.log('here:', deleted)
     setNodes((prev)=>prev.map((node)=>{
       // if(deleted.includes
       const edge=deleted.find((edge)=>edge.source===node.id || edge.target===node.id)
@@ -158,9 +96,9 @@ export default function Allotment() {
     }))
   })
   const onNodesDelete = useCallback((deleted) => {
-    console.log(deleted)
+    // console.log(deleted)
     const toBeDeletedEdges=getConnectedEdges(deleted, edges)
-    console.log(toBeDeletedEdges)
+    // console.log(toBeDeletedEdges)
     const del2=deleted.map(node=>node.id)
     setData((prev)=>prev.filter((node)=>!del2.includes(node.label)))
     setNodes(
@@ -217,7 +155,7 @@ export default function Allotment() {
     const columnIndex = data[0].findIndex(col => col.includes(columnName));
     
     const batchIndex = data.findIndex(row => row[0] === batchName);
-    console.log('here', columnIndex, batchIndex, data[0], columnName, batchName)
+    // console.log('here', columnIndex, batchIndex, data[0], columnName, batchName)
     if (columnIndex === -1 || batchIndex === -1) {
       return null;
     }
@@ -228,11 +166,23 @@ export default function Allotment() {
   }
   // useEffect for fetching data
   useEffect(() => {
-    
-    axios.get(`${backendUrl}/api/test?gender=Girls`, {withCredentials: true}).then((res) => {
-      console.log(res.data);
-      setResData(res.data);
-    })
+    if(gender){
+      if(name==='new'){
+        axios.get(`${backendUrl}/api/get_saved_mapping?name=${name}&gender=${gender}`, {withCredentials: true}).then((res) => {
+          // console.log('inside fetch',res.data);
+          setResData(res.data);
+        })
+      }else{
+        alert('Invalid URL')
+
+      }
+    }
+    else{
+      axios.get(`${backendUrl}/api/get_saved_mapping?name=${name}`, {withCredentials: true}).then((res) => {
+        // console.log('inside fetch',res.data);
+        setResData(res.data);
+      })
+    }
   },[])
   const batches=useMemo(()=>resData?resData.data.slice(1).map(row=>row[0]):[], [resData]);
   const hostels=useMemo(()=>resData?resData.data[0].slice(1).map(wing => wing.split(' - ')[0]):[], [resData, batches]);
@@ -240,7 +190,7 @@ export default function Allotment() {
     if(!resData){
       return;
     }
-    console.log(batches, hostels)
+    // console.log(batches, hostels)
     setData(batches.map((batch, index) => {
       const row=resData.data.find((row)=>row[0]===batch)
       const allocated=row.slice(1).reduce((a,c)=>a+parseInt(c),0)
@@ -261,14 +211,14 @@ export default function Allotment() {
         batches.forEach((batch, index) => {
           total+=parseInt(getMatrixData(hostel, batch, resData.data))
         })
-        console.log('total', total)
+        // console.log('total', total)
         const node={
           id: hostel,
           type: 'hostel',
           position: {x:900,y:100+100*index},
           data: {setRoomCapcity: setRoomCapcity,label: hostel, capacity: parseInt(resData.wing_capacities[hostel]), unallocated:parseInt(resData.wing_capacities[hostel])-total, per_room_capacity: parseInt(resData.wing_room_capacities[hostel])},
         }
-        console.log('here', node)
+        // console.log('here', node)
         setNodes((prev)=>prev.concat(node))
         // nodes.concat(node)
       })
@@ -334,7 +284,7 @@ export default function Allotment() {
     'capacity': '',
   });
   const setRoomCapcity = (value, hostel) => {
-    console.log('here2')
+    // console.log('here2')
     if(value>0){
       setNodes((prev)=>prev.map((node)=>{
         if(node.id===hostel){
@@ -347,7 +297,8 @@ export default function Allotment() {
       }))
     }
   }
-  const handleSubmit=()=>{
+  const handleSubmit=(param)=>{
+    console.log('here', param)
     const finalData={};
     edges.forEach(edge=>{
       const batch=edge.source
@@ -358,6 +309,12 @@ export default function Allotment() {
       }
       finalData[batch][hostel]=num;
     })
+    var save_name;
+    if (param==2){
+      save_name=prompt('Enter the name of the mapping')
+    }else{
+      save_name=name;
+    }
     const room_capacities={}
     nodes.forEach(node=>{
       if(node.type==='hostel'){
@@ -366,11 +323,15 @@ export default function Allotment() {
     })
     console.log(finalData, room_capacities)
     axios.post(`${backendUrl}/api/receive_from_sandbox`, {
-      data: finalData,
-      room_capacities: room_capacities,
-      gender: 'Girls',
+      payload: {
+        data: finalData,
+        name: save_name,
+        room_capacities: room_capacities,
+        gender: name.split(' ')[1] || gender ,
+        resave: param==1,
+      }
     }, {withCredentials: true}).then((res)=>{
-      console.log(res)
+      // console.log(res)
       alert("Data saved successfully")
     })
   }
@@ -438,7 +399,8 @@ export default function Allotment() {
       </Controls>
       <div style={{ position: 'absolute', bottom: 10, right: 10 , zIndex: 5}}>
       {/* <div style={{ zIndex: 5}}> */}
-        <Button onClick={handleSubmit}>Save</Button>
+        <Button onClick={()=>handleSubmit(1)}>Save</Button>
+        <Button onClick={()=>handleSubmit(2)}>Save As</Button>
       </div>
     </ReactFlow>
     </div>

@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import ImageSlider from '../components/ImageSlider';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import Cal from '../components/Calendar';
 import '../styles/tailwind.css';
+import { useAuth } from '../contexts/authContext';
 import aarohan from '../images/aarohan.png'
 import alankar from '../images/alankar.png'
 import arturo from '../images/arturo.png'
@@ -15,6 +16,7 @@ import Modal from 'react-modal';
 
 
 function Home() {
+  const { currentUser, loading } = useAuth();
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const facilities = [
     { name: 'Aarohan', imageUrl: aarohan, url: 'https://www.google.com' },
@@ -24,7 +26,10 @@ function Home() {
     { name: 'Undekha', imageUrl: undekha, url: 'https://www.google.com' },
     { name: 'Alankar', imageUrl: alankar, url: 'https://www.google.com' },
   ];
-
+  const renderAddCircular = useMemo(() => {
+    return !loading &&
+    currentUser && (currentUser.roles.includes('caretaker')|| currentUser.roles.includes('warden') || currentUser.roles.includes('admin') )
+  }, [loading]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newCircular, setNewCircular] = useState({ text: '', url: '' });
   const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
@@ -34,7 +39,7 @@ function Home() {
   const [circulars, setCirculars] = useState([]);
   useEffect(() => {
     axios
-      .get(`${backendUrl}/api/circulars/`, { withCredentials: true })
+      .get(`${backendUrl}/api/circulars`, { withCredentials: true })
       .then((res) => {
         // console.log("here:", res.data);
         setCirculars(res.data);
@@ -55,20 +60,20 @@ function Home() {
   // { text: 'Circular Item 10', url: 'https://www.google.com' }];
   const scrollRef = useRef();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (scrollRef.current) {
-        if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight) {
-          console.log(scrollRef.current.scrollTop, scrollRef.current.clientHeight, scrollRef.current.scrollHeight);
-          scrollRef.current.scrollTop = 0;
-        } else {
-          scrollRef.current.scrollTop += 1;
-        }
-      }
-    }, 50); // Change the interval to control the speed of rotation
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (scrollRef.current) {
+  //       if (scrollRef.current.scrollTop + scrollRef.current.clientHeight >= scrollRef.current.scrollHeight) {
+  //         console.log(scrollRef.current.scrollTop, scrollRef.current.clientHeight, scrollRef.current.scrollHeight);
+  //         scrollRef.current.scrollTop = 0;
+  //       } else {
+  //         scrollRef.current.scrollTop += 1;
+  //       }
+  //     }
+  //   }, 50); // Change the interval to control the speed of rotation
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // const openDeleteModal = () => {
   //   setDeleteModalIsOpen(true);
@@ -158,9 +163,9 @@ function Home() {
           <div ref={scrollRef} className='overflow-hidden h-64 space-y-4 '>
             {circulars.map((circular, index) => (
               <div key={index} className='mb-1 shadow-lg p-2 transform transition-all text-left'>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2"
                   stroke="currentColor" className="inline-block mr-2 w-6 h-6 text-yellow-500">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
                 </svg>
 
                 <a href={circular.url} target="_blank" rel="noopener noreferrer" className="text-black no-underline hover:underline">{circular.text}</a>
@@ -169,14 +174,14 @@ function Home() {
             ))}
           </div>
           {/* for caretaker only only */}
-          <div className="flex justify-between mt-6">
+          {renderAddCircular && (<div className="flex justify-between mt-6">
             <button onClick={() => setModalIsOpen(true)} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4'>
               Add Circular
             </button>
             <button onClick={() => setDeleteModalIsOpen(true)} className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4'>
               Delete Circular
             </button>
-          </div>
+          </div>)}
           <Modal isOpen={deleteModalIsOpen} className="flex items-center justify-center h-screen">
             <form className="bg-white rounded p-6 m-4 max-w-xs mx-auto" onSubmit={handleDelete}>
               <h2>Select Circulars to Delete</h2>

@@ -13,6 +13,7 @@ export function AuthProvider({children}) {
     // const navigate=useNavigate();
     const [loading, setLoading] = useState(false);
     // const [shouldRunEffect, setShouldRunEffect] = useState(true);
+    
 
     const login = async (email, password) => {
         setLoading(true);
@@ -52,31 +53,31 @@ export function AuthProvider({children}) {
             setLoading(false)
         })
     }
-    useEffect(()=>{
-        const unsubscribe =()=>{
-            if(!currentUser){
-                setLoading(true);
-                axios.get(`${backendUrl}/api/get_user_info`, {withCredentials: true})
-                .then((res) => {
-                    console.log('inside authContext useEffect', res.data.data)
-                    if(res.data.data){
-                        // console.log(res.data)
-                        setCurrentUser(res.data.data)
-                    }else{
-                        // console.log('No user logged in')
-                        setCurrentUser(null)
-                    }
-                })
-                .catch((err) => {
-                    console.error(err)
+    const unsubscribe =async()=>{
+        if(!currentUser){
+            setLoading(true);
+            axios.get(`${backendUrl}/api/get_user_info`, {withCredentials: true})
+            .then((res) => {
+                console.log('inside authContext useEffect', res.data.data)
+                if(res.data.data){
+                    // console.log(res.data)
+                    setCurrentUser(res.data.data)
+                }else{
+                    // console.log('No user logged in')
                     setCurrentUser(null)
-                })
-                .finally(()=>{
-                    setLoading(false);
-                })
-                // setLoading(false);
-            }
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+                setCurrentUser(null)
+            })
+            .finally(()=>{
+                setLoading(false);
+            })
+            // setLoading(false);
         }
+    }
+    useEffect(()=>{
         return unsubscribe;
     }, []) 
     const value = {

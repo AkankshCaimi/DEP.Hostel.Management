@@ -26,12 +26,7 @@ import Admin from "./screens/Admin/Admin";
 import AdminDashboard from "./screens/Admin/AdminDashboard";
 import AddStudents from "./screens/Admin/AddStudents";
 import AddFaculty from "./screens/Admin/AddFaculty";
-<<<<<<< HEAD
-import { useState, useEffect } from "react";
 import ComplaintStatus from "./screens/ComplaintStatus";
-=======
-import ApplicationStatus from "./screens/Admin/ApplicationStatus";
-import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
 
 //Warden Routes
 import Warden from "./screens/Warden/Warden";
@@ -41,7 +36,6 @@ import Allotment from "./screens/Warden/Allotment";
 import Allotments from "./screens/Warden/Allotments";
 
 // Professor Routes
->>>>>>> 8b6a8acee47ea0d7f5458e5e54a357ec1b9f3467
 import ProfessorDashboard from "./screens/Professors/ProfessorDashboard";
 import ProfAppStatus from "./screens/Professors/ProfAppStatus";
 import Professor from "./screens/Professors/Professors";
@@ -52,19 +46,12 @@ import HostelView from "./screens/Caretaker/HostelView";
 import RoomDetails from "./screens/Caretaker/RoomDetails";
 import FinalAppStatus from "./screens/Caretaker/FinalAppStatus";
 import Caretaker from "./screens/Caretaker/Caretaker";
-<<<<<<< HEAD
 import ApplicationStatus2 from "./screens/Admin/ApplicationStatus2";
-import StudentProfile from "./screens/Students/StudentProfile";
-import Allotment from "./screens/Allotment";
-import Obj from './screens/Test2'
-=======
-import ComplaintStatus from "./screens/ComplaintStatus";
 import StudentProfile from "./screens/Students/StudentProfile";
 
 
 
 // Landing Page
->>>>>>> 8b6a8acee47ea0d7f5458e5e54a357ec1b9f3467
 function LandingPage(){
   const { currentUser, loading } = useAuth();
   const [redirectTo, setRedirectTo] = useState(null);
@@ -80,6 +67,8 @@ function LandingPage(){
             setRedirectTo('/home')
         else if(role.includes('caretaker'))
             setRedirectTo('/caretaker')
+        else if(role.includes('warden'))
+            setRedirectTo('/warden')
         else
             setRedirectTo('/home')
       }
@@ -93,7 +82,10 @@ function LandingPage(){
 
 
 function App() {
+  const {currentUser, loading}=useAuth();
   const [showPopup, setShowPopup] = useState(false);
+  if(loading)
+    return <div>Loading...</div>
   return (
     <section
       className="bg-Hero bg-cover
@@ -108,12 +100,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<StudentSignup />} />
         <Route path="/form" element={<Form />} />
-<<<<<<< HEAD
-        <Route path="/allotment" element={<Allotment />} />
-        <Route path="/test" element={<Obj/>} />
-=======
         <Route path="/test" element={<Test />} />
->>>>>>> 8b6a8acee47ea0d7f5458e5e54a357ec1b9f3467
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         {/* Admin Routes */}
@@ -149,8 +136,7 @@ function App() {
           <Route path="room-details/:id" element={<RoomDetails />} />
           <Route path="allotments/girls" element={<Allotments />} />
           <Route path="allotments/boys" element={<Allotments />} />
-          <Route path="allotment/girls" element={<Allotment />} />
-          <Route path="allotment/boys" element={<Allotment />} />
+          <Route path="sandbox/:name/:gender?" element={<Allotment />} />
           <Route path="allotment-table/boys" element={<AllotmentTable />} />
           <Route path="allotment-table/girls" element={<AllotmentTable />} />
         </Route>

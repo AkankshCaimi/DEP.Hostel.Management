@@ -4,3 +4,4 @@ db.sqlite3
 /documents/
 /HMngmnt/migrations/
 /v1/
+/HMngmnt/views/__pycache__

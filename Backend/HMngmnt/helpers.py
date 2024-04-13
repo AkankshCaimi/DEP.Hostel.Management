@@ -16,10 +16,6 @@ def extract_roll_number_info(roll_number):
     else:
         return None  # Return None if the roll number doesn't match the pattern
 
-# Test cases
-print(extract_roll_number_info("2023ABC1234"))  # Output: 2023ABC
-print(extract_roll_number_info("syam.21CSZ0018@iitrpr.ac.in"))  # Output: 22XYZ
-
 def get_user_dict(user):
     roles=[]
     user_json={}
@@ -35,12 +31,22 @@ def get_user_dict(user):
                 roles.append('chief warden')
             else:
                 roles.append('warden')
+    elif hasattr(user, 'warden'):
+        roles.append('warden')
+        warden=user.warden
+        if warden.is_chief_warden:
+            roles.append('chief warden')
+        else:
+            user_json['hostel']=user.caretaker.hostel.hostel_no
+            user_json['hostel_name']=user.caretaker.hostel.hostel_name
+            roles.append(user.warden.hostel.hostel_name)
     elif user.is_superuser:
         roles.append('admin')
     elif user.is_staff:
         roles.append('staff')
         if hasattr(user, 'caretaker'):
             roles.append('caretaker')
+            roles.append(user.caretaker.hostel.hostel_name)
             user_json['hostel']=user.caretaker.hostel.hostel_no
             user_json['hostel_name']=user.caretaker.hostel.hostel_name
     else:
