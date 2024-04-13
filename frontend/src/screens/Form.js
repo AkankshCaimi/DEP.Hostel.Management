@@ -164,7 +164,7 @@ const Form = () => {
             name="gender"
             color="blue"
             variant="standard"
-            label="Gender *"
+            label="Gender"
             value={formData.gender}
             onChange={(v)=>handleChange({target:{name: "gender", value:v}})}
             aria-required="true"
