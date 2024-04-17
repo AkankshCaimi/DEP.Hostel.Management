@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate
 
-from ..models import CustomUser
+from ..models import CustomUser, Room, Hostel, Student, Wing
 from ..helpers import get_user_dict
 from ..decorators import validate_token
 import json
@@ -11,10 +11,16 @@ import jwt, datetime
 
 @csrf_exempt
 def index(request):
-    # add_fac('Dr. Puneet Goyal')
-    # print(request.COOKIES.get('secret'))
-    # payload=jwt.decode(request.COOKIES.get('secret'), 'secret', algorithms="HS256")
-    # print(payload)
+    # for student in Student.objects.all():
+    #     student.student_room=None
+    #     student.save()
+    wing=Wing.objects.get(wing_name='Raavi West')
+    rooms=wing.room_set.all()
+    for room in rooms:
+        print(room.room_no, ":", room.student_set.all())
+        if room.student_set.all().count():
+            for x in room.student_set.all():
+                print(x.student.name, x.student.gender)
     return JsonResponse({"message":"Hello, world. You're at the HMngmnt index."})
 
 

@@ -342,19 +342,18 @@ export default function Headers() {
 
 function ProfileInfoPopover({ handleLogout, currentUser }) {
   const [openPopover, setOpenPopover] = React.useState(false);
-
+  
   const triggers = {
     onMouseEnter: () => setOpenPopover(true),
     onMouseLeave: () => setOpenPopover(false),
   };
-  console.log("inside ProfileInfoPopover", currentUser)
-
+  const name=currentUser.email.split('@')[0]
   return (
     <Popover open={openPopover} handler={setOpenPopover}>
       <PopoverHandler {...triggers}>
         <Button variant="gradient"
           size="sm"
-          color="white">Profile Info</Button>
+          color="white">{name}</Button>
       </PopoverHandler>
       <PopoverContent {...triggers} className="z-50 max-w-[24rem]">
         <div className="mb-2 flex items-center justify-between gap-4">
@@ -380,10 +379,10 @@ function ProfileInfoPopover({ handleLogout, currentUser }) {
         >
           <span>{currentUser && currentUser.name ? currentUser.name : "Admin"}</span> •{" "}
           <a
-            href={currentUser && currentUser.roles[0] === "admin" ? '/admin/application-status' : currentUser.roles[0] === "outside student" ? '/internship' : currentUser.roles[0] === "faculty"?'/professor/application-status':''}
+            href={currentUser && currentUser.roles.includes("admin") ? '/admin/application-status' : currentUser.roles.includes("outside student") ? '/internship' : currentUser.roles.includes("faculty")?'/professor/application-status':''}
             className="text-md font-medium text-gray-900"
           >
-            {currentUser && currentUser.roles[0] === "admin" ? '@applications' : currentUser.roles[0] === "outside student" ? '@form' : currentUser.roles[0] === "faculty" ? '@applications':''}
+            {currentUser && currentUser.roles.includes("admin") ? '@applications' : currentUser.roles.includes("outside student") ? '@form' : currentUser.roles.includes("faculty") ? '@applications':''}
           </a>
         </Typography>
         <Typography

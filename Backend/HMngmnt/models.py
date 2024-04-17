@@ -89,6 +89,7 @@ class Room(models.Model):
     hostel=models.ForeignKey(Hostel, on_delete=models.CASCADE, default=None)
     room_occupancy = models.IntegerField(default=1)
     current_occupancy = models.IntegerField(default=0)
+    is_for_guests = models.BooleanField(default=False)
 
     def __str__(self):
         return self.room_no
@@ -161,6 +162,7 @@ class SavedMappings(models.Model):
     name=models.CharField(max_length=100, auto_created=True, primary_key=True)
     mapping=models.JSONField(null=True, blank=True, default=None)
     wing_room_capacities=models.JSONField(null=True, blank=True, default=None)
+    batch_strengths=models.JSONField(null=True, blank=True, default=None)
 
 class Circular(models.Model):
     id = models.AutoField(primary_key=True)

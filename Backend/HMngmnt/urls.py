@@ -26,7 +26,10 @@ urlpatterns = [
     path('receive_from_sandbox', views.receive_from_sandbox, name='receive_from_sandbox'),  
     path('get_saved_mappings', views.get_saved_mappings, name='get_saved_mappings'),
     path('get_saved_mapping', views.get_saved_mapping, name='get_saved_mapping'),
+    path('delete_saved_mapping/<str:name>', views.delete_saved_mapping, name='delete_saved_mapping'),
+    path('create_saved_mapping', views.create_saved_mapping, name='create_saved_mapping'),
     path('apply_saved_mapping', views.apply_saved_mapping, name='apply_saved_mapping'),
+    path('check_mapping_validity', views.check_mapping_validity, name='check_mapping_validity'),
     path('add_data', views.add_data, name='add_data'),
     path('test', views.sandbox, name='sandbox')
 ]

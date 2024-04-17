@@ -3,6 +3,33 @@ import { Accordion, AccordionHeader, AccordionBody, Button } from "@material-tai
 import axios from "axios";
 import AllotmentTable from "./Warden/AllotmentTable";
 import { NavLink } from "react-router-dom";
+function transformGender(genderInput) {
+  // Convert the input to lowercase
+  genderInput = genderInput.toLowerCase();
+
+  // Apply transformations based on conditions
+  let genderOutput;
+  if (genderInput === "boys" || genderInput === "girls") {
+      // Convert first letter capital
+      genderOutput = genderInput.charAt(0).toUpperCase() + genderInput.slice(1);
+  } else if (genderInput === "male") {
+      genderOutput = "Boys";
+  } else if (genderInput === "female") {
+      genderOutput = "Girls";
+  } else if (genderInput === "m") {
+      genderOutput = "Boys";
+  } else if (genderInput === "f") {
+      genderOutput = "Girls";
+  }else if(genderInput === "b"){
+    genderOutput = "Boys";
+  } else if(genderInput === "g"){
+    genderOutput = "Girls";
+  } else {
+      genderOutput = "Unknown";
+  }
+
+  return genderOutput;
+}
 
 function Icon({ id, open }) {
   return (
@@ -48,13 +75,31 @@ export default function DefaultAccordion() {
         console.error("Error fetching data:", error);
       });
   }, []);
-  const handleNew = () => {
-    axios.get(`${backendUrl}/api/get_saved_mapping?name=new&gender=Girls`, {withCredentials: true}).then((res) => {
-    })
-    axios.get(`${backendUrl}/api/get_saved_mapping?name=new&gender=Boys`, { withCredentials: true }).then((res)=>{
-      window.location.reload();
-    })
+  const handleNew = (e) => {
+    if(e==1){
+      axios.get(`${backendUrl}/api/create_saved_mapping?name=new&gender=Girls`, {withCredentials: true}).then((res) => {
+      })
+      axios.get(`${backendUrl}/api/create_saved_mapping?name=new&gender=Boys`, { withCredentials: true }).then((res)=>{
+        window.location.reload();
+      })
+    }else{
+      const name=prompt("Enter the name of the mapping");
+      if(!name){
+        return
+      }
+      var gender=prompt("Enter gender of mapping");
+      if(!gender){
+        return
+      }
+      gender=transformGender(gender);
+      if(gender!=="Unknown" && name!==null && name!=="")
+        axios.get(`${backendUrl}/api/create_saved_mapping?name=${name}&gender=${gender}`, { withCredentials: true }).then((res)=>{
+          window.location.reload();
+        })
+    
+    }
   }
+  
   return (
     <div className="mx-24 sm:mx-24">
       {accordions.length===0?
@@ -63,7 +108,7 @@ export default function DefaultAccordion() {
           <p className="text-m text-left text-gray-600 mb-6">
             You have not saved any mappings yet. Please save a mapping to view it here.
           </p>
-          <Button to='/warden/sandbox/new' type="gradient" className="mx-4 py-2 mb-5 px-4 bg-color hover:bg-blue-800" onClick={handleNew}>
+          <Button to='/warden/sandbox/new' type="gradient" className="mx-4 py-2 mb-5 px-4 bg-color hover:bg-blue-800" onClick={()=>handleNew(1)}>
             Create a New Mapping
           </Button>
         </div>
@@ -78,6 +123,12 @@ export default function DefaultAccordion() {
           </AccordionBody>
         </Accordion>
       ))}
+      <button className="hover-button relative" onClick={()=>handleNew(2)}>
+      +
+      <span className="tooltip absolute bg-black text-white text-xs px-2 py-1 rounded-md bottom-full left-1/2 transform -translate-x-1/2 opacity-0 pointer-events-none transition-opacity duration-300">
+        Create a new mapping
+      </span>
+    </button>
     </div>
   );
 }

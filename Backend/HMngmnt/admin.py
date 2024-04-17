@@ -27,8 +27,10 @@ class HostelAdmin(admin.ModelAdmin):
     list_display = ('hostel_name', 'capacity', 'current_capacity')
 class WingAdmin(admin.ModelAdmin):
     list_display = ('wing_name', 'capacity', 'current_capacity')
+class BatchAdmin(admin.ModelAdmin):
+    list_display = ('batch', 'number_of_students', 'number_of_girls', 'number_of_boys')
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('student_roll',)
+    list_display = ('student_roll', 'student_room')
     list_filter = ('student_roll',)
     search_fields = ('student_roll',)
 
@@ -56,7 +58,7 @@ admin.site.register(Room, RoomAdmin)
 admin.site.register(Caretaker)
 admin.site.register(Application_Final)
 admin.site.register(Circular)
-admin.site.register(Batch)
+admin.site.register(Batch, BatchAdmin)
 admin.site.register(SavedMappings)
 
 

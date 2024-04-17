@@ -195,6 +195,7 @@ def sandbox(request):
         data=SavedMappings.objects.get(name=f'Current {gender}')
         matrix=data.mapping
         wing_room_capacities=data.wing_room_capacities
+        batch_strengths=data.batch_strengths
         _=False
     else:
         matrix = []
@@ -225,16 +226,17 @@ def sandbox(request):
         for wing in Wing.objects.filter(wing_type=gender):
             temp=wing.room_set.all().values_list('room_occupancy', flat=True)
             wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
-        current, _=SavedMappings.objects.get_or_create(name=f'current {gender}')
-    batch_strengths = {}
-    for batch in batches:
-        batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+        current, _=SavedMappings.objects.get_or_create(name=f'Current {gender}')
     wing_capacities= {}
     for wing in Wing.objects.filter(wing_type=gender):
         wing_capacities[wing.wing_name]=wing.capacity
     if _:
+        batch_strengths = {}
+        for batch in batches:
+            batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
         current.mapping=matrix
         current.wing_room_capacities=wing_room_capacities
+        current.batch_strengths=batch_strengths
         current.save()
     return JsonResponse({'data':matrix, 'message': 'Success',
                          'batch_strengths': batch_strengths, 'wing_capacities': wing_capacities, 'wing_room_capacities': wing_room_capacities})
@@ -246,6 +248,7 @@ def receive_from_sandbox(request):
     print(data)
     save_name=data['name']
     gender=data['gender']
+    batch_strengths=data['batch_strengths']
     if gender not in save_name:
         save_name+=gender
     resave=bool(data.get('resave', False))
@@ -272,9 +275,12 @@ def receive_from_sandbox(request):
         converted_data['data'].append(row)
     print(converted_data)
     if resave:
-        SavedMappings.objects.filter(name=save_name).update(mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'])
+        SavedMappings.objects.filter(name=save_name).update(
+            mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'],
+            batch_strengths=batch_strengths)
     else:
-        SavedMappings.objects.create(name=save_name,mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'])
+        SavedMappings.objects.create(name=save_name,mapping=converted_data['data'], wing_room_capacities=converted_data['wing_room_capacities'],
+                                     batch_strengths=batch_strengths)
     return JsonResponse({"message":"Success"})
 
 def create_zero_matrix(gender):
@@ -304,6 +310,8 @@ def get_saved_mappings(request):
     saved_mappings_list=[json.loads(serialize('json', [mapping]))[0] for mapping in saved_mappings]
     print(saved_mappings_list)
     return JsonResponse({'message': 'Success', 'data': saved_mappings_list})
+
+@csrf_exempt
 def get_saved_mapping(request):
     name=request.GET.get('name')
     if name!='new':
@@ -312,27 +320,98 @@ def get_saved_mapping(request):
             return JsonResponse({'message': 'Invalid name'})
         mapping=SavedMappings.objects.get(name=name)
         wing_room_capacities=mapping.wing_room_capacities
+        batch_strengths=mapping.batch_strengths
         data=mapping.mapping
     else:
-        gender=request.GET.get('gender')
-        if not gender:
-            return JsonResponse({'message': 'Invalid Request'})
-        wing_room_capacities={}
-        print(gender)
-        for wing in Wing.objects.filter(wing_type=gender):
-            temp=wing.room_set.all().values_list('room_occupancy', flat=True)
-            wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
-        mapping=SavedMappings.objects.create(name=f'Current {gender}',mapping=create_zero_matrix(gender), wing_room_capacities=wing_room_capacities)
-        data=mapping.mapping
+        return create_saved_mapping(request)
+        # gender=request.GET.get('gender')
+        # if not gender:
+        #     return JsonResponse({'message': 'Invalid Request'})
+        # wing_room_capacities={}
+        # print(gender)
+        # for wing in Wing.objects.filter(wing_type=gender):
+        #     temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+        #     wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
+        # mapping=SavedMappings.objects.create(name=f'Current {gender}',mapping=create_zero_matrix(gender), wing_room_capacities=wing_room_capacities)
+        # data=mapping.mapping
 
-    batch_strengths = {}
-    batches=Batch.objects.all()
-    for batch in batches:
-        batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+
     wing_capacities= {}
     for wing in Wing.objects.filter(wing_type=gender):
         wing_capacities[wing.wing_name]=wing.capacity
     return JsonResponse({'message': 'Success', 'data': data, 'wing_room_capacities': wing_room_capacities, 'batch_strengths': batch_strengths, 'wing_capacities': wing_capacities})
+
+@csrf_exempt
+def create_saved_mapping(request):
+    name=request.GET.get('name')
+    gender=request.GET.get('gender')
+    if SavedMappings.objects.filter(name=name).exists():
+        return JsonResponse({'message': 'Name Already Exists'})
+    if not SavedMappings.objects.filter(name=f'Current {gender}').exists():
+        if Batch.objects.all().count()>0 and Wing.objects.all().count()>0:
+            def any_room_has_student():
+                for room in Room.objects.all():
+                    if room.student_set.all().count():
+                        return True
+                return False
+            if any_room_has_student():
+                return sandbox(request)
+            else:
+                wing_room_capacities={}
+                for wing in Wing.objects.filter(wing_type=gender):
+                    temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+                    wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
+                wing_capacities= {}
+                for wing in Wing.objects.filter(wing_type=gender):
+                    wing_capacities[wing.wing_name]=wing.capacity
+                batch_strengths = {}
+                for batch in Batch.objects.all():
+                    batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+                mapping=SavedMappings.objects.create(name=f'Current {gender}',mapping=create_zero_matrix(gender), wing_room_capacities=wing_room_capacities, batch_strengths=batch_strengths)
+                return JsonResponse({'message': 'Success', 'data': mapping.mapping, 'wing_room_capacities': mapping.wing_room_capacities, 'wing_capacities': wing_capacities, 'batch_strengths': batch_strengths})
+        else:
+            return JsonResponse({'message': 'No data to create mapping'})
+
+    if gender not in name:
+        name+=gender
+    wing_room_capacities={}
+    # print(gender)
+    for wing in Wing.objects.filter(wing_type=gender):
+        temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+        wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
+    wing_capacities= {}
+    for wing in Wing.objects.filter(wing_type=gender):
+        wing_capacities[wing.wing_name]=wing.capacity
+    batch_strengths = {}
+    for batch in Batch.objects.all():
+        batch_strengths[batch.batch] = batch.number_of_boys if gender=='Boys' else batch.number_of_girls
+    mapping=SavedMappings.objects.create(name=name,mapping=create_zero_matrix(gender), wing_room_capacities=wing_room_capacities, batch_strengths=batch_strengths)
+    return JsonResponse({'message': 'Success', 'data': mapping.mapping, 'wing_room_capacities': mapping.wing_room_capacities, 'wing_capacities': wing_capacities, 'batch_strengths': batch_strengths})
+@csrf_exempt
+def check_mapping_validity(request):
+    name=request.GET.get('name')
+    if not SavedMappings.objects.filter(name=name).exists():
+        return JsonResponse({'message': 'Invalid name'})
+    gender=name.split(' ')[1]
+    data=SavedMappings.objects.get(name=name).mapping
+    absent_batches=[]
+    incomplete_batches=[]
+    for row in data[1:]:
+        batch_name=row[0]
+        total_students=sum(row[1:])
+        try:
+            batch=Batch.objects.get(batch=batch_name)
+        except Batch.DoesNotExist:
+            absent_batches.append(batch_name)
+        if gender=='Boys':
+            if total_students!=batch.number_of_boys:
+                incomplete_batches.append(batch_name)
+        else:
+            if total_students!=batch.number_of_girls:
+                incomplete_batches.append(batch_name)
+    if not absent_batches and not incomplete_batches:
+        return JsonResponse({'message': 'Success'}, status=200)
+    return JsonResponse({'message': 'Changes Required', 'absent_batches': absent_batches, 'incomplete_batches': incomplete_batches}, status=303)
 
 @csrf_exempt
 def apply_saved_mapping(request):
@@ -350,8 +429,12 @@ def apply_saved_mapping(request):
         for room in rooms:
             post_save.send(sender=Room, instance=room)
     # ----------remove those batches whose allotment is same
-    temp=name.split(' ')[1:]
-    current=SavedMappings.objects.get(name=f'Current Girls')
+    temp=name.split(' ')[1]
+    print(temp)
+    current, _=SavedMappings.objects.get_or_create(name=f'Current {temp}')
+    if _:
+        current.mapping=create_zero_matrix(temp)
+        current.save()
     existing_dict={b[0]:b[1:] for b in current.mapping}
     new_dict={b[0]:b[1:] for b in data}
     filtered_batches=[batch for batch in existing_dict if existing_dict[batch]!=new_dict[batch]]
@@ -362,7 +445,7 @@ def apply_saved_mapping(request):
         if v1 and v1!=v:
             filtered_data.append([b]+v1)
     # ----------create copy of current for future reference
-    # SavedMappings.objects.create(name=f'X-Current Girls',mapping=current.mapping, wing_room_capacities=current.wing_room_capacities)
+    SavedMappings.objects.create(name=f'X-Current {temp}',mapping=current.mapping, wing_room_capacities=current.wing_room_capacities)
     # ----------clear all rooms for re-allotment
     students=Student.objects.filter(student_room__hostel_wing__wing_name__in=hostels, student_batch__batch__in=filtered_batches)
     for student in students:
@@ -372,14 +455,15 @@ def apply_saved_mapping(request):
     for i in range(1, len(filtered_data)):
         batch=filtered_data[i][0]
         array_distribution=filtered_data[i][1:]
-        students=Student.objects.filter(student_batch__batch=batch)
+        gender='Male' if temp=='Boys' else 'Female'
+        students=Student.objects.filter(student_batch__batch=batch, student__gender=gender)
         students=list(students)
         random.shuffle(students)
         grps=[[] for _ in range(0, len(array_distribution))]
         total_students = len(students)
         remaining_students = total_students
         for j, count in enumerate(array_distribution):
-            grp_size=min(count, remaining_students)
+            grp_size=min(int(count), remaining_students)
             grps[j]=students[:grp_size]
             students=students[grp_size:]
             remaining_students-=grp_size
@@ -418,6 +502,13 @@ def apply_saved_mapping(request):
         ["2023Z", 1, 0, 1, 0, 2, 0, 1, 5]
     ]
     '''    
+
+@csrf_exempt
+def delete_saved_mapping(req, name):
+    if SavedMappings.objects.filter(name=name).exists():
+        SavedMappings.objects.get(name=name).delete()
+        return JsonResponse({'message': 'Success'})
+    return JsonResponse({'message': 'Invalid name'})
 
 @csrf_exempt
 @staff_required

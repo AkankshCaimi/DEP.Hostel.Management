@@ -54,6 +54,7 @@ export default function Allotment() {
       // }
       let flag=false;
       setNodes((prev)=>prev.map((node)=>{
+        if(flag) return node;
         if(node.id===params.source){
           if(node.data.unallocated<value){
             alert("The number of students you want to put in the hostel is more than the unallocated students in the batch")
@@ -91,6 +92,13 @@ export default function Allotment() {
       const edge=deleted.find((edge)=>edge.source===node.id || edge.target===node.id)
       if(edge){
         return {...node, data: {...node.data, unallocated: node.data.unallocated+parseInt(edge.label)}}
+      }
+      return node;
+    }))
+    setData((prev)=>prev.map((node)=>{
+      const edge=deleted.find((edge)=>edge.source===node.label || edge.target===node.label)
+      if(edge){
+        return {...node, unallocated: node.unallocated+parseInt(edge.label)}
       }
       return node;
     }))
@@ -321,12 +329,33 @@ export default function Allotment() {
         room_capacities[node.id]=node.data.per_room_capacity
       }
     })
+    
+    const batch_strengths={}
+    const batches=[]
+    nodes.forEach(node=>{
+      if(node.type==='batch'){
+        batch_strengths[node.id]=node.data.strength
+        batches.push(node.id)
+      }
+    })
+    // add zeros for rest batch:hostel
+    batches.forEach((batch)=>{
+      if(!finalData[batch]){
+        finalData[batch]={}
+      }
+      hostels.forEach((hostel)=>{
+        if(!finalData[batch][hostel]){
+          finalData[batch][hostel]=0
+        }
+      })
+    })
     console.log(finalData, room_capacities)
     axios.post(`${backendUrl}/api/receive_from_sandbox`, {
       payload: {
         data: finalData,
         name: save_name,
         room_capacities: room_capacities,
+        batch_strengths: batch_strengths,
         gender: name.split(' ')[1] || gender ,
         resave: param==1,
       }
@@ -399,7 +428,7 @@ export default function Allotment() {
       </Controls>
       <div style={{ position: 'absolute', bottom: 10, right: 10 , zIndex: 5}}>
       {/* <div style={{ zIndex: 5}}> */}
-        <Button onClick={()=>handleSubmit(1)}>Save</Button>
+        {!name.toLowerCase().includes('current') && <Button onClick={()=>handleSubmit(1)}>Save</Button>}
         <Button onClick={()=>handleSubmit(2)}>Save As</Button>
       </div>
     </ReactFlow>
