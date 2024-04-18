@@ -4,9 +4,19 @@ import "../../styles/tailwind.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { Spinner } from "@material-tailwind/react";
+import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  Spinner,
+  Tabs,
+  TabsHeader,
+  TabsBody,
+  Tab,
+  TabPanel,
+  Button,
+  IconButton,
+} from "@material-tailwind/react";
 function Card({ children }) {
-  return <div className="border border-black rounded-md p-1">{children}</div>;
+  return <div className=" rounded-md py-2">{children}</div>;
 }
 
 function CardHeader({ children }) {
@@ -86,56 +96,37 @@ function HostelRoomCard({ room_no, students }) {
   const backgroundColorClass2 =
     students.length === 2 ? "hover:bg-gray-400" : "hover:bg-green-300";
   return (
-    <Link to={`../room-details/${room_no}`} className="no-underline text-black py-1">
-  <div className={`${backgroundColorClass} rounded-md flex items-center justify-center mr-1 hover:cursor-pointer ${backgroundColorClass2}`}>
-    <Card className='w-64 h-48'> {/* Adjust width and height as needed */}
-      <CardHeader>
-        <CardTitle>{room_no}</CardTitle>
-      </CardHeader>
-      <CardFooter>
-        <div className="flex items-center space-x-1">
-          <GroupIcon className="h-3 w-3 text-gray-700" />
-          <p className="h-1 w-2 pt-0.5 text-xs text-gray-700">
-            {students.length}
-          </p>
-        </div>
-      </CardFooter>
-    </Card>
-  </div>
-</Link>
-
+    <Link
+      to={`../room-details/${room_no}`}
+      className="no-underline text-black py-1"
+    >
+      <div
+        className={`${backgroundColorClass} border-none rounded-md flex items-center justify-center mr-1 border border-black hover:cursor-pointer ${backgroundColorClass2}`}
+      >
+        <Card>
+          {" "}
+          {/* Adjust width and height as needed */}
+          <CardHeader>
+            <CardTitle>{room_no}</CardTitle>
+          </CardHeader>
+          <CardFooter>
+            <div className="flex items-center space-x-1">
+              <GroupIcon className="h-3 w-3 text-gray-700" />
+              <p className="h-1 w-2 pt-0.5 text-xs text-gray-700 mb-3">
+                {students.length}
+              </p>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+    </Link>
   );
 }
 
 export default function HostelRooms() {
   const { hostel } = useParams();
-  const { currentUser , loading} = useAuth();
+  const { currentUser, loading } = useAuth();
   const [hostelDetails, setHostelDetails] = useState({});
-  // console.log(hostel);
-  const backendUrl = process.env.REACT_APP_BASE_URL;
-  useEffect(() => {
-    axios.get(`${backendUrl}/api/get_hostel/${hostel}`,{withCredentials: true})
-    .then((response) => {
-      console.log('here')
-      console.log(response.data);
-      setRooms(response.data.data);
-      setHostelDetails(response.data.hostel);
-      // setHostelName(response.data.data.hostel_name);
-      // handle the response data
-    })
-    // axios
-    //   .get(`${backendUrl}/api/get_hostel_rooms/${currentUser.hostel}`, {
-    //     withCredentials: true,
-    //   })
-    //   .then((response) => {
-    //     // handle the response data
-    //     console.log(response.data);
-    //     setRooms(response.data.data);
-    //   })
-    //   .catch((error) => {
-    //     // handle the error
-    //   });
-  }, []);
   const [rooms, setRooms] = useState([
     { room_no: "CE-101", students: [people[0], people[1]] },
     { room_no: "CE-102", students: [people[2], people[3]] },
@@ -185,46 +176,290 @@ export default function HostelRooms() {
     { room_no: "CE-146", students: [people[89], people[90]] },
     { room_no: "CE-147", students: [people[91], people[92]] },
     { room_no: "CE-148", students: [people[93], people[94]] },
+    { room_no: "CE-201", students: [people[0], people[1]] },
+    { room_no: "CE-202", students: [people[2], people[3]] },
+    { room_no: "CE-203", students: [people[4], people[5]] },
+    { room_no: "CE-204", students: [people[6], people[7]] },
+    { room_no: "CE-205", students: [people[8], people[9]] },
+    { room_no: "CE-206", students: [people[10]] },
+    { room_no: "CE-207", students: [people[11], people[12]] },
+    { room_no: "CE-208", students: [people[13], people[14]] },
+    { room_no: "CE-209", students: [people[15], people[16]] },
+    { room_no: "CE-210", students: [people[17], people[18]] },
+    { room_no: "CE-211", students: [people[19], people[20]] },
+    { room_no: "CE-212", students: [people[21], people[22]] },
+    { room_no: "CE-213", students: [people[23], people[24]] },
+    { room_no: "CE-214", students: [people[25], people[26]] },
+    { room_no: "CE-215", students: [people[27], people[28]] },
+    { room_no: "CE-216", students: [people[29], people[30]] },
+    { room_no: "CE-217", students: [people[31], people[32]] },
+    { room_no: "CE-218", students: [people[33], people[34]] },
+    { room_no: "CE-219", students: [people[35], people[36]] },
+    { room_no: "CE-220", students: [people[37], people[38]] },
+    { room_no: "CE-221", students: [people[39], people[40]] },
+    { room_no: "CE-222", students: [people[41], people[42]] },
+    { room_no: "CE-223", students: [people[43], people[44]] },
+    { room_no: "CE-224", students: [people[45], people[46]] },
+    { room_no: "CE-225", students: [people[47], people[48]] },
+    { room_no: "CE-226", students: [people[49], people[50]] },
+    { room_no: "CE-227", students: [people[51], people[52]] },
+    { room_no: "CE-228", students: [people[53], people[54]] },
+    { room_no: "CE-229", students: [people[55], people[56]] },
+    { room_no: "CE-230", students: [people[57], people[58]] },
+    { room_no: "CE-231", students: [people[59], people[60]] },
+    { room_no: "CE-332", students: [people[61], people[62]] },
+    { room_no: "CE-333", students: [people[63], people[64]] },
+    { room_no: "CE-334", students: [people[65], people[66]] },
+    { room_no: "CE-335", students: [people[67], people[68]] },
+    { room_no: "CE-336", students: [people[69]] },
+    { room_no: "CE-337", students: [people[71], people[72]] },
+    { room_no: "CE-338", students: [people[73], people[74]] },
+    { room_no: "CE-339", students: [people[75], people[76]] },
+    { room_no: "CE-340", students: [people[77], people[78]] },
+    { room_no: "CE-341", students: [people[79], people[80]] },
+    { room_no: "CE-342", students: [people[81], people[82]] },
+    { room_no: "CE-343", students: [people[83], people[84]] },
+    { room_no: "CE-344", students: [people[85], people[86]] },
+    { room_no: "CE-345", students: [people[87], people[88]] },
+    { room_no: "CE-346", students: [people[89], people[90]] },
+    { room_no: "CE-347", students: [people[91], people[92]] },
+    { room_no: "CE-348", students: [people[93], people[94]] },
   ]);
-  return loading ? <Spinner/>:
-  !loading && (
-    <div className="container mx-auto px-8 m-4">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">
-          {hostelDetails.hostel_name} Hostel Rooms
-        </h1>
-        <p className="text-gray-500 pb-0">
-          Here are all the rooms in the hostel along with the number of students
-          in each room.
-        </p>
-        <div className="flex items-center space-x-8">
-          <div className="flex items-center">
-            <div className="w-4 h-4 bg-green-200 mr-2 border border-black"></div>
-            <p className="mt-3">Vacant</p>
-          </div>
-          <div className="flex items-center">
-            <div className="w-4 h-4 bg-gray-300 mr-2 border border-black"></div>
-            <p className="mt-3">Occupied</p>
-          </div>
-        </div>
-      </div>
+  // console.log(hostel);
+  const backendUrl = process.env.REACT_APP_BASE_URL;
+  useEffect(() => {
+    axios
+      .get(`${backendUrl}/api/get_hostel/${hostel}`, { withCredentials: true })
+      .then((response) => {
+        // console.log("here");
+        // console.log(response.data);
+        // setRooms(response.data.data);
+        // setHostelDetails(response.data.hostel);
+        // setHostelName(response.data.data.hostel_name);
+        // handle the response data
+      });
+    // axios
+    //   .get(`${backendUrl}/api/get_hostel_rooms/${currentUser.hostel}`, {
+    //     withCredentials: true,
+    //   })
+    //   .then((response) => {
+    //     // handle the response data
+    //     console.log(response.data);
+    //     setRooms(response.data.data);
+    //   })
+    //   .catch((error) => {
+    //     // handle the error
+    //   });
+  }, []);
+
+
+  function HostelRoomDetails() {
+    // console.log("hello");
+    const [active, setActive] = React.useState(1);
+
+    if (!Array.isArray(rooms) || rooms.length === 0) {
+      console.log("No rooms data available");
+      return; // or handle this case appropriately
+    }
+
+    // Extract the first digit of the room number as the floor number
+    const floorNumbers = rooms
+      .filter(room => room.room_no && typeof room.room_no === 'string') // Ensure room_no is defined and is a string
+      .map(room => parseInt(room.room_no.match(/\d+$/)?.[0] || 0)); // Use optional chaining and fallback to handle cases where room_no might not match the expected format
+
+    if (floorNumbers.length === 0) {
+      console.log("No valid room numbers found");
+      return; // or handle this case appropriately
+    }
+
+    console.log(floorNumbers, "floorNumbers");
+
+    // Find the maximum floor number
+    const maxFloorNumber = Math.max(...floorNumbers)/100;
+    console.log(maxFloorNumber, "maxFloorNumber");
+    const paginationNumbers = Array.from(
+      { length: maxFloorNumber },
+      (_, i) => i + 1
+    );
+
+    console.log(maxFloorNumber, "maxFloorNumber");
+    console.log(paginationNumbers, "paginationNumbers");
+
+    const filteredRooms = rooms.filter((room) => {
+      const floorNumber = parseInt(room.room_no.match(/\d+$/)[0]);
+      console.log("filtered", floorNumber.toString()[0] - "0", active);
+      return floorNumber.toString()[0] - "0" === active;
+    });
+
+    const getItemProps = (index) => ({
+      variant: active === index ? "filled" : "text",
+      color: "gray",
+      onClick: () => setActive(index),
+    });
+
+    return (
       <div className="bg-gray-200 p-4 overflow-x-auto rounded-md">
-        {/* Hostel room display */}
-        {/* <div className="flex flex-row space-x-1">
-          <div className="flex">
-            {rooms.slice(0, 24).map((room, index) => (
-              <HostelRoomCard key={index} {...room} />
+        <div className="flex items-center gap-4 mb-2">
+          <div className="flex items-center gap-2 mx-auto">
+          <span className="font-semibold text-lg">Select Floor</span>
+            {paginationNumbers.map((number) => (
+              <IconButton key={number} {...getItemProps(number)}>
+                {number}
+              </IconButton>
             ))}
           </div>
-        </div> */}
-        <div className="flex flex-row space-x-1">
+        </div>
+        <div className="flex flex-row item-center space-x-1">
           <div className="flex flex-wrap">
-            {rooms.reverse().map((room, index) => (
-              <HostelRoomCard key={index} {...room} />
+            {filteredRooms.map((room, index) => (
+              <div key={index} className="w-20 px-0 my-1">
+                <HostelRoomCard {...room} />
+              </div>
             ))}
           </div>
         </div>
       </div>
-    </div>
+    );
+  }
+  function InternRoomDetails() {
+    // console.log("hello");
+    const [active, setActive] = React.useState(1);
+
+    if (!Array.isArray(rooms) || rooms.length === 0) {
+      console.log("No rooms data available");
+      return; // or handle this case appropriately
+    }
+
+    // Extract the first digit of the room number as the floor number
+    const floorNumbers = rooms
+      .filter(room => room.room_no && typeof room.room_no === 'string') // Ensure room_no is defined and is a string
+      .map(room => parseInt(room.room_no.match(/\d+$/)?.[0] || 0)); // Use optional chaining and fallback to handle cases where room_no might not match the expected format
+
+    if (floorNumbers.length === 0) {
+      console.log("No valid room numbers found");
+      return; // or handle this case appropriately
+    }
+
+    console.log(floorNumbers, "floorNumbers");
+
+    // Find the maximum floor number
+    const maxFloorNumber = Math.max(...floorNumbers)/100;
+    console.log(maxFloorNumber, "maxFloorNumber");
+    const paginationNumbers = Array.from(
+      { length: maxFloorNumber },
+      (_, i) => i + 1
+    );
+
+    console.log(maxFloorNumber, "maxFloorNumber");
+    console.log(paginationNumbers, "paginationNumbers");
+
+    const filteredRooms = rooms.filter((room) => {
+      const floorNumber = parseInt(room.room_no.match(/\d+$/)[0]);
+      console.log("filtered", floorNumber.toString()[0] - "0", active);
+      return floorNumber.toString()[0] - "0" === active;
+    });
+
+    const getItemProps = (index) => ({
+      variant: active === index ? "filled" : "text",
+      color: "gray",
+      onClick: () => setActive(index),
+    });
+
+    return (
+      <div className="bg-gray-200 p-4 overflow-x-auto rounded-md">
+        <div className="flex items-center gap-4 mb-2">
+          <div className="flex items-center gap-2 mx-auto">
+          <span className="font-semibold text-lg">Select Floor</span>
+            {paginationNumbers.map((number) => (
+              <IconButton key={number} {...getItemProps(number)}>
+                {number}
+              </IconButton>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-row item-center space-x-1">
+          <div className="flex flex-wrap">
+            {filteredRooms.map((room, index) => (
+              <div key={index} className="w-20 px-0 my-1">
+                <HostelRoomCard {...room} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const data = [
+    {
+      label: "Institute Students",
+      value: "institute students",
+    },
+    {
+      label: "Interns",
+      value: "interns",
+    },
+  ];
+
+  return loading ? (
+    <Spinner />
+  ) : (
+    !loading && (
+      <div className="container mx-auto px-8 m-4">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold">
+            {hostelDetails.hostel_name} Hostel Rooms
+          </h1>
+          <p className="text-gray-600 pb-0">
+            Here are all the rooms in the hostel along with the number of
+            students in each room.
+          </p>
+        </div>
+        <div>
+          <Tabs id="custom-animation" value={data[0].value} className="">
+            <TabsHeader className="w-full lg:w-96 mx-auto mt-4">
+              {data.map(({ label, value }) => (
+                <Tab key={value} value={value}>
+                  {label}
+                </Tab>
+              ))}
+            </TabsHeader>
+            <div className="flex items-center space-x-8 mt-2 -mb-4">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-green-200 mr-2 border border-black"></div>
+                <p className="">Vacant</p>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-300 mr-2 border border-black"></div>
+                <p className="">Occupied</p>
+              </div>
+            </div>
+            <TabsBody
+              animate={{
+                initial: { y: 250 },
+                mount: { y: 0 },
+                unmount: { y: 250 },
+              }}
+            >
+              {data.map(({ value, desc }) => (
+                <TabPanel key={value} value={value}>
+                  <div className="bg-gray-200 p-4 overflow-x-auto rounded-md">
+                    <div className="flex flex-row item-center space-x-1">
+                      <div className="flex flex-wrap">
+                        {value === "institute students" || !value ? (
+                          <HostelRoomDetails />
+                        ) : (
+                          <InternRoomDetails />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </TabPanel>
+              ))}
+            </TabsBody>
+          </Tabs>
+        </div>
+      </div>
+    )
   );
 }
