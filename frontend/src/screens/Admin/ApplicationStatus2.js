@@ -386,7 +386,7 @@ export default function MembersTable() {
                         className="p-4 border-b border-blue-gray-50 w-10"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <Select
+                        <Select variant="static" size="lg" direction="down"
                           label={
                             selectedOptions[application_id]?.value || "Select"
                           }

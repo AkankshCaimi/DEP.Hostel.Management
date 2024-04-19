@@ -82,6 +82,12 @@ export default function Allotment() {
         // console.log("New Edges:", newEdges); // Log the new edges here
         return newEdges;
       });
+      setData((prev)=>prev.map((node)=>{
+        if(node.label===params.source){
+          return {...node, unallocated: node.unallocated-value}
+        }
+        return node;
+      }))
     },
     [setEdges, setNodes]
   );

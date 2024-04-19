@@ -23,6 +23,12 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ("email",)
     ordering = ("email",)
+
+class FacultyAdmin(admin.ModelAdmin):
+    list_display = ('department', 'is_hod')
+    # search_fields = ('faculty_name', 'faculty_department')
+    list_filter = ('is_hod',)
+
 class HostelAdmin(admin.ModelAdmin):
     list_display = ('hostel_name', 'capacity', 'current_capacity')
 class WingAdmin(admin.ModelAdmin):
@@ -49,7 +55,7 @@ class RoomAdmin(admin.ModelAdmin):
 # Register your custom admin class
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Application)
-admin.site.register(Faculty)
+admin.site.register(Faculty, FacultyAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(Warden)
 admin.site.register(Wing, WingAdmin)

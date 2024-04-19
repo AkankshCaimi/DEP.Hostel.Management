@@ -87,6 +87,8 @@ def update_batch_strength_on_delete(sender, instance, **kwargs):
 
 @receiver([post_save, post_delete], sender=Room)
 def update_hostel_and_wing(sender, instance, **kwargs):
+    if instance.is_for_guests:
+        return
     instance.hostel_wing.capacity = instance.hostel_wing.get_capacity()
     instance.hostel_wing.current_capacity = instance.hostel_wing.get_current_capacity()
     instance.hostel_wing.save()

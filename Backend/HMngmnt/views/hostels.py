@@ -16,6 +16,17 @@ import random
 def room(request, id):
     print('id:', id)
     room=Room.objects.get(room_no=id)
+    if room.is_for_guests:
+        people=room.application_final_set.all()
+        people_list=[{
+            'name': person.application.student.name,
+            'email': person.application.student.email,
+            'phone': person.application.phone,
+            'status': person.application.status,
+            'arrival': person.application.arrival,
+            'departure': person.application.departure,
+        } for person in people]
+        return JsonResponse({'message': 'Staff page', 'data': people_list})
     students=room.student_set.all()
     if len(students):
         students_list=[{
@@ -57,7 +68,9 @@ def get_hostel_rooms(request, hostel_no):
         'room_occupancy': room.room_occupancy,
         'room_current_occupancy': room.current_occupancy,
         'floor': room.floor,
-        'students': [{'name': st.student.name, 'email': st.student.email} for st in room.student_set.all()] if hasattr(room, 'student_set') else []
+        'is_for_guests': room.is_for_guests,
+        'students': [{'name': st.student.name, 'email': st.student.email} for st in room.student_set.all()] if hasattr(room, 'student_set') else [],
+        'guests': [{'name': st.application.student.name, 'email': st.application.student.email} for st in room.application_final_set.all()] if hasattr(room, 'application_final_set') else []
 
     } for room in rooms]
     # return JsonResponse({'message': 'Warden page', 'data': rooms_list})
@@ -224,7 +237,7 @@ def sandbox(request):
             matrix.append(batch_row)
         wing_room_capacities={}
         for wing in Wing.objects.filter(wing_type=gender):
-            temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+            temp=wing.room_set.filter(is_for_guests=False).values_list('room_occupancy', flat=True)
             wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
         current, _=SavedMappings.objects.get_or_create(name=f'Current {gender}')
     wing_capacities= {}
@@ -330,7 +343,7 @@ def get_saved_mapping(request):
         # wing_room_capacities={}
         # print(gender)
         # for wing in Wing.objects.filter(wing_type=gender):
-        #     temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+        #     temp=wing.room_set.filter(is_for_guests=False).values_list('room_occupancy', flat=True)
         #     wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
         # mapping=SavedMappings.objects.create(name=f'Current {gender}',mapping=create_zero_matrix(gender), wing_room_capacities=wing_room_capacities)
         # data=mapping.mapping
@@ -350,7 +363,7 @@ def create_saved_mapping(request):
     if not SavedMappings.objects.filter(name=f'Current {gender}').exists():
         if Batch.objects.all().count()>0 and Wing.objects.all().count()>0:
             def any_room_has_student():
-                for room in Room.objects.all():
+                for room in Room.objects.filter(is_for_guests=False):
                     if room.student_set.all().count():
                         return True
                 return False
@@ -359,7 +372,7 @@ def create_saved_mapping(request):
             else:
                 wing_room_capacities={}
                 for wing in Wing.objects.filter(wing_type=gender):
-                    temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+                    temp=wing.room_set.filter(is_for_guests=False).values_list('room_occupancy', flat=True)
                     wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
                 wing_capacities= {}
                 for wing in Wing.objects.filter(wing_type=gender):
@@ -377,7 +390,7 @@ def create_saved_mapping(request):
     wing_room_capacities={}
     # print(gender)
     for wing in Wing.objects.filter(wing_type=gender):
-        temp=wing.room_set.all().values_list('room_occupancy', flat=True)
+        temp=wing.room_set.filter(is_for_guests=False).values_list('room_occupancy', flat=True)
         wing_room_capacities[wing.wing_name]=temp[0] if len(temp) else 0
     wing_capacities= {}
     for wing in Wing.objects.filter(wing_type=gender):
@@ -424,7 +437,7 @@ def apply_saved_mapping(request):
     wing_room_capacities=SavedMappings.objects.get(name=name).wing_room_capacities
     for wing in wing_room_capacities:
         x=Wing.objects.get(wing_name=wing)
-        rooms=x.room_set.all()
+        rooms=x.room_set.filter(is_for_guests=False)
         rooms.update(room_occupancy=wing_room_capacities[wing])
         for room in rooms:
             post_save.send(sender=Room, instance=room)
@@ -470,7 +483,7 @@ def apply_saved_mapping(request):
         print(grps)
         for j, grp in enumerate(grps):
             wing=Wing.objects.get(wing_name=filtered_data[0][j+1])
-            rooms=list(wing.room_set.all().order_by('floor'))
+            rooms=list(wing.room_set.filter(is_for_guests=False).order_by('floor'))
             while len(grp):
                 for room in rooms:
                     if room.current_occupancy==0 or (room.current_occupancy<room.room_occupancy and room.student_set.all()[0].student_batch==batch):
