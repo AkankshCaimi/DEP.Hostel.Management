@@ -85,7 +85,7 @@ def get_hostel(req, id):
     user=req.new_param
     user=CustomUser.objects.get(pk=user.get('id'))
     user_dict=get_user_dict(user)
-    if 'chief warden' in user_dict['roles'] or user_dict['hostel_name']==hostel.hostel_name:
+    if  'admin' in user_dict['roles'] or 'chief warden' in user_dict['roles'] or user_dict['hostel_name']==hostel.hostel_name:
         jsonR= get_hostel_rooms(req, hostel.hostel_no)
         return JsonResponse({'message': 'Staff page', 'data': jsonR, 'hostel': hostel_serialized['fields']})
     return JsonResponse({'error': 'You are not authorized to view this page'}, status=403)
