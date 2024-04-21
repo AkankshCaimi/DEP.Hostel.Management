@@ -426,7 +426,7 @@ export default function Allotment() {
       zoomOnDoubleClick={false}
       preventScrolling={false}
       nodeTypes={nodeTypes}
-      onNodesDelete={onNodesDelete}
+      // onNodesDelete={onNodesDelete}
       onEdgesDelete={onEdgesDelete}
     >
       <Background variant="dots" gap={12} size={2} />

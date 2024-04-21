@@ -48,7 +48,7 @@ class RoomAdmin(admin.ModelAdmin):
     list_display = ('room_no', 'get_students')
     inlines = [StudentInline]
     fieldsets = (
-        ("Room Info", {"fields": ("room_no", "room_occupancy", "hostel_wing", "current_occupancy")}),
+        ("Room Info", {"fields": ("room_no", "room_occupancy", "hostel_wing", "current_occupancy", "hostel", "is_for_guests")}),
     )
     def get_students(self, obj):
         return ", ".join([student.student.name for student in obj.student_set.all()])

@@ -56,7 +56,7 @@ const Cal = () => {
 				<div className="calendar-container">
 					<Calendar
 						value={selectedDate}
-						onClickDay={Date_Click_Fun}
+						// onClickDay={Date_Click_Fun}
 						tileClassName={({ date }) =>
 							selectedDate &&
 								date.toDateString() === selectedDate.toDateString()

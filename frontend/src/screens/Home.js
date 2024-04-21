@@ -20,7 +20,7 @@ function Home() {
   const backendUrl = process.env.REACT_APP_BASE_URL;
   const facilities = [
     { name: 'Aarohan', imageUrl: aarohan, url: 'https://www.google.com' },
-    { name: 'Zeitgeist', imageUrl: zeitgeist, url: 'https://www.google.com' },
+    { name: 'Zeitgeist', imageUrl: zeitgeist, url: 'https://www.linkedin.com/company/zeitgeist-iit-ropar/' },
     { name: 'Decypher', imageUrl: decypher, url: 'https://www.google.com' },
     { name: 'Arturo', imageUrl: arturo, url: 'https://www.google.com' },
     { name: 'Undekha', imageUrl: undekha, url: 'https://www.google.com' },
@@ -28,7 +28,7 @@ function Home() {
   ];
   const renderAddCircular = useMemo(() => {
     return !loading &&
-    currentUser && (currentUser.roles.includes('caretaker')|| currentUser.roles.includes('warden') || currentUser.roles.includes('admin') )
+    currentUser && (currentUser.roles.includes('caretaker')|| currentUser.roles.includes('chief warden') || currentUser.roles.includes('admin') )
   }, [loading]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [newCircular, setNewCircular] = useState({ text: '', url: '' });
@@ -45,7 +45,7 @@ function Home() {
         setCirculars(res.data);
       })
       .catch((error) => {
-        // console.error("Error fetching data:", error);
+        console.error("Error fetching data:", error);
       });
   }, []);
   // const circulars = [{ text: 'Online Hostel/Mess Fee Payment', url: 'https://www.google.com' },
@@ -93,7 +93,7 @@ function Home() {
   const deleteSelectedCirculars = async () => {
     const selectedIds = circulars.filter(circular => circular.isSelected).map(circular => circular.id);
 
-    axios.delete(`${backendUrl}/api/circulars/`, { data: { ids: selectedIds } }, { withCredentials: true })
+    axios.delete(`${backendUrl}/api/circulars`, { data: { ids: selectedIds } }, { withCredentials: true })
       .then((res) => {
         setCirculars(circulars.filter(circular => !circular.isSelected));
         setDeleteModalIsOpen(false);
@@ -113,7 +113,7 @@ function Home() {
   const handleSubmit = (event) => {
     // setModalIsOpen(false);
     event.preventDefault();
-    axios.post(`${backendUrl}/api/circulars/`, newCircular, { withCredentials: true })
+    axios.post(`${backendUrl}/api/circulars`, newCircular, { withCredentials: true })
       .then((res) => {
         setCirculars(res.data);
         setModalIsOpen(false);
@@ -133,15 +133,20 @@ function Home() {
         <div className='w-7/10 p-4'>
           <h2 className='text-lg font-bold mb-2 bg-black text-white p-2'>Student Facilities</h2>
           <div className='grid grid-cols-3 gap-4'>
-            {facilities.map((facility, index) => (
-              <div key={index} className='relative shadow-lg p-4 aspect-w-16 aspect-h-9'>
-                <img src={facility.imageUrl} alt={facility.name} className='w-full h-full object-cover rounded shadow-lg' />
-                <a href={facility.url} target="_blank" rel="noopener noreferrer" className='absolute inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-50 text-white text-center text-2xl no-underline hover:underline rounded'>
-                  {facility.name}
-                </a>
-              </div>
-            ))}
-          </div>
+  {facilities.map((facility, index) => (
+    <div key={index} className='relative shadow-lg p-4 aspect-w-16 aspect-h-9'>
+      <img src={facility.imageUrl} alt={facility.name} className='w-full h-full object-cover rounded shadow-lg' />
+      <a
+        href={facility.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className='absolute inset-0 flex items-center justify-center w-full h-full bg-black bg-opacity-50 text-white text-center text-2xl no-underline hover:underline rounded'
+      >
+        {facility.name}
+      </a>
+    </div>
+  ))}
+</div>
 
 
 
@@ -168,7 +173,7 @@ function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
                 </svg>
 
-                <a href={circular.url} target="_blank" rel="noopener noreferrer" className="text-black no-underline hover:underline">{circular.text}</a>
+                <a href={'https://www.'+circular.url} target="_blank" rel="noopener noreferrer" className="text-black no-underline hover:underline">{circular.text}</a>
               </div>
 
             ))}

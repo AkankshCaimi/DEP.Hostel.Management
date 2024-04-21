@@ -96,15 +96,16 @@ def update_application(request):
             # print('application_id:', application_id)
             # print('status:', status['hostel'])
             application=Application.objects.get(application_id=int(application_id))
-            # print('application:', application)
             application.status=status['value']
+            print('application:', application)
             if 'Rejected' in status['value']:
                 application.comments=status['comments']
             elif status['value']=='Pending Caretaker Action':
                 # Application_Final(application=application, hostel=Hostel.objects.get(hostel_name=status['hostel'])).save()
-                hostel=Hostel.objects.get(hostel_name=str(status['hostel']))
-                print('here')
-                print('hostel:', hostel)
+                hostel=str(status['hostel']).split(' ')[0]
+                hostel=Hostel.objects.get(hostel_name=hostel)
+                # print('here')
+                # print('hostel:', hostel)
                 new_app=Application_Final(application=application, hostel=hostel)
                 new_app.save()
             application.save()

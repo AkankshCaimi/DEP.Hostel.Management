@@ -37,8 +37,8 @@ def get_user_dict(user):
         if warden.is_chief_warden:
             roles.append('chief warden')
         else:
-            user_json['hostel']=user.caretaker.hostel.hostel_no
-            user_json['hostel_name']=user.caretaker.hostel.hostel_name
+            user_json['hostel']=user.warden.hostel.hostel_no
+            user_json['hostel_name']=user.warden.hostel.hostel_name
             roles.append(user.warden.hostel.hostel_name)
     elif user.is_superuser:
         roles.append('admin')

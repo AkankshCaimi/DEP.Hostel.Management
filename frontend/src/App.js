@@ -134,11 +134,10 @@ function App() {
           <Route index element={<WardenDashboard />} />
           <Route path="hostel-view/:hostel" element={<HostelView />} />
           <Route path="room-details/:id" element={<RoomDetails />} />
-          <Route path="allotments/girls" element={<Allotments />} />
-          <Route path="allotments/boys" element={<Allotments />} />
+          <Route path="allotments" element={<Allotments />} />
           <Route path="sandbox/:name/:gender?" element={<Allotment />} />
-          <Route path="allotment-table/boys" element={<AllotmentTable />} />
-          <Route path="allotment-table/girls" element={<AllotmentTable />} />
+          <Route path="hostel-view/:hostel" element={<HostelView />} />
+          <Route path="room-details/:id" element={<RoomDetails />} />
         </Route>
 
       </Routes>

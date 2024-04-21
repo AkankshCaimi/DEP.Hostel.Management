@@ -26,26 +26,25 @@ def room(request, id):
             'arrival': person.application.arrival,
             'departure': person.application.departure,
         } for person in people]
-        return JsonResponse({'message': 'Staff page', 'data': people_list})
+        return JsonResponse({'message': 'Staff page', 'data': people_list, 'guest': True, 'current_occupancy': room.current_occupancy, 'room_occupancy': room.room_occupancy})
     students=room.student_set.all()
-    if len(students):
-        students_list=[{
-            'name': student.student.name,
-            'email': student.student.email,
-        } for student in students]
-        print('students_list:', students_list)
-        return JsonResponse({'message': 'Staff page', 'data': students_list})
-    students=room.application_final_set.all()
-    print('students:', students)
-    if len(students):
-        students_list=[{
-            'name': student.application.student.name,
-            'email': student.application.student.email,
-            'phone': student.application.phone
-        } for student in students]
-        print('students_list:', students_list)
-        return JsonResponse({'message': 'Staff page', 'data': students_list})
-    return JsonResponse({'message': 'Staff page', 'data': []})
+    students_list=[{
+        'name': student.student.name,
+        'email': student.student.email,
+    } for student in students]
+    print('students_list:', students_list)
+    return JsonResponse({'message': 'Staff page', 'data': students_list, 'guest': False})
+    # students=room.application_final_set.all()
+    # print('students:', students)
+    # if len(students):
+    #     students_list=[{
+    #         'name': student.application.student.name,
+    #         'email': student.application.student.email,
+    #         'phone': student.application.phone
+    #     } for student in students]
+    #     print('students_list:', students_list)
+    #     return JsonResponse({'message': 'Staff page', 'data': students_list})
+    # return JsonResponse({'message': 'Staff page', 'data': []})
 
 @csrf_exempt
 @staff_required
@@ -100,11 +99,11 @@ def get_hostels(request):
         'hostel_no': hostel.hostel_no,
         'hostel_name': hostel.hostel_name,
         'hostel_type': hostel.hostel_type,
-        'num_floors': hostel.num_floors,
         'capacity': hostel.capacity,
         'caretaker': hostel.caretaker.caretaker.email
     } for hostel in hostels]
-    return JsonResponse({'message': 'Warden page', 'data': hostels_list})
+    sorted_hostels_list=sorted(hostels_list, key=lambda x: x['hostel_no'])
+    return JsonResponse({'message': 'Warden page', 'data': sorted_hostels_list})
 
 
 @csrf_exempt
@@ -524,7 +523,7 @@ def delete_saved_mapping(req, name):
     return JsonResponse({'message': 'Invalid name'})
 
 @csrf_exempt
-@staff_required
+# @staff_required
 def circulars(request):
     print("here")
     if request.method == 'GET':

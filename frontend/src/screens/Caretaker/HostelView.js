@@ -2,9 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../styles/tailwind.css";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import {
   Spinner,
   Tabs,
@@ -84,7 +83,7 @@ const people = [
   { name: "Virat Kapoor", email: "viratkapoor@example.com" },
 ];
 
-function HostelRoomCard({ room_no, students }) {
+function HostelRoomCard({ room_no, students,room_current_occupancy , room_occupancy}) {
   // const navigate= useNavigate();
   function handleClick() {
     console.log("Room number here:", room_no);
@@ -92,9 +91,9 @@ function HostelRoomCard({ room_no, students }) {
     // navigate('')
   }
   const backgroundColorClass =
-    students.length === 2 ? "bg-gray-300" : "bg-green-200";
+    room_current_occupancy === room_occupancy ? "bg-gray-300" : "bg-green-200";
   const backgroundColorClass2 =
-    students.length === 2 ? "hover:bg-gray-400" : "hover:bg-green-300";
+    room_current_occupancy === room_occupancy ? "hover:bg-gray-400" : "hover:bg-green-300";
   return (
     <Link
       to={`../room-details/${room_no}`}
@@ -113,7 +112,7 @@ function HostelRoomCard({ room_no, students }) {
             <div className="flex items-center space-x-1">
               <GroupIcon className="h-3 w-3 text-gray-700" />
               <p className="h-1 w-2 pt-0.5 text-xs text-gray-700 mb-3">
-                {students.length}
+                {room_current_occupancy}
               </p>
             </div>
           </CardFooter>
@@ -127,6 +126,7 @@ export default function HostelRooms() {
   const { hostel } = useParams();
   const { currentUser, loading } = useAuth();
   const [hostelDetails, setHostelDetails] = useState({});
+  const [spin, setSpin] = useState(false);
   const [rooms, setRooms] = useState([
     { room_no: "CE-101", students: [people[0], people[1]] },
     { room_no: "CE-102", students: [people[2], people[3]] },
@@ -228,13 +228,16 @@ export default function HostelRooms() {
   // console.log(hostel);
   const backendUrl = process.env.REACT_APP_BASE_URL;
   useEffect(() => {
+    setSpin(true);
     axios
       .get(`${backendUrl}/api/get_hostel/${hostel}`, { withCredentials: true })
       .then((response) => {
         // console.log("here");
+        console.log("here",response.data);
+        setRooms(response.data.data);
         // console.log(response.data);
-        // setRooms(response.data.data);
-        // setHostelDetails(response.data.hostel);
+        setHostelDetails(response.data.hostel);
+        setSpin(false);
         // setHostelName(response.data.data.hostel_name);
         // handle the response data
       });
@@ -264,7 +267,7 @@ export default function HostelRooms() {
 
     // Extract the first digit of the room number as the floor number
     const floorNumbers = rooms
-      .filter(room => room.room_no && typeof room.room_no === 'string') // Ensure room_no is defined and is a string
+      .filter(room => !room.is_for_guests) // Ensure room_no is defined and is a string
       .map(room => parseInt(room.room_no.match(/\d+$/)?.[0] || 0)); // Use optional chaining and fallback to handle cases where room_no might not match the expected format
 
     if (floorNumbers.length === 0) {
@@ -288,7 +291,7 @@ export default function HostelRooms() {
     const filteredRooms = rooms.filter((room) => {
       const floorNumber = parseInt(room.room_no.match(/\d+$/)[0]);
       console.log("filtered", floorNumber.toString()[0] - "0", active);
-      return floorNumber.toString()[0] - "0" === active;
+      return floorNumber.toString()[0] - "0" === active && !room.is_for_guests;
     });
 
     const getItemProps = (index) => ({
@@ -332,7 +335,7 @@ export default function HostelRooms() {
 
     // Extract the first digit of the room number as the floor number
     const floorNumbers = rooms
-      .filter(room => room.room_no && typeof room.room_no === 'string') // Ensure room_no is defined and is a string
+      .filter(room => room.is_for_guests) // Ensure room_no is defined and is a string
       .map(room => parseInt(room.room_no.match(/\d+$/)?.[0] || 0)); // Use optional chaining and fallback to handle cases where room_no might not match the expected format
 
     if (floorNumbers.length === 0) {
@@ -354,9 +357,10 @@ export default function HostelRooms() {
     console.log(paginationNumbers, "paginationNumbers");
 
     const filteredRooms = rooms.filter((room) => {
+      
       const floorNumber = parseInt(room.room_no.match(/\d+$/)[0]);
       console.log("filtered", floorNumber.toString()[0] - "0", active);
-      return floorNumber.toString()[0] - "0" === active;
+      return floorNumber.toString()[0] - "0" === active && room.is_for_guests;
     });
 
     const getItemProps = (index) => ({
@@ -401,7 +405,7 @@ export default function HostelRooms() {
     },
   ];
 
-  return loading ? (
+  return loading || spin ? (
     <Spinner />
   ) : (
     !loading && (

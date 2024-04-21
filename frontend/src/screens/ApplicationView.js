@@ -357,7 +357,7 @@ export default function TableWithStripedColumns() {
   )}
 
 {location.pathname.includes("caretaker") &&
-  formData.status.includes("payment") && (
+  formData.status.toLowerCase().includes("payment") && (
     <NavLink
       to={`../hostel-view/${currentUser.hostel}`}
       className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 my-4 no-underline"

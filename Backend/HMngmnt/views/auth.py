@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 
 from ..models import CustomUser, Room, Hostel, Student, Wing
 from ..helpers import get_user_dict
-from ..decorators import validate_token
+from ..decorators import validate_token, token_required
 import json
 import jwt, datetime
 
@@ -102,3 +102,37 @@ def get_user_info(request):
         user=get_user_dict(user)
 
         return JsonResponse({'message': 'User page', 'data': user})
+    
+@csrf_exempt
+@token_required
+def profile(req):
+    if req.method == 'GET':
+        # email=req.GET.get('email')
+        pk=req.new_param.get('id')
+        user=CustomUser.objects.get(pk=pk)
+        print(user)
+        ret={
+            'name': user.name,
+            'email': user.email,
+            # 'role': 'admin' if user.is_superuser else 'staff' if user.is_staff else 'student'
+        }
+        if hasattr(user,'student'):
+            ret['role']='student'
+            ret['phone']=user.student.student_phone
+            if hasattr(user.student, 'student_room'):
+                ret['room']=user.student.student_room.room_no
+                ret['hostel']=user.student.student_room.hostel.hostel_name
+        else:
+            ret['role']='outside student'
+            application=list(user.application_set.all())
+            if len(application)!=0:
+                application=application[0]
+                ret['phone']=application.phone
+                if hasattr(application, 'application_final'):
+                    application=application.application_final
+                    if hasattr(application, 'hostel') and application.hostel is not None:
+                        ret['hostel']=application.hostel.hostel_name
+                    if hasattr(application, 'room') and application.room is not None:
+                        print(1)
+                        ret['room']=application.room.room_no
+        return JsonResponse({'message': 'User profile', 'data': ret})
